@@ -20,10 +20,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc  
 @EnableTransactionManagement
 @ComponentScan(basePackages = {
-    "com.publictransport.config",
-    "com.publictransport.controllers",
-    "com.publictransport.services",
-    "com.publictransport.repositories",
     "com.publictransport.models"
 })
 public class WebAppContextConfigs implements WebMvcConfigurer{

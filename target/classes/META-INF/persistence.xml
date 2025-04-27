@@ -3,5 +3,15 @@
   <!-- Define Persistence Unit -->
   <persistence-unit name="my_persistence_unit">
     <class>com.publictransport.models.User</class>
+    <class>com.publictransport.models.Schedule</class>
+    <class>com.publictransport.models.Stop</class>
+    <class>com.publictransport.models.Notification</class>
+    <class>com.publictransport.models.Vehicle</class>
+    <class>com.publictransport.models.Route</class>
+    <class>com.publictransport.models.Report</class>
+    <class>com.publictransport.models.ScheduleStop</class>
+    <class>com.publictransport.models.Person</class>
+    <class>com.publictransport.models.Station</class>
+    <class>com.publictransport.models.Admin</class>
   </persistence-unit>
 </persistence>

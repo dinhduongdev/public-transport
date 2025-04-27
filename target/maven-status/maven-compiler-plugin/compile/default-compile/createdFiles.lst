@@ -1,11 +1,7 @@
 MainApp.class
 com\publictransport\models\Schedule.class
-com\publictransport\models\Coordinates.class
 com\publictransport\models\Notification.class
-com\publictransport\models\Observer.class
 com\publictransport\models\Station.class
-com\publictransport\models\Person.class
-com\publictransport\models\Status.class
 com\publictransport\models\Vehicle.class
 com\publictransport\config\DispatcherServletInit.class
 com\publictransport\config\HibernateConfigs.class
@@ -16,12 +12,10 @@ com\publictransport\services\UserService.class
 com\publictransport\models\ScheduleStop.class
 com\publictransport\models\Stop.class
 com\publictransport\models\User.class
-com\publictransport\models\Favoritable.class
 com\publictransport\config\DataSource.class
 com\publictransport\publictransport\resources\JakartaEE11Resource.class
 com\publictransport\models\Admin.class
 com\publictransport\config\ThymeleafConfig.class
-com\publictransport\models\VehicleType.class
 com\publictransport\config\SpringSecurityDialect.class
 com\publictransport\publictransport\JakartaRestConfiguration.class
 com\publictransport\controllers\IndexController.class
