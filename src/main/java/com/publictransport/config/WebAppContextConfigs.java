@@ -15,18 +15,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *
  * @author duong
  */
-
 @Configuration
-@EnableWebMvc  
+@EnableWebMvc
 @EnableTransactionManagement
 @ComponentScan(basePackages = {
-    "com.publictransport.models"
-})
-public class WebAppContextConfigs implements WebMvcConfigurer{
+    "com.publictransport.models",
+    "com.publictransport.config",
+    "com.publictransport.controllers",})
+public class WebAppContextConfigs implements WebMvcConfigurer {
 
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
         configurer.enable();
     }
-    
+
 }
