@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Route Detail - Public Transport System</title>
+    <th:block th:replace="base :: bootstrap"></th:block>
+</head>
+<body>
+<div th:replace="base :: header"></div>
+<div class="container mt-4">
+    <h2>Route Detail</h2>
+    <div class="card">
+<!--        <div class="card-body">
+            <h5 class="card-title" th:text="'Route: ' + ${routeDTO.route.name}"></h5>
+            <p><strong>ID:</strong> <span th:text="${routeDTO.route.id}"></span></p>
+            <p><strong>Start Point:</strong> <span th:text="${routeDTO.firstStationName}"></span></p>
+            <p><strong>End Point:</strong> <span th:text="${routeDTO.lastStationName}"></span></p>
+
+            <h6>Stops:</h6>
+            <ul>
+                <li th:each="station : ${routeDTO.stations}"
+                    th:text="${station.stopName}"></li>
+            </ul>
+
+            <a th:href="@{/manage-routes}" class="btn btn-secondary">Back to List</a>
+            <a th:href="@{/manage-routes/edit/{id}(id=${routeDTO.route.id})}" class="btn btn-warning">Edit</a>
+        </div>-->
+    </div>
+</div>
+<div th:replace="base :: footer"></div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Route - Public Transport System</title>
+    <th:block th:replace="base :: bootstrap"></th:block>
+    <style>
+        .station-buttons { margin-top: 10px; }
+    </style>
+</head>
+<body>
+<div th:replace="base :: header"></div>
+<div class="container">
+    <h2>Edit Route</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Edit Route</h5>
+            <form th:action="@{/manage-routes/edit/{id}(id=${route.id})}" method="post">
+                <div class="mb-3">
+                    <label for="routeName" class="form-label">Tên tuyến</label>
+                    <input type="text" class="form-control" id="routeName" name="routeName" th:value="${route.name}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="stops" class="form-label">Các trạm dừng</label>
+                    <select class="form-control" id="stops" name="stops" multiple required>
+                        <option th:each="station : ${stationsList}"
+                                th:value="${station.id}"
+                                th:text="${station.stopName}"
+                                th:selected="${selectedStationIds.contains(station.id)}">
+                        </option>
+                    </select>
+                    <small class="form-text text-muted">Giữ phím Ctrl để chọn nhiều trạm.</small>
+                    <div id="stationButtons" class="station-buttons"></div>
+                </div>
+                <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+                <a th:href="@{/manage-route}" class="btn btn-secondary">Hủy</a>
+            </form>
+        </div>
+    </div>
+</div>
+<div th:replace="base :: footer"></div>
+</body>
+</html>

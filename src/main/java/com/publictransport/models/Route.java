@@ -15,6 +15,7 @@ import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Collection;
 
@@ -27,7 +28,8 @@ import java.util.Collection;
 @NamedQueries({
     @NamedQuery(name = "Route.findAll", query = "SELECT r FROM Route r"),
     @NamedQuery(name = "Route.findById", query = "SELECT r FROM Route r WHERE r.id = :id"),
-    @NamedQuery(name = "Route.findByDistances", query = "SELECT r FROM Route r WHERE r.distances = :distances")})
+    @NamedQuery(name = "Route.findByDistances", query = "SELECT r FROM Route r WHERE r.distances = :distances"),
+    @NamedQuery(name = "Route.findByName", query = "SELECT r FROM Route r WHERE r.name = :name")})
 public class Route implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -39,6 +41,9 @@ public class Route implements Serializable {
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "distances")
     private Double distances;
+    @Size(max = 255)
+    @Column(name = "name")
+    private String name;
     @ManyToMany(mappedBy = "routeCollection")
     private Collection<User> userCollection;
     @OneToMany(mappedBy = "routeId")
@@ -67,6 +72,14 @@ public class Route implements Serializable {
 
     public void setDistances(Double distances) {
         this.distances = distances;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Collection<User> getUserCollection() {

@@ -31,9 +31,27 @@ import java.util.Collection;
 @NamedQueries({
     @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
     @NamedQuery(name = "User.findById", query = "SELECT u FROM User u WHERE u.id = :id"),
-    @NamedQuery(name = "User.findByName", query = "SELECT u FROM User u WHERE u.name = :name"),
-    @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email")})
+    @NamedQuery(name = "User.findByUsername", query = "SELECT u FROM User u WHERE u.username = :username"),
+    @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
+    @NamedQuery(name = "User.findByUserRole", query = "SELECT u FROM User u WHERE u.userRole = :userRole")})
 public class User implements Serializable {
+
+    @Size(max = 255)
+    @Column(name = "username")
+    private String username;
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
+    @Size(max = 255)
+    @Column(name = "email")
+    private String email;
+    @Size(max = 255)
+    @Column(name = "password")
+    private String password;
+    @Size(max = 255)
+    @Column(name = "user_role")
+    private String userRole;
+    @Lob
+    @Column(name = "avatar")
+    private byte[] avatar;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -41,16 +59,6 @@ public class User implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
-    @Size(max = 255)
-    @Column(name = "name")
-    private String name;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
-    @Size(max = 255)
-    @Column(name = "email")
-    private String email;
-    @Lob
-    @Column(name = "avatar")
-    private byte[] avatar;
     @JoinTable(name = "user_favorite_routes", joinColumns = {
         @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "route_id", referencedColumnName = "id")})
@@ -81,29 +89,15 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+
+    public String getUserRole() {
+        return userRole;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserRole(String userRole) {
+        this.userRole = userRole;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public byte[] getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(byte[] avatar) {
-        this.avatar = avatar;
-    }
 
     public Collection<Route> getRouteCollection() {
         return routeCollection;
@@ -160,6 +154,40 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "com.publictransport.models.User[ id=" + id + " ]";
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+
+
+    public byte[] getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(byte[] avatar) {
+        this.avatar = avatar;
     }
     
 }

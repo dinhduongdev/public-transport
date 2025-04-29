@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Admin Dashboard - Public Transport System</title>
+    <th:block th:replace="base :: bootstrap"></th:block>
+    <style>
+        .station-buttons {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="base :: header"></div>
+    <div class="container">
+        <h2>Manage Routes</h2>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Route List</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Start - Departure</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="routeDTO : ${routeDTOs}">
+                            <td th:text="${routeDTO.route.id}"></td>
+                            <td th:text="${routeDTO.route.name}"></td>
+                            <td th:text="${routeDTO.firstStationName + ' - ' + routeDTO.lastStationName}"></td>
+                            <td>
+                                <a th:href="@{/manage-routes/detail/{id}(id=${routeDTO.route.id})}" class="btn btn-sm btn-success">View Detail</a>
+                                <a th:href="@{/manage-routes/edit/{id}(id=${routeDTO.route.id})}" class="btn btn-sm btn-warning">Edit</a>
+                                <a th:href="@{/manage-routes/delete/{id}(id=${routeDTO.route.id})}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this route?')">Delete</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-primary" id="toggleRouteFormButton">Thêm tuyến</button>
+                <div id="addRouteForm" style="display: none; margin-top: 20px;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Thêm tuyến mới</h5>
+                            <form th:action="@{/manage-routes}" method="post">
+                                <div class="mb-3">
+                                    <label for="routeName" class="form-label">Tên tuyến</label>
+                                    <input type="text" class="form-control" id="routeName" name="routeName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="stops" class="form-label">Các trạm dừng</label>
+                                    <select class="form-control" id="stops" name="stops" multiple required>
+                                        <option th:each="station : ${stationsList}"
+                                                th:value="${station.id}"
+                                                th:text="${station.stopName}"></option>
+                                    </select>
+                                    <small class="form-text text-muted">Giữ phím Ctrl để chọn nhiều trạm.</small>
+                                    <div id="stationButtons" class="station-buttons"></div>
+                                </div>
+                                <button type="submit" class="btn btn-success">Lưu tuyến</button>
+                                <button type="button" class="btn btn-secondary" id="cancelRouteFormButton">Hủy</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="base :: footer"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>
