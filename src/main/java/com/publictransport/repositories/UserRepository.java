@@ -5,7 +5,7 @@
 package com.publictransport.repositories;
 
 import com.publictransport.models.User;
-import java.util.List;
+import com.publictransport.models.VehicleType;
 
 /**
  *
@@ -13,4 +13,5 @@ import java.util.List;
  */
 public interface UserRepository {
     User getUserByUsername(String username);
+
 }

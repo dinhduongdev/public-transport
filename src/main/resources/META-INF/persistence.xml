@@ -13,5 +13,7 @@
     <class>com.publictransport.models.Person</class>
     <class>com.publictransport.models.Station</class>
     <class>com.publictransport.models.Admin</class>
+    <class>com.publictransport.models.Vehicle_1</class>
+    <class>com.publictransport.models.VehicleType</class>
   </persistence-unit>
 </persistence>

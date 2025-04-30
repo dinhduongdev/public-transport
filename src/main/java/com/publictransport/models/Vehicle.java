@@ -10,14 +10,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Collection;
 
 /**
  *
@@ -28,8 +27,7 @@ import java.util.Collection;
 @NamedQueries({
     @NamedQuery(name = "Vehicle.findAll", query = "SELECT v FROM Vehicle v"),
     @NamedQuery(name = "Vehicle.findById", query = "SELECT v FROM Vehicle v WHERE v.id = :id"),
-    @NamedQuery(name = "Vehicle.findByCapacity", query = "SELECT v FROM Vehicle v WHERE v.capacity = :capacity"),
-    @NamedQuery(name = "Vehicle.findByVehicleType", query = "SELECT v FROM Vehicle v WHERE v.vehicleType = :vehicleType")})
+    @NamedQuery(name = "Vehicle.findByCapacity", query = "SELECT v FROM Vehicle v WHERE v.capacity = :capacity")})
 public class Vehicle implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -41,24 +39,15 @@ public class Vehicle implements Serializable {
     @Size(max = 255)
     @Column(name = "capacity")
     private String capacity;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 14)
-    @Column(name = "vehicle_type")
-    private String vehicleType;
-    @OneToMany(mappedBy = "vehicleId")
-    private Collection<Schedule> scheduleCollection;
+    @JoinColumn(name = "vehicle_type_id", referencedColumnName = "id")
+    @ManyToOne
+    private VehicleType vehicleTypeId;
 
     public Vehicle() {
     }
 
     public Vehicle(Long id) {
         this.id = id;
-    }
-
-    public Vehicle(Long id, String vehicleType) {
-        this.id = id;
-        this.vehicleType = vehicleType;
     }
 
     public Long getId() {
@@ -77,20 +66,12 @@ public class Vehicle implements Serializable {
         this.capacity = capacity;
     }
 
-    public String getVehicleType() {
-        return vehicleType;
+    public VehicleType getVehicleTypeId() {
+        return vehicleTypeId;
     }
 
-    public void setVehicleType(String vehicleType) {
-        this.vehicleType = vehicleType;
-    }
-
-    public Collection<Schedule> getScheduleCollection() {
-        return scheduleCollection;
-    }
-
-    public void setScheduleCollection(Collection<Schedule> scheduleCollection) {
-        this.scheduleCollection = scheduleCollection;
+    public void setVehicleTypeId(VehicleType vehicleTypeId) {
+        this.vehicleTypeId = vehicleTypeId;
     }
 
     @Override

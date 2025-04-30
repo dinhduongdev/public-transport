@@ -24,7 +24,8 @@ public class SpringSecurityConfigs {
 
     @Autowired
     private UserDetailsService userDetailsService;
-
+//    @Autowired
+//    private CustomLoginSuccessHandler customLoginSuccessHandler;
     @Bean
     public BCryptPasswordEncoder getBCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -37,7 +38,9 @@ public class SpringSecurityConfigs {
                 .requestMatchers("/", "/manage-routes",
                         "/manage-routes/edit/**",
                         "/manage-routes/delete/**",
-                        "/manage-routes/detail/**").authenticated()
+                        "/manage-routes/detail/**",
+                        "/manage-vehicles-type",
+                        "/manage-vehicles").authenticated()
                 .requestMatchers("/js/**").permitAll() 
                 )
                 .formLogin(form -> form

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard - Manage Vehicle Types</title>
+    <th:block th:replace="base :: bootstrap"></th:block>
+    <style>
+        .form-section {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="base :: header"></div>
+<div class="container">
+    <h2>Manage Vehicle Types</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Vehicle Type List</h5>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Type Name</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="type : ${vehicleTypes}">
+                    <td th:text="${type.id}"></td>
+                    <td th:text="${type.name}"></td>
+                    <td>
+                        <a th:href="@{/manage-vehicles-type/edit/{id}(id=${type.id})}" class="btn btn-sm btn-warning">Edit</a>
+                        <a th:href="@{/manage-vehicles-type/delete/{id}(id=${type.id})}" class="btn btn-sm btn-danger"
+                           onclick="return confirm('Are you sure you want to delete this vehicle type?')">Delete</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <button type="button" class="btn btn-primary" id="toggleVehicleTypeFormButton">Add Vehicle Type</button>
+
+            <div id="addVehicleTypeForm" style="display: none;" class="form-section">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Add New Vehicle Type</h5>
+                        <form th:action="@{/manage-vehicles-type}" method="post">
+                            <div class="mb-3">
+                                <label for="typeName" class="form-label">Vehicle Type Name</label>
+                                <input type="text" class="form-control" id="typeName" name="typeName" required>
+                            </div>
+                            <button type="submit" class="btn btn-success">Save</button>
+                            <button type="button" class="btn btn-secondary" id="cancelVehicleTypeFormButton">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div th:replace="base :: footer"></div>
+<script>
+    document.getElementById("toggleVehicleTypeFormButton").addEventListener("click", function () {
+        document.getElementById("addVehicleTypeForm").style.display = "block";
+        this.style.display = "none";
+    });
+
+    document.getElementById("cancelVehicleTypeFormButton").addEventListener("click", function () {
+        document.getElementById("addVehicleTypeForm").style.display = "none";
+        document.getElementById("toggleVehicleTypeFormButton").style.display = "inline-block";
+    });
+</script>
+</body>
+</html>

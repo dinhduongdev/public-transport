@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.publictransport.controllers;
 
 import com.publictransport.dto.RouteDTO;
@@ -11,6 +7,7 @@ import com.publictransport.models.Stop;
 import com.publictransport.services.RouteService;
 import com.publictransport.services.StationService;
 import com.publictransport.services.StopService;
+import com.publictransport.utils.RouteUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,11 +26,22 @@ import org.springframework.web.bind.annotation.*;
 public class RouteController {
 
     @Autowired
-    RouteService routeService;
+    private RouteService routeService;
     @Autowired
-    StopService stopService;
+    private StopService stopService;
     @Autowired
-    StationService stationService;
+    private StationService stationService;
+
+    // Khởi tạo RouteUtils với các service
+    private final RouteUtils routeUtils;
+
+    @Autowired
+    public RouteController(RouteService routeService, StopService stopService, StationService stationService) {
+        this.routeService = routeService;
+        this.stopService = stopService;
+        this.stationService = stationService;
+        this.routeUtils = new RouteUtils(routeService, stopService, stationService);
+    }
 
     @GetMapping("/")
     public String index(Model model) {
@@ -45,20 +53,14 @@ public class RouteController {
         List<Route> routes = this.routeService.getRoutes();
         List<RouteDTO> routeDTOs = new ArrayList<>();
         for (Route route : routes) {
-            System.out.println(route.getId());
 
 
             Stop[] firstAndLastStop = this.stopService.getFirstAndLastStop(route.getId());
             Station firstStation = firstAndLastStop[0].getStationId();
             Station lastStation = firstAndLastStop[1].getStationId();
-            System.out.println(firstAndLastStop[0].getId());
-            System.out.println(firstAndLastStop[1].getId());
-            System.out.println("bat dau" + firstStation);
-            System.out.println("ket thuc" + lastStation);
 
 
             RouteDTO routeDTO = new RouteDTO(route, firstStation.getStopName(), lastStation.getStopName());
-
             routeDTOs.add(routeDTO);
         }
         List<Station> stationsList = this.stationService.getStations();
@@ -68,18 +70,17 @@ public class RouteController {
     }
 
     @PostMapping("/manage-routes")
-    public String addRoute( Model model,
-                            @RequestParam("routeName") String routeName,
-                           @RequestParam("stops") List<Long> stationIds
-                           ) {
-        //Create a new Route
+    public String addRoute(Model model,
+                           @RequestParam("routeName") String routeName,
+                           @RequestParam("stops") List<Long> stationIds) {
+        // Create a new Route
         Route route = new Route();
         route.setName(routeName);
         route = this.routeService.saveRoute(route);
         // Create Stop entries for each selected station
         int stopOrder = 1;
         for (Long stationId : stationIds) {
-            Station station =  this.stationService.getStationById(stationId);
+            Station station = this.stationService.getStationById(stationId);
             Stop stop = new Stop();
             stop.setRouteId(route);
             stop.setStationId(station);
@@ -88,25 +89,19 @@ public class RouteController {
         }
         return "redirect:/manage-routes";
     }
-    @GetMapping("/manage-routes/detail/{id}")
-    public String viewDetailRoute(@PathVariable("id") Long id, Model model) {
-        return "route-detail";
-    }
-
 
     @GetMapping("/manage-routes/edit/{id}")
     public String editRouteForm(@PathVariable("id") Long id, Model model) {
-        Route route = routeService.getRouteById(id);
-        List<Stop> stops = stopService.getStopsByRouteId(id);
-        List<Long> selectedStationIds = stops.stream()
-                .map(stop -> stop.getStationId().getId())
-                .collect(Collectors.toList());
-        List<Station> stationsList = stationService.getStations();
-        model.addAttribute("route", route);
-        model.addAttribute("selectedStationIds", selectedStationIds);
-        model.addAttribute("stationsList", stationsList);
+        routeUtils.prepareRouteData(id, model);
         return "edit-route";
     }
+
+    @GetMapping("/manage-routes/detail/{id}")
+    public String viewDetailRoute(@PathVariable("id") Long id, Model model) {
+        routeUtils.prepareRouteData(id, model);
+        return "route-detail";
+    }
+
     @PostMapping("/manage-routes/edit/{id}")
     public String updateRoute(@PathVariable("id") Long id,
                               @RequestParam("routeName") String routeName,
@@ -126,6 +121,7 @@ public class RouteController {
         }
         return "redirect:/manage-routes";
     }
+
     @GetMapping("/manage-routes/delete/{id}")
     public String deleteRoute(@PathVariable("id") Long id) {
         stopService.deleteStopsByRouteId(id);
