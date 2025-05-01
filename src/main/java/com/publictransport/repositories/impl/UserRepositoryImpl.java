@@ -6,7 +6,6 @@ package com.publictransport.repositories.impl;
 
 import com.publictransport.models.User;
 import com.publictransport.repositories.UserRepository;
-import java.util.List;
 
 import jakarta.persistence.Query;
 import org.hibernate.Session;
@@ -33,7 +32,6 @@ public class UserRepositoryImpl implements UserRepository {
         Session s = this.factory.getObject().getCurrentSession();
         Query q = s.createNamedQuery("User.findByUsername", User.class);
         q.setParameter("username", username);
-
         return (User) q.getSingleResult();
     }
 }

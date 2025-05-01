@@ -45,11 +45,9 @@ public class StopRepositoryImpl implements StopRepository {
     @Override
     public Stop saveStop(Stop stop) {
         Session s = this.factory.getObject().getCurrentSession();
-        // Reattach the Route entity if it's detached
         if (stop.getRouteId() != null && stop.getRouteId().getId() != null) {
             stop.setRouteId((Route) s.merge(stop.getRouteId()));
         }
-        // Reattach the Station entity if it's detached
         if (stop.getStationId() != null && stop.getStationId().getId() != null) {
             stop.setStationId((Station) s.merge(stop.getStationId()));
         }

@@ -18,7 +18,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.Set;
 
 /**
  *
@@ -49,7 +49,7 @@ public class Stop implements Serializable {
     @ManyToOne
     private Station stationId;
     @OneToMany(mappedBy = "stopId")
-    private Collection<ScheduleStop> scheduleStopCollection;
+    private Set<ScheduleStop> scheduleStopSet;
 
     public Stop() {
     }
@@ -95,12 +95,12 @@ public class Stop implements Serializable {
         this.stationId = stationId;
     }
 
-    public Collection<ScheduleStop> getScheduleStopCollection() {
-        return scheduleStopCollection;
+    public Set<ScheduleStop> getScheduleStopSet() {
+        return scheduleStopSet;
     }
 
-    public void setScheduleStopCollection(Collection<ScheduleStop> scheduleStopCollection) {
-        this.scheduleStopCollection = scheduleStopCollection;
+    public void setScheduleStopSet(Set<ScheduleStop> scheduleStopSet) {
+        this.scheduleStopSet = scheduleStopSet;
     }
 
     @Override

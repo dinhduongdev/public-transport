@@ -1,8 +1,6 @@
 package com.publictransport.services.impl;
 
-import com.publictransport.models.Vehicle;
 import com.publictransport.models.VehicleType;
-import com.publictransport.repositories.VehicleRepository;
 import com.publictransport.repositories.VehicleTypeRepository;
 import com.publictransport.services.VehicleTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,5 +21,15 @@ public class VehicleTypeServiceImpl implements VehicleTypeService {
     @Override
     public VehicleType saveVehicleType(VehicleType vehicleType) {
         return this.vehicleTypeRepository.saveVehicleType(vehicleType);
+    }
+
+    @Override
+    public VehicleType getVehicleTypeById(Long id) {
+        return this.vehicleTypeRepository.getVehicleTypeById(id);
+    }
+
+    @Override
+    public void deleteVehicleType(Long id) {
+        this.vehicleTypeRepository.deleteVehicleType(id);
     }
 }

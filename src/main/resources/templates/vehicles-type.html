@@ -25,10 +25,11 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="type : ${vehicleTypes}">
-                    <td th:text="${type.id}"></td>
-                    <td th:text="${type.name}"></td>
+                <tr th:each="type : ${vehicleTypes}" >
+                    <td th:text="${type.id}" ></td>
+                    <td th:text="${type.name}" ></td>
                     <td>
+                        <a th:href="@{/manage-vehicles-type/detail/{id}(id=${type.id})}" class="btn btn-sm btn-info">View Detail</a>
                         <a th:href="@{/manage-vehicles-type/edit/{id}(id=${type.id})}" class="btn btn-sm btn-warning">Edit</a>
                         <a th:href="@{/manage-vehicles-type/delete/{id}(id=${type.id})}" class="btn btn-sm btn-danger"
                            onclick="return confirm('Are you sure you want to delete this vehicle type?')">Delete</a>
@@ -43,10 +44,10 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Add New Vehicle Type</h5>
-                        <form th:action="@{/manage-vehicles-type}" method="post">
-                            <div class="mb-3">
+                        <form th:action="@{/manage-vehicles-type}" method="post" th:object="${vehicle_type}">
+                        <div class="mb-3">
                                 <label for="typeName" class="form-label">Vehicle Type Name</label>
-                                <input type="text" class="form-control" id="typeName" name="typeName" required>
+                                <input type="text" class="form-control" id="typeName" name="typeName" required th:field="*{name}" >
                             </div>
                             <button type="submit" class="btn btn-success">Save</button>
                             <button type="button" class="btn btn-secondary" id="cancelVehicleTypeFormButton">Cancel</button>

@@ -14,9 +14,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  *
@@ -30,15 +32,21 @@ import java.io.Serializable;
     @NamedQuery(name = "Vehicle.findByCapacity", query = "SELECT v FROM Vehicle v WHERE v.capacity = :capacity")})
 public class Vehicle implements Serializable {
 
+    @Size(max = 255)
+    @Column(name = "capacity")
+    private String capacity;
+    @Size(max = 50)
+    @Column(name = "license_plate")
+    private String licensePlate;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
-    @Size(max = 255)
-    @Column(name = "capacity")
-    private String capacity;
+    @OneToMany(mappedBy = "vehicleId")
+    private Set<Schedule> scheduleSet;
     @JoinColumn(name = "vehicle_type_id", referencedColumnName = "id")
     @ManyToOne
     private VehicleType vehicleTypeId;
@@ -58,12 +66,13 @@ public class Vehicle implements Serializable {
         this.id = id;
     }
 
-    public String getCapacity() {
-        return capacity;
+
+    public Set<Schedule> getScheduleSet() {
+        return scheduleSet;
     }
 
-    public void setCapacity(String capacity) {
-        this.capacity = capacity;
+    public void setScheduleSet(Set<Schedule> scheduleSet) {
+        this.scheduleSet = scheduleSet;
     }
 
     public VehicleType getVehicleTypeId() {
@@ -97,6 +106,22 @@ public class Vehicle implements Serializable {
     @Override
     public String toString() {
         return "com.publictransport.models.Vehicle[ id=" + id + " ]";
+    }
+
+    public String getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(String capacity) {
+        this.capacity = capacity;
+    }
+
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
     }
     
 }

@@ -12,6 +12,8 @@ D:\THUC HANH PTHTWEB\PublicTransport\src\main\java\com\publictransport\controlle
 D:\THUC HANH PTHTWEB\PublicTransport\src\main\java\com\publictransport\controllers\VehicleController.java
 D:\THUC HANH PTHTWEB\PublicTransport\src\main\java\com\publictransport\controllers\VehicleTypeController.java
 D:\THUC HANH PTHTWEB\PublicTransport\src\main\java\com\publictransport\dto\RouteDTO.java
+D:\THUC HANH PTHTWEB\PublicTransport\src\main\java\com\publictransport\formatters\VehicleFormatter.java
+D:\THUC HANH PTHTWEB\PublicTransport\src\main\java\com\publictransport\formatters\VehicleTypeFormatter.java
 D:\THUC HANH PTHTWEB\PublicTransport\src\main\java\com\publictransport\models\Notification.java
 D:\THUC HANH PTHTWEB\PublicTransport\src\main\java\com\publictransport\models\Report.java
 D:\THUC HANH PTHTWEB\PublicTransport\src\main\java\com\publictransport\models\Route.java

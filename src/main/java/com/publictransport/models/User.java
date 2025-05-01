@@ -20,7 +20,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.Set;
 
 /**
  *
@@ -33,9 +33,16 @@ import java.util.Collection;
     @NamedQuery(name = "User.findById", query = "SELECT u FROM User u WHERE u.id = :id"),
     @NamedQuery(name = "User.findByUsername", query = "SELECT u FROM User u WHERE u.username = :username"),
     @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
+    @NamedQuery(name = "User.findByPassword", query = "SELECT u FROM User u WHERE u.password = :password"),
     @NamedQuery(name = "User.findByUserRole", query = "SELECT u FROM User u WHERE u.userRole = :userRole")})
 public class User implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Long id;
     @Size(max = 255)
     @Column(name = "username")
     private String username;
@@ -52,27 +59,20 @@ public class User implements Serializable {
     @Lob
     @Column(name = "avatar")
     private byte[] avatar;
-
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Long id;
     @JoinTable(name = "user_favorite_routes", joinColumns = {
         @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "route_id", referencedColumnName = "id")})
     @ManyToMany
-    private Collection<Route> routeCollection;
+    private Set<Route> routeSet;
     @JoinTable(name = "user_favorite_schedules", joinColumns = {
         @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "schedule_id", referencedColumnName = "id")})
     @ManyToMany
-    private Collection<Schedule> scheduleCollection;
+    private Set<Schedule> scheduleSet;
     @OneToMany(mappedBy = "userId")
-    private Collection<Notification> notificationCollection;
+    private Set<Notification> notificationSet;
     @OneToMany(mappedBy = "userId")
-    private Collection<Report> reportCollection;
+    private Set<Report> reportSet;
 
     public User() {
     }
@@ -87,73 +87,6 @@ public class User implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-
-    public String getUserRole() {
-        return userRole;
-    }
-
-    public void setUserRole(String userRole) {
-        this.userRole = userRole;
-    }
-
-
-    public Collection<Route> getRouteCollection() {
-        return routeCollection;
-    }
-
-    public void setRouteCollection(Collection<Route> routeCollection) {
-        this.routeCollection = routeCollection;
-    }
-
-    public Collection<Schedule> getScheduleCollection() {
-        return scheduleCollection;
-    }
-
-    public void setScheduleCollection(Collection<Schedule> scheduleCollection) {
-        this.scheduleCollection = scheduleCollection;
-    }
-
-    public Collection<Notification> getNotificationCollection() {
-        return notificationCollection;
-    }
-
-    public void setNotificationCollection(Collection<Notification> notificationCollection) {
-        this.notificationCollection = notificationCollection;
-    }
-
-    public Collection<Report> getReportCollection() {
-        return reportCollection;
-    }
-
-    public void setReportCollection(Collection<Report> reportCollection) {
-        this.reportCollection = reportCollection;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof User)) {
-            return false;
-        }
-        User other = (User) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.publictransport.models.User[ id=" + id + " ]";
     }
 
     public String getUsername() {
@@ -180,7 +113,13 @@ public class User implements Serializable {
         this.password = password;
     }
 
+    public String getUserRole() {
+        return userRole;
+    }
 
+    public void setUserRole(String userRole) {
+        this.userRole = userRole;
+    }
 
     public byte[] getAvatar() {
         return avatar;
@@ -188,6 +127,63 @@ public class User implements Serializable {
 
     public void setAvatar(byte[] avatar) {
         this.avatar = avatar;
+    }
+
+    public Set<Route> getRouteSet() {
+        return routeSet;
+    }
+
+    public void setRouteSet(Set<Route> routeSet) {
+        this.routeSet = routeSet;
+    }
+
+    public Set<Schedule> getScheduleSet() {
+        return scheduleSet;
+    }
+
+    public void setScheduleSet(Set<Schedule> scheduleSet) {
+        this.scheduleSet = scheduleSet;
+    }
+
+    public Set<Notification> getNotificationSet() {
+        return notificationSet;
+    }
+
+    public void setNotificationSet(Set<Notification> notificationSet) {
+        this.notificationSet = notificationSet;
+    }
+
+    public Set<Report> getReportSet() {
+        return reportSet;
+    }
+
+    public void setReportSet(Set<Report> reportSet) {
+        this.reportSet = reportSet;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof User)) {
+            return false;
+        }
+        User other = (User) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "com.publictransport.models.User[ id=" + id + " ]";
     }
     
 }

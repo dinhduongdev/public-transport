@@ -20,8 +20,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 /**
  *
@@ -48,8 +48,8 @@ public class Schedule implements Serializable {
     @Column(name = "end_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date endTime;
-    @ManyToMany(mappedBy = "scheduleCollection")
-    private Collection<User> userCollection;
+    @ManyToMany(mappedBy = "scheduleSet")
+    private Set<User> userSet;
     @JoinColumn(name = "route_id", referencedColumnName = "id")
     @ManyToOne
     private Route routeId;
@@ -57,7 +57,7 @@ public class Schedule implements Serializable {
     @ManyToOne
     private Vehicle vehicleId;
     @OneToMany(mappedBy = "scheduleId")
-    private Collection<ScheduleStop> scheduleStopCollection;
+    private Set<ScheduleStop> scheduleStopSet;
 
     public Schedule() {
     }
@@ -90,12 +90,12 @@ public class Schedule implements Serializable {
         this.endTime = endTime;
     }
 
-    public Collection<User> getUserCollection() {
-        return userCollection;
+    public Set<User> getUserSet() {
+        return userSet;
     }
 
-    public void setUserCollection(Collection<User> userCollection) {
-        this.userCollection = userCollection;
+    public void setUserSet(Set<User> userSet) {
+        this.userSet = userSet;
     }
 
     public Route getRouteId() {
@@ -114,12 +114,12 @@ public class Schedule implements Serializable {
         this.vehicleId = vehicleId;
     }
 
-    public Collection<ScheduleStop> getScheduleStopCollection() {
-        return scheduleStopCollection;
+    public Set<ScheduleStop> getScheduleStopSet() {
+        return scheduleStopSet;
     }
 
-    public void setScheduleStopCollection(Collection<ScheduleStop> scheduleStopCollection) {
-        this.scheduleStopCollection = scheduleStopCollection;
+    public void setScheduleStopSet(Set<ScheduleStop> scheduleStopSet) {
+        this.scheduleStopSet = scheduleStopSet;
     }
 
     @Override

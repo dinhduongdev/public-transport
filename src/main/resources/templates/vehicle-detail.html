@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Vehicle Detail</title>
+    <th:block th:replace="base :: bootstrap"></th:block>
+</head>
+<body>
+<div th:replace="base :: header"></div>
+<div class="container">
+    <h2>Vehicle Detail</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Vehicle Information</h5>
+            <table class="table">
+                <tr>
+                    <th>ID</th>
+                    <td th:text="${vehicle.id}"></td>
+                </tr>
+                <tr>
+                    <th>Capacity</th>
+                    <td th:text="${vehicle.capacity}"></td>
+                </tr>
+                <tr>
+                    <th>Vehicle Type</th>
+                    <td th:text="${vehicle.vehicleTypeId.name}"></td>
+                </tr>
+            </table>
+            <a th:href="@{/manage-vehicles}" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+</div>
+<div th:replace="base :: footer"></div>
+</body>
+</html>

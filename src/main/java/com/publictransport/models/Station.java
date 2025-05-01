@@ -17,7 +17,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.Set;
 
 /**
  *
@@ -53,7 +53,7 @@ public class Station implements Serializable {
     @Column(name = "longitude")
     private double longitude;
     @OneToMany(mappedBy = "stationId")
-    private Collection<Stop> stopCollection;
+    private Set<Stop> stopSet;
 
     public Station() {
     }
@@ -101,12 +101,12 @@ public class Station implements Serializable {
         this.longitude = longitude;
     }
 
-    public Collection<Stop> getStopCollection() {
-        return stopCollection;
+    public Set<Stop> getStopSet() {
+        return stopSet;
     }
 
-    public void setStopCollection(Collection<Stop> stopCollection) {
-        this.stopCollection = stopCollection;
+    public void setStopSet(Set<Stop> stopSet) {
+        this.stopSet = stopSet;
     }
 
     @Override

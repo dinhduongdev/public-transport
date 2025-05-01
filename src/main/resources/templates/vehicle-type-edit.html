@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Vehicle Type</title>
+    <th:block th:replace="base :: bootstrap"></th:block>
+</head>
+<body>
+<div th:replace="base :: header"></div>
+<div class="container">
+    <h2>Edit Vehicle Type</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Vehicle Type Information</h5>
+            <form th:action="@{/manage-vehicles-type/edit}" method="post" th:object="${vehicleType}">
+                <input type="hidden" th:field="*{id}" />
+                <div class="mb-3">
+                    <label for="typeName" class="form-label">Vehicle Type Name</label>
+                    <input type="text" class="form-control" id="typeName" name="typeName" required th:field="*{name}">
+                </div>
+                <button type="submit" class="btn btn-success">Save</button>
+                <a th:href="@{/manage-vehicles-type}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+<div th:replace="base :: footer"></div>
+</body>
+</html>

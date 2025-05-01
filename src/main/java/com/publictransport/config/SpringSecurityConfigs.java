@@ -40,7 +40,14 @@ public class SpringSecurityConfigs {
                         "/manage-routes/delete/**",
                         "/manage-routes/detail/**",
                         "/manage-vehicles-type",
-                        "/manage-vehicles").authenticated()
+                        "/manage-vehicles-type/detail/**",
+                        "/manage-vehicles-type/delete/**",
+                        "/manage-vehicles-type/edit/**",
+                        "/manage-vehicles",
+                        "manage-vehicles/detail/**",
+                        "/manage-vehicles/delete/**",
+                        "/manage-vehicles/edit/**",
+                        "/manage-schedules").authenticated()
                 .requestMatchers("/js/**").permitAll() 
                 )
                 .formLogin(form -> form

@@ -1,6 +1,5 @@
 package com.publictransport.repositories.impl;
 
-import com.publictransport.models.Route;
 import com.publictransport.models.VehicleType;
 import com.publictransport.repositories.VehicleTypeRepository;
 import jakarta.persistence.Query;
@@ -26,7 +25,26 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepository {
     @Override
     public VehicleType saveVehicleType(VehicleType vehicleType) {
         Session s = this.factory.getObject().getCurrentSession();
-        s.persist(vehicleType);
+        if (vehicleType.getId() == null) {
+            s.persist(vehicleType);
+        } else {
+            vehicleType = (VehicleType) s.merge(vehicleType);
+        }
         return vehicleType;
+    }
+
+    @Override
+    public VehicleType getVehicleTypeById(Long id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        return s.get(VehicleType.class, id);
+    }
+
+    @Override
+    public void deleteVehicleType(Long id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        VehicleType vehicleType = s.get(VehicleType.class, id);
+        if (vehicleType != null) {
+            s.remove(vehicleType);
+        }
     }
 }

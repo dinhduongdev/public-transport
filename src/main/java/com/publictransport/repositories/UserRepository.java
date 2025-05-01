@@ -5,7 +5,6 @@
 package com.publictransport.repositories;
 
 import com.publictransport.models.User;
-import com.publictransport.models.VehicleType;
 
 /**
  *

@@ -17,7 +17,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.Set;
 
 /**
  *
@@ -44,12 +44,12 @@ public class Route implements Serializable {
     @Size(max = 255)
     @Column(name = "name")
     private String name;
-    @ManyToMany(mappedBy = "routeCollection")
-    private Collection<User> userCollection;
+    @ManyToMany(mappedBy = "routeSet")
+    private Set<User> userSet;
     @OneToMany(mappedBy = "routeId")
-    private Collection<Schedule> scheduleCollection;
+    private Set<Schedule> scheduleSet;
     @OneToMany(mappedBy = "routeId")
-    private Collection<Stop> stopCollection;
+    private Set<Stop> stopSet;
 
     public Route() {
     }
@@ -82,28 +82,28 @@ public class Route implements Serializable {
         this.name = name;
     }
 
-    public Collection<User> getUserCollection() {
-        return userCollection;
+    public Set<User> getUserSet() {
+        return userSet;
     }
 
-    public void setUserCollection(Collection<User> userCollection) {
-        this.userCollection = userCollection;
+    public void setUserSet(Set<User> userSet) {
+        this.userSet = userSet;
     }
 
-    public Collection<Schedule> getScheduleCollection() {
-        return scheduleCollection;
+    public Set<Schedule> getScheduleSet() {
+        return scheduleSet;
     }
 
-    public void setScheduleCollection(Collection<Schedule> scheduleCollection) {
-        this.scheduleCollection = scheduleCollection;
+    public void setScheduleSet(Set<Schedule> scheduleSet) {
+        this.scheduleSet = scheduleSet;
     }
 
-    public Collection<Stop> getStopCollection() {
-        return stopCollection;
+    public Set<Stop> getStopSet() {
+        return stopSet;
     }
 
-    public void setStopCollection(Collection<Stop> stopCollection) {
-        this.stopCollection = stopCollection;
+    public void setStopSet(Set<Stop> stopSet) {
+        this.stopSet = stopSet;
     }
 
     @Override

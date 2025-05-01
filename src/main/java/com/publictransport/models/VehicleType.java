@@ -17,7 +17,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.Set;
 
 /**
  *
@@ -31,19 +31,20 @@ import java.util.Collection;
     @NamedQuery(name = "VehicleType.findByName", query = "SELECT v FROM VehicleType v WHERE v.name = :name")})
 public class VehicleType implements Serializable {
 
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "name")
+    private String name;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 255)
-    @Column(name = "name")
-    private String name;
     @OneToMany(mappedBy = "vehicleTypeId")
-    private Collection<Vehicle> vehicleCollection;
+    private Set<Vehicle> vehicleSet;
 
     public VehicleType() {
     }
@@ -65,20 +66,13 @@ public class VehicleType implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+
+    public Set<Vehicle> getVehicleSet() {
+        return vehicleSet;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Collection<Vehicle> getVehicleCollection() {
-        return vehicleCollection;
-    }
-
-    public void setVehicleCollection(Collection<Vehicle> vehicleCollection) {
-        this.vehicleCollection = vehicleCollection;
+    public void setVehicleSet(Set<Vehicle> vehicleSet) {
+        this.vehicleSet = vehicleSet;
     }
 
     @Override
@@ -104,6 +98,14 @@ public class VehicleType implements Serializable {
     @Override
     public String toString() {
         return "com.publictransport.models.VehicleType[ id=" + id + " ]";
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
     
 }

@@ -5,7 +5,6 @@
 package com.publictransport.repositories.impl;
 
 import com.publictransport.models.Route;
-import com.publictransport.models.Station;
 import com.publictransport.repositories.RouteRepository;
 import jakarta.persistence.Query;
 import java.util.List;
@@ -24,30 +23,35 @@ import org.springframework.transaction.annotation.Transactional;
 public class RouteRepositoryImpl implements RouteRepository{
     @Autowired
     LocalSessionFactoryBean factory;
-    
+
+    private Session getCurrentSession() {
+        return factory.getObject().getCurrentSession();
+    }
+
+
     @Override
     public List<Route> getRoutes() {
-        Session s = this.factory.getObject().getCurrentSession();
+        Session s = getCurrentSession();
         Query  q = s.createQuery("FROM Route", Route.class);
         return q.getResultList();
     }
 
     @Override
     public Route saveRoute(Route route) {
-        Session s = this.factory.getObject().getCurrentSession();
+        Session s = getCurrentSession();
         s.persist(route);
         return route;
     }
 
     @Override
     public Route getRouteById(Long id) {
-        Session s = this.factory.getObject().getCurrentSession();
+        Session s = getCurrentSession();
         return s.get(Route.class, id);
     }
 
     @Override
     public void deleteRoute(Long id) {
-        Session s = this.factory.getObject().getCurrentSession();
+        Session s = getCurrentSession();
         Query q = s.createQuery("DELETE FROM Route WHERE id = :id");
         q.setParameter("id", id);
         q.executeUpdate();
