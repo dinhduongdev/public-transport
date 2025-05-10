@@ -15,7 +15,7 @@ public class Stop {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "route_variant_id")
-    private Routevariant routeVariant;
+    private RouteVariant routeVariant;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "station_id")

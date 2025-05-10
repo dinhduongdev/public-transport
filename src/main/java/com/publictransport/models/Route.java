@@ -24,6 +24,6 @@ public class Route {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type")
-    private com.publictransport.models.Typeroute type;
+    private com.publictransport.models.TypeRoute type;
 
 }

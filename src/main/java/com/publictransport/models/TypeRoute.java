@@ -11,8 +11,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "statusreport")
-public class Statusreport {
+@Table(name = "type_route")
+public class TypeRoute {
     @Id
     @Size(max = 20)
     @Column(name = "name", nullable = false, length = 20)

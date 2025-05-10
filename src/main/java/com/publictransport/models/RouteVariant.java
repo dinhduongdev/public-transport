@@ -8,9 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "routevariant")
-public class Routevariant {
+@Table(name = "route_variant")
+public class RouteVariant {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 

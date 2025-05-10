@@ -12,12 +12,13 @@ import java.time.Instant;
 @Table(name = "schedule")
 public class Schedule {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "routevariant_id")
-    private Routevariant routevariant;
+    @JoinColumn(name = "route_variant_id")
+    private RouteVariant routeVariant;
 
     @Column(name = "start_date")
     private Instant startDate;

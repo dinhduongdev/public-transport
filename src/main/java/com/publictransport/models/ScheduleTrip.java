@@ -9,9 +9,10 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "scheduletrip")
-public class Scheduletrip {
+@Table(name = "schedule_trip")
+public class ScheduleTrip {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 

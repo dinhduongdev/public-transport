@@ -36,7 +36,7 @@ public class Report {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "status")
-    private com.publictransport.models.Statusreport status;
+    private com.publictransport.models.StatusReport status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)

@@ -58,7 +58,6 @@ public class RouteController {
             Station firstStation = firstAndLastStop[0].getStationId();
             Station lastStation = firstAndLastStop[1].getStationId();
 
-
             RouteDTO routeDTO = new RouteDTO(route, firstStation.getStopName(), lastStation.getStopName());
             routeDTOs.add(routeDTO);
         }
