@@ -36,6 +36,7 @@ public class SpringSecurityConfigs {
         http.csrf(c -> c.disable())
                 .authorizeHttpRequests(requests -> requests
                 .requestMatchers("/", "/manage-routes",
+                        "/manage-routes/**",
                         "/manage-routes/edit/**",
                         "/manage-routes/delete/**",
                         "/manage-routes/detail/**",
@@ -47,7 +48,8 @@ public class SpringSecurityConfigs {
                         "manage-vehicles/detail/**",
                         "/manage-vehicles/delete/**",
                         "/manage-vehicles/edit/**",
-                        "/manage-schedules").authenticated()
+                        "/manage-schedules",
+                        "/manage-route-variants").authenticated()
                 .requestMatchers("/js/**").permitAll() 
                 )
                 .formLogin(form -> form

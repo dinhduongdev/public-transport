@@ -1,18 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.publictransport.services;
 
-import java.util.List;
+import com.publictransport.models.Route;
+import com.publictransport.models.RouteVariant;
 
-/**
- *
- * @author duong
- */
+import java.util.List;
+import java.util.Map;
+
 public interface RouteService {
-    List<Route> getRoutes();
-    Route saveRoute(Route route);
+    List<Route> getAllRoutes(int page, int size);
+    long getTotalRoutes();
+    int getTotalPages(int size);
+    List<RouteVariant> getRouteVariantsByRouteId(Long routeId);
     Route getRouteById(Long id);
+    void saveRoute(Route route);
+    void updateRoute(Route route);
     void deleteRoute(Long id);
+    List<Route> searchRoutes(Map<String, String> params, int page, int size);
+    long countRoutesByParams(Map<String, String> params);
+    int getTotalPagesByParams(Map<String, String> params, int size);
 }

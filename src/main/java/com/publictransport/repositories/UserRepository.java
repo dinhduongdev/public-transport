@@ -4,11 +4,13 @@
  */
 package com.publictransport.repositories;
 
+import com.publictransport.models.User;
+
 /**
  *
  * @author duong
  */
 public interface UserRepository {
-    User getUserByUsername(String username);
+    User getUserByEmail(String email);
 
 }

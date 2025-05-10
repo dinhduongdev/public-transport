@@ -38,4 +38,7 @@ public class User {
     @Column(name = "avatar")
     private String avatar;
 
+    public String getUserRole() {
+        return this.role != null ? this.role.getName() : "ROLE_USER";
+    }
 }

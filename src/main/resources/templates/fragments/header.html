@@ -1,0 +1,55 @@
+<header th:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <!-- Logo hoặc Tên Hệ Thống -->
+            <a class="navbar-brand fw-bold" href="#">Hệ thống xe buýt</a>
+
+            <!-- Nút Toggler cho thiết bị di động -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Các mục điều hướng -->
+            <div class="collapse navbar-collapse" id="adminNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold" aria-current="page" th:href="@{/}">Quản trị viên</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/manage-schedules}">Quản lý lịch trình</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/manage-routes}">Quản lý tuyến</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/manage-route-variants}">Quản lý lộ trình</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/manage-vehicles}">Quản lý phương tiện</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/manage-vehicles-type}">Quản lý loại phương tiện</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/update-times}">Cập nhật thời gian</a>
+                    </li>
+                </ul>
+
+                <!-- Dropdown người dùng -->
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-2"></i> Admin
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
+                            <li><a class="dropdown-item" href="#">Đổi mật khẩu</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" th:href="@{/logout}">Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>

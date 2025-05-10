@@ -1,5 +1,6 @@
 package com.publictransport.services.impl;
 
+import com.publictransport.models.User;
 import com.publictransport.repositories.UserRepository;
 import com.publictransport.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +21,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User getUserByUsername(String username) {
-        return this.userRepository.getUserByUsername(username);
-    }
-
-    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User u = this.userRepository.getUserByUsername(username);
+        User u = this.userRepository.getUserByEmail(username);
         System.out.println(u);
         if (u == null) {
             throw new UsernameNotFoundException("Invalid username");
@@ -34,6 +30,11 @@ public class UserServiceImpl implements UserService {
         Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority(u.getUserRole()));
         return new org.springframework.security.core.userdetails.User(
-                u.getUsername(), u.getPassword(), authorities);
+                u.getEmail(), u.getPassword(), authorities);
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return null;
     }
 }

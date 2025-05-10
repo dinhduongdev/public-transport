@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
+<head>
+    <title th:replace="~{base :: title}">Danh sách tuyến đường</title>
+    <th:block th:fragment="extraStyles">
+        <style>
+            .action-buttons a {
+                padding: 5px 10px;
+                text-decoration: none;
+                border-radius: 3px;
+                margin-right: 5px;
+                color: white;
+            }
+            .action-buttons .detail-btn {
+                background-color: #007bff;
+            }
+            .action-buttons .edit-btn {
+                background-color: #ffc107;
+                color: black;
+            }
+            .action-buttons .delete-btn {
+                background-color: #dc3545;
+            }
+            .action-buttons a:hover {
+                opacity: 0.8;
+            }
+            .add-btn {
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #28a745;
+                color: white;
+                text-decoration: none;
+                border-radius: 3px;
+                margin-bottom: 20px;
+            }
+            .add-btn:hover {
+                background-color: #218838;
+            }
+            .pagination a {
+                color: #007bff;
+                padding: 8px 16px;
+                text-decoration: none;
+                border: 1px solid #ddd;
+                margin: 0 4px;
+                border-radius: 3px;
+            }
+            .pagination a.active {
+                background-color: #007bff;
+                color: white;
+                border: 1px solid #007bff;
+            }
+            .pagination a:hover:not(.active) {
+                background-color: #ddd;
+            }
+            .search-form {
+                max-width: 400px;
+                margin-bottom: 20px;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <h1>Danh sách tuyến đường</h1>
+
+    <!-- Form tìm kiếm -->
+    <form th:action="@{/manage-routes}" method="get" class="search-form">
+        <div class="input-group">
+            <input type="text" class="form-control" name="keyword" placeholder="Tìm kiếm theo tên hoặc mã tuyến..." th:value="${keyword}">
+            <input type="hidden" name="page" value="1">
+            <input type="hidden" name="size" th:value="${size}">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Tìm kiếm</button>
+        </div>
+    </form>
+
+    <!-- Nút Thêm mới -->
+    <a th:href="@{/manage-routes/add}" class="add-btn">Thêm mới tuyến đường</a>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Mã tuyến</th>
+            <th>Tên tuyến</th>
+            <th>Loại</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${routes == null or routes.isEmpty}">
+            <td colspan="5" class="text-center">Không tìm thấy tuyến đường nào.</td>
+        </tr>
+        <tr th:each="route : ${routes}">
+            <td th:text="${route.id}"></td>
+            <td th:text="${route.code}"></td>
+            <td th:text="${route.name}"></td>
+            <td th:text="${route.type != null} ? ${route.type.name} : 'N/A'"></td>
+            <td class="action-buttons">
+                <a th:href="@{/manage-routes/detail/{id}(id=${route.id})}" class="detail-btn">Xem chi tiết</a>
+                <a th:href="@{/manage-routes/edit/{id}(id=${route.id})}" class="edit-btn">Sửa</a>
+                <a th:href="@{/manage-routes/delete/{id}(id=${route.id})}" class="delete-btn"
+                   onclick="return confirm('Bạn có chắc chắn muốn xóa tuyến đường này?')">Xóa</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Phân trang -->
+    <div class="pagination d-flex justify-content-center">
+        <a th:if="${currentPage > 1}" th:href="@{/manage-routes(page=${currentPage - 1}, size=${size}, keyword=${keyword})}" class="me-2">« Trước</a>
+        <a th:each="i : ${#numbers.sequence(1, totalPages)}"
+           th:href="@{/manage-routes(page=${i}, size=${size}, keyword=${keyword})}"
+           th:classappend="${i == currentPage} ? 'active'" th:text="${i}"></a>
+        <a th:if="${currentPage < totalPages}" th:href="@{/manage-routes(page=${currentPage + 1}, size=${size}, keyword=${keyword})}" class="ms-2">Tiếp »</a>
+    </div>
+</th:block>
+
+<!-- Fragment extraScripts (giữ nguyên logic toggle nếu có từ trước) -->
+<th:block th:fragment="extraScripts">
+    <!-- Không cần JavaScript bổ sung cho tìm kiếm -->
+</th:block>
+</body>
+</html>

@@ -1,105 +1,24 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Trang Chu</title>
-    <th:block th:fragment="bootstrap">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    </th:block>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} ?: 'Hệ thống xe buýt'"></title>
+    <th:block th:replace="~{fragments/bootstrap :: bootstrap}"></th:block>
+    <!-- Có thể thêm CSS bổ sung từ trang con -->
+    <th:block th:replace="~{this :: extraStyles}"></th:block>
 </head>
 <body>
-    <header th:fragment="header">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <!-- Logo hoặc Tên Hệ Thống -->
-                <a class="navbar-brand fw-bold" href="#">Hệ thống xe buýt</a>
+<header th:replace="~{fragments/header :: header}"></header>
 
-                <!-- Nút Toggler cho thiết bị di động -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+<!-- Nội dung chính của trang sẽ được chèn tại đây -->
+<div class="container mt-4">
+    <th:block th:replace="~{this :: content}"></th:block>
+</div>
 
-                <!-- Các mục điều hướng -->
-                <div class="collapse navbar-collapse" id="adminNavbar">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active fw-bold" aria-current="page" th:href="@{/}">Quản trị viên</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/manage-schedules}">Quản lý lịch trình</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/manage-routes}">Quản lý tuyến</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/manage-vehicles}">Quản lý phương tiện</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/manage-vehicles-type}">Quản lý loại phương tiện</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/update-times}">Cập nhật thời gian</a>
-                        </li>
-                    </ul>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 
-                    <!-- Dropdown người dùng -->
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-circle me-2"></i> Admin
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
-                                <li><a class="dropdown-item" href="#">Đổi mật khẩu</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" th:href="@{/logout}">Đăng xuất</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <footer th:fragment="footer">
-        <div class="bg-dark text-white pt-4 pb-2">
-            <div class="container">
-                <div class="row">
-                    <!-- Thông tin công ty -->
-                    <div class="col-md-4 mb-3">
-                        <h5>Hệ thống xe buýt TP.HCM</h5>
-                        <p>Quản lý và điều hành mạng lưới vận tải công cộng hiệu quả, an toàn và tiện lợi cho người dân.</p>
-                    </div>
-
-                    <!-- Liên kết nhanh -->
-                    <div class="col-md-4 mb-3">
-                        <h5>Liên kết nhanh</h5>
-                        <ul class="list-unstyled">
-                            <li><a href="#" class="text-white text-decoration-none">Trang chủ</a></li>
-                            <li><a href="#" class="text-white text-decoration-none">Quản lý tuyến</a></li>
-                            <li><a href="#" class="text-white text-decoration-none">Lịch trình</a></li>
-                            <li><a href="#" class="text-white text-decoration-none">Báo cáo</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Mạng xã hội -->
-                    <div class="col-md-4 mb-3">
-                        <h5>Kết nối với chúng tôi</h5>
-                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <hr class="bg-light">
-                <div class="text-center">
-                    <p class="mb-0">&copy; 2025 Sở Giao thông Vận tải TP.HCM. Mọi quyền được bảo lưu.</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
+<!-- Có thể thêm JavaScript bổ sung từ trang con -->
+<th:block th:replace="~{this :: extraScripts}"></th:block>
 </body>
 </html>

@@ -1,0 +1,37 @@
+<footer th:fragment="footer">
+    <div class="bg-dark text-white pt-4 pb-2">
+        <div class="container">
+            <div class="row">
+                <!-- Thông tin công ty -->
+                <div class="col-md-4 mb-3">
+                    <h5>Hệ thống xe buýt TP.HCM</h5>
+                    <p>Quản lý và điều hành mạng lưới vận tải công cộng hiệu quả, an toàn và tiện lợi cho người dân.</p>
+                </div>
+
+                <!-- Liên kết nhanh -->
+                <div class="col-md-4 mb-3">
+                    <h5>Liên kết nhanh</h5>
+                    <ul class="list-unstyled">
+                        <li><a th:href="@{/}" class="text-white text-decoration-none">Trang chủ</a></li>
+                        <li><a th:href="@{/manage-routes}" class="text-white text-decoration-none">Quản lý tuyến</a></li>
+                        <li><a th:href="@{/manage-schedules}" class="text-white text-decoration-none">Lịch trình</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Báo cáo</a></li>
+                    </ul>
+                </div>
+
+                <!-- Mạng xã hội -->
+                <div class="col-md-4 mb-3">
+                    <h5>Kết nối với chúng tôi</h5>
+                    <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center">
+                <p class="mb-0">© 2025 Sở Giao thông Vận tải TP.HCM. Mọi quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </div>
+</footer>

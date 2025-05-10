@@ -4,8 +4,7 @@
  */
 package com.publictransport.config;
 
-import com.publictransport.formatters.VehicleFormatter;
-import com.publictransport.formatters.VehicleTypeFormatter;
+
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -43,7 +42,7 @@ public class WebAppContextConfigs implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        registry.addFormatter(new VehicleTypeFormatter());
-        registry.addFormatter(new VehicleFormatter());
+//        registry.addFormatter(new VehicleTypeFormatter());
+//        registry.addFormatter(new VehicleFormatter());
     }
 }

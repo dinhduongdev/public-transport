@@ -1,26 +1,41 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
 <head>
-    <title>Admin Dashboard - Public Transport System</title>
-    <th:block th:replace="base :: bootstrap"></th:block>
-
-    <!-- Thêm Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title th:replace="~{base :: title}">Admin Dashboard - Public Transport System</title>
+    <th:block th:fragment="extraStyles">
+        <style>
+            .chart-container {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            h2 {
+                color: #333;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+        </style>
+    </th:block>
 </head>
 <body>
+<th:block th:fragment="content">
+    <!-- Hiển thị thông báo (nếu có) -->
     <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
 
-    <div th:replace="base :: header"></div>
-
     <!-- Nội dung biểu đồ -->
-    <div class="container mt-5">
+    <div class="chart-container mt-5">
         <h2>Thống kê lượt hành khách theo tuyến</h2>
         <canvas id="routeChart" width="400" height="200"></canvas>
     </div>
+</th:block>
 
-    <div th:replace="base :: footer"></div> 
-
-    <!-- Script để vẽ biểu đồ -->
+<!-- JavaScript để vẽ biểu đồ -->
+<th:block th:fragment="extraScripts">
+    <!-- Thêm Chart.js (đã được thêm trong base.html, nhưng có thể giữ để tham khảo) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const ctx = document.getElementById('routeChart').getContext('2d');
         const routeChart = new Chart(ctx, {
@@ -45,5 +60,6 @@
             }
         });
     </script>
+</th:block>
 </body>
 </html>

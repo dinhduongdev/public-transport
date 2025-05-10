@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
+<head>
+    <title th:replace="~{base :: title}">Thêm tuyến đường</title>
+    <th:block th:fragment="extraStyles">
+        <style>
+            .add-container {
+                max-width: 600px;
+                margin: 50px auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .btn-success, .btn-secondary {
+                margin-right: 10px;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <div class="add-container">
+        <h2 class="text-center mb-4">Thêm tuyến đường</h2>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Thông tin tuyến đường</h5>
+                <form th:action="@{/manage-routes/add}" th:object="${route}" method="post">
+                    <div class="mb-3">
+                        <label for="routeName" class="form-label">Tên tuyến</label>
+                        <input type="text" class="form-control" id="routeName" name="name" th:field="*{name}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="routeCode" class="form-label">Mã tuyến</label>
+                        <input type="text" class="form-control" id="routeCode" name="code" th:field="*{code}" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Thêm</button>
+                    <a th:href="@{/manage-routes}" class="btn btn-secondary">Hủy</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<!-- Fragment extraScripts (rỗng vì trang này không cần JavaScript bổ sung) -->
+<th:block th:fragment="extraScripts">
+    <!-- Không cần JavaScript bổ sung -->
+</th:block>
+</body>
+</html>

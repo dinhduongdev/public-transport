@@ -1,28 +1,59 @@
-<!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
 <head>
-    <title>Đăng nhập</title>
-    <th:block th:replace="base :: bootstrap"></th:block>
+    <title th:replace="~{base :: title}">Đăng nhập</title>
+    <th:block th:fragment="extraStyles">
+        <style>
+            .login-container {
+                max-width: 400px;
+                margin: 50px auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .login-container h1 {
+                color: #007bff;
+                margin-bottom: 20px;
+            }
+            .btn-primary {
+                width: 100%;
+                padding: 10px;
+            }
+        </style>
+    </th:block>
 </head>
 <body>
-<main class="container">
-    <div th:replace="base :: header"></div>
-    <h1 class="text-center text-info mt-1">ĐĂNG NHẬP</h1>
+<th:block th:fragment="content">
+    <div class="login-container">
+        <h1 class="text-center">ĐĂNG NHẬP</h1>
 
-    <form th:action="@{/login}" method="post">
+        <!-- Hiển thị thông báo (nếu có) -->
         <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
-        <div class="mb-3 mt-3">
-            <label for="username" class="form-label">Tên đăng nhập:</label>
-            <input type="text" class="form-control" id="username" placeholder="Tên đăng nhập..." name="username">
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Mật khẩu:</label>
-            <input type="password" class="form-control" id="password" placeholder="Mật khẩu..." name="password">
+
+        <!-- Hiển thị lỗi đăng nhập (nếu có) -->
+        <div th:if="${param.error}" class="alert alert-danger">
+            Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng thử lại.
         </div>
 
-        <button type="submit" class="btn btn-primary">Đăng nhập</button>
-    </form>
+        <!-- Form đăng nhập -->
+        <form th:action="@{/login}" method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label">Tên đăng nhập:</label>
+                <input type="text" class="form-control" id="username" placeholder="Tên đăng nhập..." name="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Mật khẩu:</label>
+                <input type="password" class="form-control" id="password" placeholder="Mật khẩu..." name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Đăng nhập</button>
+        </form>
+    </div>
+</th:block>
 
-    <div th:replace="base :: footer"></div>
-</main>
+<!-- Thêm fragment extraScripts (rỗng) để tránh lỗi -->
+<th:block th:fragment="extraScripts">
+    <!-- Không cần JavaScript bổ sung cho trang đăng nhập -->
+</th:block>
 </body>
+</html>

@@ -4,6 +4,7 @@
  */
 package com.publictransport.repositories.impl;
 
+import com.publictransport.models.User;
 import com.publictransport.repositories.UserRepository;
 
 import jakarta.persistence.Query;
@@ -26,11 +27,13 @@ public class UserRepositoryImpl implements UserRepository {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+
+
     @Override
-    public User getUserByUsername(String username) {
+    public User getUserByEmail(String email) {
         Session s = this.factory.getObject().getCurrentSession();
-        Query q = s.createNamedQuery("User.findByUsername", User.class);
-        q.setParameter("username", username);
+        Query q = s.createQuery("FROM User u WHERE u.email = :email", User.class);
+        q.setParameter("email", email);
         return (User) q.getSingleResult();
     }
 }

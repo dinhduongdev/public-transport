@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
+<head>
+    <title th:replace="~{base :: title}">Danh sách tuyến đường</title>
+    <th:block th:fragment="extraStyles">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+                background-color: #f4f4f9;
+            }
+            h1 {
+                text-align: center;
+                color: #333;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            th, td {
+                padding: 12px;
+                text-align: left;
+                border: 1px solid #ddd;
+            }
+            th {
+                background-color: #343a40;
+                color: white;
+            }
+            td {
+                background-color: #fff;
+            }
+            tr:nth-child(even) td {
+                background-color: #f8f9fa;
+            }
+            tr:hover td {
+                background-color: #e9ecef;
+            }
+            .add-btn {
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #28a745;
+                color: white;
+                text-decoration: none;
+                border-radius: 3px;
+                margin-bottom: 20px;
+            }
+            .add-btn:hover {
+                background-color: #218838;
+            }
+            .pagination {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+            }
+            .pagination a {
+                color: #007bff;
+                padding: 8px 16px;
+                text-decoration: none;
+                border: 1px solid #ddd;
+                margin: 0 4px;
+                border-radius: 3px;
+            }
+            .pagination a.active-page {
+                background-color: #007bff;
+                color: white;
+                border: 1px solid #007bff;
+            }
+            .pagination a:hover:not(.active-page) {
+                background-color: #ddd;
+            }
+            .search-form {
+                max-width: 400px;
+                margin-bottom: 20px;
+            }
+            .search-form .input-group {
+                display: flex;
+            }
+            .search-form input[type="text"] {
+                flex: 1;
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 3px 0 0 3px;
+            }
+            .search-form button {
+                padding: 8px 16px;
+                background-color: #007bff;
+                color: white;
+                border: 1px solid #007bff;
+                border-radius: 0 3px 3px 0;
+                cursor: pointer;
+            }
+            .search-form button:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <h1>Danh sách tuyến đường</h1>
+
+    <!-- Form tìm kiếm -->
+    <form th:action="@{/manage-route-variants}" method="get" class="search-form">
+        <div class="input-group">
+            <input type="text" class="form-control" name="keyword" placeholder="Tìm kiếm theo trạm đi hoặc tới..." th:value="${keyword}">
+            <input type="hidden" name="page" value="1">
+            <input type="hidden" name="size" th:value="${size}">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Tìm kiếm</button>
+        </div>
+    </form>
+
+    <!-- Nút Thêm mới -->
+    <a th:href="@{/manage-route-variants/add}" class="add-btn">Thêm mới tuyến đường</a>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Hướng</th>
+            <th>Trạm đi</th>
+            <th>Trạm tới</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${routeVariants == null or routeVariants.isEmpty}">
+            <td colspan="4" class="text-center">Không tìm thấy tuyến đường nào.</td>
+        </tr>
+        <tr th:each="routeVariant : ${routeVariants}">
+            <td th:text="${routeVariant.id}"></td>
+            <td th:text="${routeVariant.isOutbound} ? 'Tuyến đi' : 'Tuyến về'"></td>
+            <td th:text="${routeVariant.startStop}"></td>
+            <td th:text="${routeVariant.endStop}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Phân trang -->
+    <div class="pagination d-flex justify-content-center">
+        <a th:if="${currentPage > 1}" th:href="@{/manage-route-variants(page=${currentPage - 1}, size=${size}, keyword=${keyword})}" class="me-2">« Trước</a>
+        <a th:each="i : ${#numbers.sequence(1, totalPages)}"
+           th:href="@{/manage-route-variants(page=${i}, size=${size}, keyword=${keyword})}"
+           th:classappend="${i == currentPage} ? 'active-page'" th:text="${i}"></a>
+        <a th:if="${currentPage < totalPages}" th:href="@{/manage-route-variants(page=${currentPage + 1}, size=${size}, keyword=${keyword})}" class="ms-2">Tiếp »</a>
+    </div>
+</th:block>
+
+<th:block th:fragment="extraScripts">
+    <!-- Không cần JavaScript bổ sung -->
+</th:block>
+</body>
+</html>

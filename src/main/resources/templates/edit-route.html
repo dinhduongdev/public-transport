@@ -1,42 +1,65 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
 <head>
-    <title>Edit Route - Public Transport System</title>
-    <th:block th:replace="base :: bootstrap"></th:block>
-    <style>
-        .station-buttons { margin-top: 10px; }
-    </style>
+    <title th:replace="~{base :: title}">Edit Route - Public Transport System</title>
+    <th:block th:fragment="extraStyles">
+        <style>
+            .edit-container {
+                max-width: 600px;
+                margin: 50px auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .station-buttons {
+                margin-top: 10px;
+            }
+            .btn-success, .btn-secondary {
+                margin-right: 10px;
+            }
+        </style>
+    </th:block>
 </head>
 <body>
-<div th:replace="base :: header"></div>
-<div class="container">
-    <h2>Edit Route</h2>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Edit Route</h5>
-            <form th:action="@{/manage-routes/edit/{id}(id=${route.id})}" method="post">
-                <div class="mb-3">
-                    <label for="routeName" class="form-label">Tên tuyến</label>
-                    <input type="text" class="form-control" id="routeName" name="routeName" th:value="${route.name}" required>
-                </div>
-                <div class="mb-3">
-                    <label for="stops" class="form-label">Các trạm dừng</label>
-                    <select class="form-control" id="stops" name="stops" multiple required>
-                        <option th:each="station : ${stationsList}"
-                                th:value="${station.id}"
-                                th:text="${station.stopName}"
-                                th:selected="${selectedStationIds.contains(station.id)}">
-                        </option>
-                    </select>
-                    <small class="form-text text-muted">Giữ phím Ctrl để chọn nhiều trạm.</small>
-                    <div id="stationButtons" class="station-buttons"></div>
-                </div>
-                <button type="submit" class="btn btn-success">Lưu thay đổi</button>
-                <a th:href="@{/manage-routes}" class="btn btn-secondary">Hủy</a>
-            </form>
+<th:block th:fragment="content">
+    <div class="edit-container">
+        <h2 class="text-center mb-4">Sửa tuyến đường</h2>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Thông tin tuyến đường</h5>
+                <form th:action="@{/manage-routes/edit/{id}(id=${route.id})}" method="post">
+                    <div class="mb-3">
+                        <label for="routeName" class="form-label">Tên tuyến</label>
+                        <input type="text" class="form-control" id="routeName" name="name" th:value="${route.name}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="routeCode" class="form-label">Mã tuyến</label>
+                        <input type="text" class="form-control" id="routeCode" name="code" th:value="${route.code}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="stops" class="form-label">Các trạm dừng</label>
+                        <select class="form-control" id="stops" name="stops" multiple required>
+                            <option th:each="station : ${stationsList}"
+                                    th:value="${station.id}"
+                                    th:text="${station.stopName}"
+                                    th:selected="${selectedStationIds != null and selectedStationIds.contains(station.id)}">
+                            </option>
+                        </select>
+                        <small class="form-text text-muted">Giữ phím Ctrl để chọn nhiều trạm.</small>
+                        <div id="stationButtons" class="station-buttons"></div>
+                    </div>
+                    <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+                    <a th:href="@{/manage-routes}" class="btn btn-secondary">Hủy</a>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-<div th:replace="base :: footer"></div>
+</th:block>
+
+<!-- Fragment extraScripts (rỗng vì trang này không cần JavaScript bổ sung) -->
+<th:block th:fragment="extraScripts">
+    <!-- Không cần JavaScript bổ sung -->
+</th:block>
 </body>
 </html>
