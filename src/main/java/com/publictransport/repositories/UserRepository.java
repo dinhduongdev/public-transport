@@ -4,8 +4,6 @@
  */
 package com.publictransport.repositories;
 
-import com.publictransport.models.User;
-
 /**
  *
  * @author duong

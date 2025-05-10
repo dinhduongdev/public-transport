@@ -1,6 +1,5 @@
 package com.publictransport.repositories.impl;
 
-import com.publictransport.models.VehicleType;
 import com.publictransport.repositories.VehicleTypeRepository;
 import jakarta.persistence.Query;
 import org.hibernate.Session;

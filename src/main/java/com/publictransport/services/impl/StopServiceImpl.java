@@ -4,7 +4,6 @@
  */
 package com.publictransport.services.impl;
 
-import com.publictransport.models.Stop;
 import com.publictransport.repositories.StopRepository;
 import com.publictransport.services.StopService;
 import java.util.List;

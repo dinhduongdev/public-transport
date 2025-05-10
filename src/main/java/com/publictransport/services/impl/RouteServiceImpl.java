@@ -4,7 +4,6 @@
  */
 package com.publictransport.services.impl;
 
-import com.publictransport.models.Route;
 import com.publictransport.repositories.RouteRepository;
 import com.publictransport.services.RouteService;
 import java.util.List;

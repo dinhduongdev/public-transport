@@ -1,6 +1,5 @@
 package com.publictransport.services.impl;
 
-import com.publictransport.models.User;
 import com.publictransport.repositories.UserRepository;
 import com.publictransport.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

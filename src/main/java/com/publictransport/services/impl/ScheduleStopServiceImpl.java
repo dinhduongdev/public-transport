@@ -1,6 +1,5 @@
 package com.publictransport.services.impl;
 
-import com.publictransport.models.ScheduleStop;
 import com.publictransport.repositories.ScheduleStopRepository;
 import com.publictransport.services.ScheduleStopService;
 import org.springframework.beans.factory.annotation.Autowired;

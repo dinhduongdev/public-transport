@@ -1,7 +1,5 @@
 package com.publictransport.services;
 
-import com.publictransport.models.Schedule;
-
 import java.util.Date;
 import java.util.List;
 

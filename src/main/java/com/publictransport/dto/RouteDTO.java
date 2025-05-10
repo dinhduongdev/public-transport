@@ -4,8 +4,6 @@
  */
 package com.publictransport.dto;
 
-import com.publictransport.models.Route;
-import com.publictransport.models.Station;
 import java.util.List;
 
 /**

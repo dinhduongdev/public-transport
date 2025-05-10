@@ -4,7 +4,6 @@
  */
 package com.publictransport.repositories.impl;
 
-import com.publictransport.models.User;
 import com.publictransport.repositories.UserRepository;
 
 import jakarta.persistence.Query;

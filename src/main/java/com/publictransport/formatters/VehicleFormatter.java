@@ -1,6 +1,5 @@
 package com.publictransport.formatters;
 
-import com.publictransport.models.Vehicle;
 import org.springframework.format.Formatter;
 
 import java.text.ParseException;

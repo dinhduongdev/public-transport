@@ -1,6 +1,5 @@
 package com.publictransport.services;
 
-import com.publictransport.models.VehicleType;
 import java.util.List;
 
 public interface VehicleTypeService {

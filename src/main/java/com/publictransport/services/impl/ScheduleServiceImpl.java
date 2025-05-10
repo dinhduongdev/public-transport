@@ -1,6 +1,5 @@
 package com.publictransport.services.impl;
 
-import com.publictransport.models.Schedule;
 import com.publictransport.repositories.ScheduleRepository;
 import com.publictransport.services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;

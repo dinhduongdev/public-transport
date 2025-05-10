@@ -4,9 +4,6 @@
  */
 package com.publictransport.repositories.impl;
 
-import com.publictransport.models.Route;
-import com.publictransport.models.Station;
-import com.publictransport.models.Stop;
 import com.publictransport.repositories.StopRepository;
 import jakarta.persistence.Query;
 import java.util.List;

@@ -1,6 +1,5 @@
 package com.publictransport.services.impl;
 
-import com.publictransport.models.Vehicle;
 import com.publictransport.repositories.VehicleRepository;
 import com.publictransport.services.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;

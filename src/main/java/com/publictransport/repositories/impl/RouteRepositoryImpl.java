@@ -4,7 +4,6 @@
  */
 package com.publictransport.repositories.impl;
 
-import com.publictransport.models.Route;
 import com.publictransport.repositories.RouteRepository;
 import jakarta.persistence.Query;
 import java.util.List;

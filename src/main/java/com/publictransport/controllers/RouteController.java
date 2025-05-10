@@ -1,9 +1,6 @@
 package com.publictransport.controllers;
 
 import com.publictransport.dto.RouteDTO;
-import com.publictransport.models.Route;
-import com.publictransport.models.Station;
-import com.publictransport.models.Stop;
 import com.publictransport.services.RouteService;
 import com.publictransport.services.StationService;
 import com.publictransport.services.StopService;

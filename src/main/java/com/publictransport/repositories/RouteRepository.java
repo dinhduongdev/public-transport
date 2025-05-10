@@ -4,7 +4,6 @@
  */
 package com.publictransport.repositories;
 
-import com.publictransport.models.Route;
 import java.util.List;
 
 /**

@@ -1,6 +1,5 @@
 package com.publictransport.repositories.impl;
 
-import com.publictransport.models.Schedule;
 import com.publictransport.repositories.ScheduleRepository;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
