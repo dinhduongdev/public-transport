@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:fragment="commonStyles">
+        <style>
+            .action-buttons a {
+                padding: 5px 10px;
+                text-decoration: none;
+                border-radius: 3px;
+                margin-right: 5px;
+                color: white;
+            }
+            .action-buttons .detail-btn {
+                background-color: #007bff;
+            }
+            .action-buttons .edit-btn {
+                background-color: #ffc107;
+                color: black;
+            }
+            .action-buttons .delete-btn {
+                background-color: #dc3545;
+            }
+            .action-buttons a:hover {
+                opacity: 0.8;
+            }
+            .add-btn {
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #28a745;
+                color: white;
+                text-decoration: none;
+                border-radius: 3px;
+                margin-bottom: 20px;
+            }
+            .add-btn:hover {
+                background-color: #218838;
+            }
+            .pagination {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 5px;
+            }
+            .pagination a {
+                padding: 8px 12px;
+                text-decoration: none;
+                border: 1px solid #ddd;
+                border-radius: 3px;
+                background-color: #fff;
+                color: #333;
+                font-weight: bold;
+                transition: background-color 0.3s;
+            }
+            .pagination a.active {
+                background-color: #dc3545;
+                color: white;
+                border: 1px solid #dc3545;
+            }
+            .pagination a:hover:not(.active) {
+                background-color: #e9ecef;
+            }
+            .pagination .dots {
+                padding: 8px 12px;
+                color: #333;
+            }
+            .pagination .nav-btn {
+                padding: 8px 12px;
+                border: 1px solid #ddd;
+                border-radius: 3px;
+                background-color: #fff;
+                color: #333;
+                font-weight: bold;
+                text-decoration: none;
+                transition: background-color 0.3s;
+            }
+            .pagination .nav-btn:hover {
+                background-color: #e9ecef;
+            }
+            .search-form {
+                margin-bottom: 20px;
+            }
+            .search-form .form-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+                margin-bottom: 15px;
+            }
+            .search-form .form-group {
+                flex: 1 1 200px; /* Mỗi ô input chiếm tối thiểu 200px */
+            }
+            .search-form .form-group label {
+                font-weight: bold;
+                margin-bottom: 5px;
+                display: block;
+            }
+            .search-form .form-group input {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 3px;
+            }
+            .search-form .btn {
+                padding: 8px 20px;
+                margin-top: 20px;
+                margin-right: 10px;
+            }
+            .search-form .reset-btn {
+                background-color: #6c757d;
+                color: white;
+            }
+            .search-form .reset-btn:hover {
+                background-color: #5a6268;
+            }
+            .search-results-info {
+                margin-bottom: 20px;
+                font-style: italic;
+                color: #666;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<!-- Fragment cho form tìm kiếm -->
+<th:block th:fragment="searchForm(actionUrl, fields, size, resetUrl)">
+    <form th:action="${actionUrl}" method="get" class="search-form">
+        <div class="form-row">
+            <th:block th:each="field : ${fields}">
+                <div class="form-group">
+                    <label th:for="${field.name}" th:text="${field.label}"></label>
+                    <input type="text" class="form-control" th:id="${field.name}" th:name="${field.name}" th:value="${field.value}">
+                </div>
+            </th:block>
+        </div>
+        <input type="hidden" name="page" value="1">
+        <input type="hidden" name="size" th:value="${size}">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Tìm kiếm</button>
+        <a th:href="${resetUrl}" class="btn reset-btn">Reset</a>
+    </form>
+</th:block>
+
+<!-- Fragment cho phân trang -->
+<th:block th:fragment="pagination(baseUrl, currentPage, totalPages, size, params)">
+    <div class="pagination">
+        <!-- Nút Trước -->
+        <a th:if="${currentPage > 1}" th:href="${baseUrl + '?page=' + (currentPage - 1) + '&size=' + size + params}" class="nav-btn">←</a>
+
+        <!-- Trang 1 -->
+        <a th:href="${baseUrl + '?page=1&size=' + size + params}"
+           th:classappend="${currentPage == 1} ? 'active'" th:text="1"></a>
+
+        <!-- Dấu ... nếu cần -->
+        <span th:if="${currentPage > 4}" class="dots">...</span>
+
+        <!-- Các trang xung quanh trang hiện tại (hiển thị tối đa 5 trang) -->
+        <th:block th:with="startPage=${currentPage - 2 > 1 ? currentPage - 2 : 2}, endPage=${currentPage + 2 < totalPages ? currentPage + 2 : totalPages - 1}">
+            <a th:each="i : ${#numbers.sequence(startPage, endPage)}"
+               th:if="${i > 1 and i < totalPages}"
+               th:href="${baseUrl + '?page=' + i + '&size=' + size + params}"
+               th:classappend="${i == currentPage} ? 'active'"
+               th:text="${i}"></a>
+        </th:block>
+
+        <!-- Dấu ... nếu cần -->
+        <span th:if="${currentPage < totalPages - 3}" class="dots">...</span>
+
+        <!-- Trang cuối -->
+        <a th:if="${totalPages > 1}"
+           th:href="${baseUrl + '?page=' + totalPages + '&size=' + size + params}"
+           th:classappend="${currentPage == totalPages} ? 'active'"
+           th:text="${totalPages}"></a>
+
+        <!-- Nút Sau -->
+        <a th:if="${currentPage < totalPages}" th:href="${baseUrl + '?page=' + (currentPage + 1) + '&size=' + size + params}" class="nav-btn">→</a>
+    </div>
+</th:block>
+
+<!-- Fragment cho nút hành động -->
+<th:block th:fragment="actionButtons(baseUrl, id)">
+    <td class="action-buttons">
+        <a th:href="${baseUrl + '/detail/' + id}" class="detail-btn">Xem chi tiết</a>
+        <a th:href="${baseUrl + '/edit/' + id}" class="edit-btn">Sửa</a>
+        <a th:href="${baseUrl + '/delete/' + id}" class="delete-btn"
+           onclick="return confirm('Bạn có chắc chắn muốn xóa?')">Xóa</a>
+    </td>
+</th:block>
+</body>
+</html>

@@ -16,7 +16,7 @@ public class Schedule {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "route_variant_id")
     private RouteVariant routeVariant;
 

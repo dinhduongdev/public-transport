@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
+<head>
+    <title th:replace="~{base :: title}">Chi tiết lộ trình</title>
+
+    <th:block th:fragment="extraStyles">
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+        <style>
+            .detail-table, .stops-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+            .detail-table th, .detail-table td, .stops-table th, .stops-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+            .detail-table th, .stops-table th {
+                background-color: #f2f2f2;
+            }
+            .back-btn {
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #007bff;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                margin-bottom: 20px;
+            }
+            .back-btn:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <h1>Chi tiết lộ trình</h1>
+
+    <!-- Nút Quay lại -->
+    <a th:href="@{/manage-route-variants}" class="back-btn">Quay lại</a>
+
+    <!-- Thông tin chi tiết lộ trình -->
+    <table class="detail-table">
+        <tr>
+            <th>ID</th>
+            <td th:text="${routeVariant.id}"></td>
+        </tr>
+        <tr>
+            <th>Hướng</th>
+            <td th:text="${routeVariant.isOutbound} ? 'Tuyến đi' : 'Tuyến về'"></td>
+        </tr>
+        <tr>
+            <th>Trạm đi</th>
+            <td th:text="${routeVariant.startStop}"></td>
+        </tr>
+        <tr>
+            <th>Trạm tới</th>
+            <td th:text="${routeVariant.endStop}"></td>
+        </tr>
+        <tr>
+            <th>Tên tuyến</th>
+            <td th:text="${routeVariant.route != null} ? ${routeVariant.route.name} : 'N/A'"></td>
+        </tr>
+        <tr>
+            <th>Khoảng cách</th>
+            <td th:text="${routeVariant.distance} + ' km'"></td>
+        </tr>
+    </table>
+
+    <!-- Danh sách các Stop -->
+    <h2>Danh sách trạm dừng</h2>
+    <table class="stops-table">
+        <thead>
+        <tr>
+            <th>Thứ tự</th>
+            <th>Tên trạm</th>
+            <th>Địa chỉ</th>
+            <th>Tọa độ</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${stops == null or stops.isEmpty}">
+            <td colspan="4" class="text-center">Không có trạm dừng nào.</td>
+        </tr>
+        <tr th:each="stop : ${stops}">
+            <td th:text="${stop.stopOrder}"></td>
+            <td th:text="${stop.station != null} ? ${stop.station.name} : 'N/A'"></td>
+            <td th:text="${stop.station != null} ? ${stop.station.address} : 'N/A'"></td>
+            <td th:text="${stop.station != null} ? (${stop.station.lat} + ', ' + ${stop.station.lng}) : 'N/A'"></td>
+        </tr>
+        </tbody>
+    </table>
+</th:block>
+
+<th:block th:fragment="extraScripts">
+    <!-- Không cần JavaScript bổ sung -->
+</th:block>
+</body>
+</html>

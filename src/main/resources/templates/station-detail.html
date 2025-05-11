@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
+<head>
+    <title th:replace="~{base :: title}">Chi tiết trạm</title>
+    <th:block th:fragment="extraStyles">
+        <style>
+            .station-info {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #f8f9fa;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .station-info h2 {
+                margin-bottom: 20px;
+            }
+            .station-info dl dt {
+                font-weight: bold;
+                margin-top: 10px;
+            }
+            .station-info dl dd {
+                margin-bottom: 10px;
+            }
+            .back-btn {
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #6c757d;
+                color: white;
+                text-decoration: none;
+                border-radius: 3px;
+                margin-top: 20px;
+            }
+            .back-btn:hover {
+                background-color: #5a6268;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <div class="station-info">
+        <h2>Chi tiết trạm</h2>
+        <dl>
+            <dt>ID:</dt>
+            <dd th:text="${station.id}"></dd>
+            <dt>Tên trạm:</dt>
+            <dd th:text="${station.name != null} ? ${station.name} : 'N/A'"></dd>
+            <dt>Kinh độ (lat):</dt>
+            <dd th:text="${station.lat != null} ? ${station.lat} : 'N/A'"></dd>
+            <dt>Vĩ độ (lng):</dt>
+            <dd th:text="${station.lng != null} ? ${station.lng} : 'N/A'"></dd>
+            <dt>Địa chỉ:</dt>
+            <dd th:text="${station.address != null} ? ${station.address} : 'N/A'"></dd>
+            <dt>Phố:</dt>
+            <dd th:text="${station.street != null} ? ${station.street} : 'N/A'"></dd>
+            <dt>Phường:</dt>
+            <dd th:text="${station.ward != null} ? ${station.ward} : 'N/A'"></dd>
+            <dt>Khu vực:</dt>
+            <dd th:text="${station.zone != null} ? ${station.zone} : 'N/A'"></dd>
+        </dl>
+        <a th:href="@{/manage-stations}" class="back-btn">Quay lại danh sách</a>
+    </div>
+</th:block>
+
+<th:block th:fragment="extraScripts">
+    <!-- Không cần JavaScript bổ sung -->
+</th:block>
+</body>
+</html>

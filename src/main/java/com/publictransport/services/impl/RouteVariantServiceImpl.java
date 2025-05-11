@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class RouteVariantServiceImpl implements RouteVariantService {
@@ -14,13 +15,44 @@ public class RouteVariantServiceImpl implements RouteVariantService {
     @Autowired
     private RouteVariantRepository routeVariantRepository;
 
+
     @Override
-    public List<RouteVariant> getRouteVariants(int page, int size) {
+    public List<RouteVariant> findAllRouteVariants(int page, int size) {
         return routeVariantRepository.findAllRouteVariants(page, size);
     }
 
     @Override
-    public Long countRouteVariants() {
-        return routeVariantRepository.countRouteVariants();
+    public long countAllRouteVariants() {
+        return routeVariantRepository.countAllRouteVariants();
+    }
+
+    @Override
+    public List<RouteVariant> searchRouteVariants(Map<String, String> params, int page, int size) {
+        return routeVariantRepository.searchRouteVariants(params, page, size);
+    }
+
+    @Override
+    public long countRouteVariantsByParams(Map<String, String> params) {
+        return routeVariantRepository.countRouteVariantsByParams(params);
+    }
+
+    @Override
+    public RouteVariant findById(Long id) {
+        return routeVariantRepository.findById(id);
+    }
+
+    @Override
+    public void save(RouteVariant routeVariant) {
+        routeVariantRepository.save(routeVariant);
+    }
+
+    @Override
+    public void update(RouteVariant routeVariant) {
+        routeVariantRepository.update(routeVariant);
+    }
+
+    @Override
+    public void delete(Long id) {
+        routeVariantRepository.delete(id);
     }
 }

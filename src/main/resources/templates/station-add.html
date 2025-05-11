@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
+<head>
+    <title th:replace="~{base :: title}">Thêm trạm</title>
+    <th:block th:fragment="extraStyles">
+        <style>
+            .station-form {
+                max-width: 600px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #f8f9fa;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .station-form h2 {
+                margin-bottom: 20px;
+            }
+            .station-form .form-group {
+                margin-bottom: 15px;
+            }
+            .station-form .form-group label {
+                font-weight: bold;
+            }
+            .station-form .btn {
+                margin-right: 10px;
+            }
+            .back-btn {
+                background-color: #6c757d;
+                color: white;
+            }
+            .back-btn:hover {
+                background-color: #5a6268;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <div class="station-form">
+        <h2>Thêm trạm mới</h2>
+        <form th:action="@{/manage-stations/add}" th:object="${station}" method="post">
+            <div class="form-group">
+                <label for="name">Tên trạm:</label>
+                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+            </div>
+            <div class="form-group">
+                <label for="lat">Kinh độ (lat):</label>
+                <input type="number" step="any" class="form-control" id="lat" th:field="*{lat}">
+            </div>
+            <div class="form-group">
+                <label for="lng">Vĩ độ (lng):</label>
+                <input type="number" step="any" class="form-control" id="lng" th:field="*{lng}">
+            </div>
+            <div class="form-group">
+                <label for="address">Địa chỉ:</label>
+                <input type="text" class="form-control" id="address" th:field="*{address}">
+            </div>
+            <div class="form-group">
+                <label for="street">Phố:</label>
+                <input type="text" class="form-control" id="street" th:field="*{street}">
+            </div>
+            <div class="form-group">
+                <label for="ward">Phường:</label>
+                <input type="text" class="form-control" id="ward" th:field="*{ward}">
+            </div>
+            <div class="form-group">
+                <label for="zone">Khu vực:</label>
+                <input type="text" class="form-control" id="zone" th:field="*{zone}">
+            </div>
+            <button type="submit" class="btn btn-primary">Lưu</button>
+            <a th:href="@{/manage-stations}" class="btn back-btn">Hủy</a>
+        </form>
+    </div>
+</th:block>
+
+<th:block th:fragment="extraScripts">
+    <!-- Không cần JavaScript bổ sung -->
+</th:block>
+</body>
+</html>

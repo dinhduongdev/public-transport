@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
+<head>
+    <title th:replace="~{base :: title}">Chi tiết lịch trình</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <th:block th:fragment="extraStyles">
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+        <style>
+            .schedule-info {
+                max-width: 900px;
+                margin: 40px auto;
+                padding: 30px;
+                background-color: #ffffff;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                border: 1px solid #e9ecef;
+            }
+            .schedule-info h2 {
+                color: #2c3e50;
+                font-size: 28px;
+                margin-bottom: 30px;
+                border-bottom: 2px solid #3498db;
+                padding-bottom: 10px;
+            }
+            .schedule-info dl {
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+                gap: 15px;
+            }
+            .schedule-info dl dt {
+                font-weight: 600;
+                color: #34495e;
+                margin-top: 10px;
+            }
+            .schedule-info dl dd {
+                margin-bottom: 10px;
+                color: #555;
+                background-color: #f8f9fa;
+                padding: 8px 12px;
+                border-radius: 5px;
+                border: 1px solid #e9ecef;
+            }
+            .schedule-trips {
+                margin-top: 40px;
+                padding: 20px;
+                background-color: #f9f9f9;
+                border-radius: 8px;
+                border: 1px solid #e9ecef;
+            }
+            .schedule-trips h3 {
+                color: #2c3e50;
+                font-size: 22px;
+                margin-bottom: 25px;
+                border-left: 4px solid #e74c3c;
+                padding-left: 10px;
+            }
+            .schedule-trips table {
+                background-color: #fff;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            .schedule-trips table th {
+                background-color: #34495e;
+                color: #fff;
+                padding: 12px;
+                font-weight: 600;
+            }
+            .schedule-trips table td {
+                padding: 12px;
+                color: #333;
+                border-bottom: 1px solid #e9ecef;
+                transition: background-color 0.3s;
+            }
+            .schedule-trips table tbody tr:hover {
+                background-color: #f1f3f5;
+            }
+            .schedule-trips .pagination {
+                margin-top: 25px;
+                justify-content: center;
+            }
+            .back-btn {
+                display: inline-block;
+                padding: 12px 25px;
+                background-color: #6c757d;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                margin-top: 30px;
+                transition: background-color 0.3s ease;
+            }
+            .back-btn:hover {
+                background-color: #5a6268;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <div class="schedule-info">
+        <h2>Chi tiết lịch trình</h2>
+        <dl>
+            <dt>ID:</dt>
+            <dd th:text="${schedule.id}"></dd>
+            <dt>ID Biến thể tuyến:</dt>
+            <dd th:text="${schedule.routeVariant != null} ? ${schedule.routeVariant.id} : 'N/A'"></dd>
+            <dt>Trạm đi:</dt>
+            <dd th:text="${schedule.routeVariant != null and schedule.routeVariant.startStop != null} ? ${schedule.routeVariant.startStop} : 'N/A'"></dd>
+            <dt>Trạm đến:</dt>
+            <dd th:text="${schedule.routeVariant != null and schedule.routeVariant.endStop != null} ? ${schedule.routeVariant.endStop} : 'N/A'"></dd>
+            <dt>Ngày bắt đầu:</dt>
+            <dd th:text="${schedule.startDate != null} ? ${schedule.startDate} : 'N/A'"></dd>
+            <dt>Ngày kết thúc:</dt>
+            <dd th:text="${schedule.endDate != null} ? ${schedule.endDate} : 'N/A'"></dd>
+            <dt>Ưu tiên:</dt>
+            <dd th:text="${schedule.priority != null} ? ${schedule.priority} : 'N/A'"></dd>
+        </dl>
+
+        <!-- Danh sách ScheduleTrip với phân trang -->
+        <div class="schedule-trips">
+            <h3>Danh sách chuyến đi</h3>
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Giờ bắt đầu</th>
+                    <th>Giờ kết thúc</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${scheduleTrips == null or scheduleTrips.isEmpty}">
+                    <td colspan="3" class="text-center">Không có chuyến đi nào.</td>
+                </tr>
+                <tr th:each="trip : ${scheduleTrips}">
+                    <td th:text="${trip.id}"></td>
+                    <td th:text="${trip.startTime != null} ? ${trip.startTime} : 'N/A'"></td>
+                    <td th:text="${trip.endTime != null} ? ${trip.endTime} : 'N/A'"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Phân trang cho ScheduleTrip -->
+            <div class="pagination">
+                <!-- Nút Trước -->
+                <a th:if="${tripPage > 1}" th:href="@{/manage-schedules/detail/{id}(id=${schedule.id}, tripPage=${tripPage - 1}, tripSize=${tripSize})}" class="nav-btn">←</a>
+
+                <!-- Trang 1 -->
+                <a th:href="@{/manage-schedules/detail/{id}(id=${schedule.id}, tripPage=1, tripSize=${tripSize})}"
+                   th:classappend="${tripPage == 1} ? 'active'" th:text="1"></a>
+
+                <!-- Dấu ... nếu cần -->
+                <span th:if="${tripPage > 4}" class="dots">...</span>
+
+                <!-- Các trang xung quanh trang hiện tại (hiển thị tối đa 5 trang) -->
+                <th:block th:with="startPage=${tripPage - 2 > 1 ? tripPage - 2 : 2}, endPage=${tripPage + 2 < totalTripPages ? tripPage + 2 : totalTripPages}">
+                    <a th:each="i : ${#numbers.sequence(startPage, endPage)}"
+                       th:if="${i > 1 and i < totalTripPages}"
+                       th:href="@{/manage-schedules/detail/{id}(id=${schedule.id}, tripPage=${i}, tripSize=${tripSize})}"
+                       th:classappend="${i == tripPage} ? 'active'"
+                       th:text="${i}"></a>
+                </th:block>
+
+                <!-- Dấu ... nếu cần -->
+                <span th:if="${tripPage < totalTripPages - 3}" class="dots">...</span>
+
+                <!-- Trang cuối -->
+                <a th:if="${totalTripPages > 1}"
+                   th:href="@{/manage-schedules/detail/{id}(id=${schedule.id}, tripPage=${totalTripPages}, tripSize=${tripSize})}"
+                   th:classappend="${tripPage == totalTripPages} ? 'active'"
+                   th:text="${totalTripPages}"></a>
+
+                <!-- Nút Sau -->
+                <a th:if="${tripPage < totalTripPages}" th:href="@{/manage-schedules/detail/{id}(id=${schedule.id}, tripPage=${tripPage + 1}, tripSize=${tripSize})}" class="nav-btn">→</a>
+            </div>
+        </div>
+
+        <a th:href="@{/manage-schedules}" class="back-btn">Quay lại danh sách</a>
+    </div>
+</th:block>
+
+<th:block th:fragment="extraScripts">
+    <!-- Không cần JavaScript bổ sung -->
+</th:block>
+</body>
+</html>

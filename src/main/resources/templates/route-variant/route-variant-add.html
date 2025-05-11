@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
+<head>
+    <title th:replace="~{base :: title}">Thêm mới lộ trình</title>
+
+    <th:block th:fragment="extraStyles">
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+        <style>
+            .form-container {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .form-group {
+                margin-bottom: 15px;
+            }
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+            .form-group input, .form-group select {
+                width: 100%;
+                padding: 8px;
+                box-sizing: border-box;
+            }
+            .stops-section {
+                margin-top: 20px;
+            }
+            .stop-entry {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            .stop-entry select, .stop-entry input {
+                margin-right: 10px;
+                flex: 1;
+            }
+            .remove-btn {
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            .remove-btn:hover {
+                background-color: #c82333;
+            }
+            .add-stop-btn {
+                background-color: #007bff;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-bottom: 20px;
+            }
+            .add-stop-btn:hover {
+                background-color: #0056b3;
+            }
+            .form-buttons {
+                margin-top: 20px;
+            }
+            .btn {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                text-decoration: none;
+                display: inline-block;
+            }
+            .btn-submit {
+                background-color: #28a745;
+                color: white;
+            }
+            .btn-submit:hover {
+                background-color: #218838;
+            }
+            .btn-cancel {
+                background-color: #dc3545;
+                color: white;
+                margin-left: 10px;
+            }
+            .btn-cancel:hover {
+                background-color: #c82333;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <div class="form-container">
+        <h1>Thêm mới lộ trình</h1>
+
+        <!-- Form thêm mới lộ trình -->
+        <form th:action="@{/manage-route-variants/add}" th:object="${routeVariant}" method="post">
+            <div class="form-group">
+                <label for="route">Tuyến đường</label>
+                <select id="route" th:field="*{route}" required>
+                    <option value="">-- Chọn tuyến đường --</option>
+                    <option th:each="route : ${routes}"
+                            th:value="${route.id}"
+                            th:text="${route.name}"></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="isOutbound">Hướng</label>
+                <select id="isOutbound" th:field="*{isOutbound}" required>
+                    <option value="">-- Chọn hướng --</option>
+                    <option value="true">Tuyến đi</option>
+                    <option value="false">Tuyến về</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="distance">Khoảng cách (km)</label>
+                <input type="number" step="0.1" id="distance" th:field="*{distance}" required />
+            </div>
+
+            <div class="form-group">
+                <label for="startStop">Trạm đi</label>
+                <input type="text" id="startStop" th:field="*{startStop}" required />
+            </div>
+
+            <div class="form-group">
+                <label for="endStop">Trạm tới</label>
+                <input type="text" id="endStop" th:field="*{endStop}" required />
+            </div>
+
+            <!-- Phần thêm các Stop -->
+            <div class="stops-section">
+                <h2>Danh sách trạm dừng</h2>
+                <button type="button" class="add-stop-btn" onclick="addStop()">Thêm trạm dừng</button>
+                <div id="stops-container"></div>
+            </div>
+
+            <div class="form-buttons">
+                <button type="submit" class="btn btn-submit">Thêm mới</button>
+                <a th:href="@{/manage-route-variants}" class="btn btn-cancel">Hủy</a>
+            </div>
+        </form>
+    </div>
+</th:block>
+
+<th:block th:fragment="extraScripts">
+    <script th:inline="javascript">
+        /* Danh sách stations để sử dụng trong dropdown */
+        const stations = /*[[${stations}]]*/ [];
+
+        let stopCounter = 0;
+
+        function addStop() {
+            stopCounter++;
+            const container = document.getElementById('stops-container');
+
+            const stopEntry = document.createElement('div');
+            stopEntry.className = 'stop-entry';
+            stopEntry.id = 'stop-' + stopCounter;
+
+            // Dropdown chọn Station
+            const stationSelect = document.createElement('select');
+            stationSelect.name = 'stops[' + (stopCounter - 1) + '].station.id';
+            stationSelect.required = true;
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.text = '-- Chọn trạm --';
+            stationSelect.appendChild(defaultOption);
+            stations.forEach(station => {
+                const option = document.createElement('option');
+                option.value = station.id;
+                option.text = station.name;
+                stationSelect.appendChild(option);
+            });
+
+            // Ô nhập stopOrder
+            const stopOrderInput = document.createElement('input');
+            stopOrderInput.type = 'number';
+            stopOrderInput.name = 'stops[' + (stopCounter - 1) + '].stopOrder';
+            stopOrderInput.placeholder = 'Thứ tự';
+            stopOrderInput.required = true;
+
+            // Nút xóa
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'remove-btn';
+            removeBtn.textContent = 'Xóa';
+            removeBtn.onclick = function() {
+                container.removeChild(stopEntry);
+            };
+
+            stopEntry.appendChild(stationSelect);
+            stopEntry.appendChild(stopOrderInput);
+            stopEntry.appendChild(removeBtn);
+            container.appendChild(stopEntry);
+        }
+    </script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
+<head>
+    <title th:replace="~{base :: title}">Danh sách lịch trình</title>
+    <th:block th:fragment="extraStyles">
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <h1>Danh sách lịch trình</h1>
+
+    <!-- Form tìm kiếm -->
+    <form th:action="@{/manage-schedules}" method="get" class="search-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="routeVariantId">ID Biến thể tuyến</label>
+                <input type="text" class="form-control" id="routeVariantId" name="routeVariantId" th:value="${routeVariantId}">
+            </div>
+            <div class="form-group">
+                <label for="startDate">Ngày bắt đầu</label>
+                <input type="datetime-local" class="form-control" id="startDate" name="startDate" th:value="${startDate}">
+            </div>
+            <div class="form-group">
+                <label for="endDate">Ngày kết thúc</label>
+                <input type="datetime-local" class="form-control" id="endDate" name="endDate" th:value="${endDate}">
+            </div>
+            <div class="form-group">
+                <label for="priority">Ưu tiên</label>
+                <input type="number" class="form-control" id="priority" name="priority" th:value="${priority}">
+            </div>
+        </div>
+        <input type="hidden" name="page" value="1">
+        <input type="hidden" name="size" th:value="${size}">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Tìm kiếm</button>
+        <a th:href="@{/manage-schedules}" class="btn reset-btn">Reset</a>
+    </form>
+
+    <!-- Hiển thị số lượng kết quả -->
+    <div class="search-results-info">
+        <span th:if="${totalItems != null}">
+            Tìm thấy <strong th:text="${totalItems}"></strong> kết quả
+            (<strong th:text="${totalPages}"></strong> trang).
+        </span>
+    </div>
+
+    <!-- Nút Thêm mới -->
+    <a th:href="@{/manage-schedules/add}" class="add-btn">Thêm mới lịch trình</a>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Trạm đi</th>
+            <th>Trạm đến</th>
+            <th>Ngày bắt đầu</th>
+            <th>Ngày kết thúc</th>
+            <th>Ưu tiên</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${schedules == null or schedules.isEmpty}">
+            <td colspan="7" class="text-center">Không tìm thấy lịch trình nào.</td>
+        </tr>
+        <tr th:each="schedule : ${schedules}">
+            <td th:text="${schedule.id}"></td>
+            <td th:text="${schedule.routeVariant.startStop}"></td>
+            <td th:text="${schedule.routeVariant.endStop}"></td>
+            <td th:text="${schedule.startDate != null} ? ${schedule.startDate} : 'N/A'"></td>
+            <td th:text="${schedule.endDate != null} ? ${schedule.endDate} : 'N/A'"></td>
+            <td th:text="${schedule.priority != null} ? ${schedule.priority} : 'N/A'"></td>
+            <td class="action-buttons">
+                <a th:href="@{/manage-schedules/detail/{id}(id=${schedule.id})}" class="detail-btn">Xem chi tiết</a>
+                <a th:href="@{/manage-schedules/edit/{id}(id=${schedule.id})}" class="edit-btn">Sửa</a>
+                <a th:href="@{/manage-schedules/delete/{id}(id=${schedule.id})}" class="delete-btn"
+                   onclick="return confirm('Bạn có chắc chắn muốn xóa lịch trình này?')">Xóa</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Phân trang -->
+    <div class="pagination">
+        <!-- Nút Trước -->
+        <a th:if="${currentPage > 1}" th:href="@{/manage-schedules(page=${currentPage - 1}, size=${size}, routeVariantId=${routeVariantId}, startDate=${startDate}, endDate=${endDate}, priority=${priority})}" class="nav-btn">←</a>
+
+        <!-- Trang 1 -->
+        <a th:href="@{/manage-schedules(page=1, size=${size}, routeVariantId=${routeVariantId}, startDate=${startDate}, endDate=${endDate}, priority=${priority})}"
+           th:classappend="${currentPage == 1} ? 'active'" th:text="1"></a>
+
+        <!-- Dấu ... nếu cần -->
+        <span th:if="${currentPage > 4}" class="dots">...</span>
+
+        <!-- Các trang xung quanh trang hiện tại (hiển thị tối đa 5 trang) -->
+        <th:block th:with="startPage=${currentPage - 2 > 1 ? currentPage - 2 : 2}, endPage=${currentPage + 2 < totalPages ? currentPage + 2 : totalPages - 1}">
+            <a th:each="i : ${#numbers.sequence(startPage, endPage)}"
+               th:if="${i > 1 and i < totalPages}"
+               th:href="@{/manage-schedules(page=${i}, size=${size}, routeVariantId=${routeVariantId}, startDate=${startDate}, endDate=${endDate}, priority=${priority})}"
+               th:classappend="${i == currentPage} ? 'active'"
+               th:text="${i}"></a>
+        </th:block>
+
+        <!-- Dấu ... nếu cần -->
+        <span th:if="${currentPage < totalPages - 3}" class="dots">...</span>
+
+        <!-- Trang cuối -->
+        <a th:if="${totalPages > 1}"
+           th:href="@{/manage-schedules(page=${totalPages}, size=${size}, routeVariantId=${routeVariantId}, startDate=${startDate}, endDate=${endDate}, priority=${priority})}"
+           th:classappend="${currentPage == totalPages} ? 'active'"
+           th:text="${totalPages}"></a>
+
+        <!-- Nút Sau -->
+        <a th:if="${currentPage < totalPages}" th:href="@{/manage-schedules(page=${currentPage + 1}, size=${size}, routeVariantId=${routeVariantId}, startDate=${startDate}, endDate=${endDate}, priority=${priority})}" class="nav-btn">→</a>
+    </div>
+</th:block>
+
+<th:block th:fragment="extraScripts">
+    <!-- Không cần JavaScript bổ sung -->
+</th:block>
+</body>
+</html>

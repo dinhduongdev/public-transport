@@ -17,44 +17,13 @@ public class RouteServiceImpl implements RouteService {
 
 
     @Override
-    public List<Route> getAllRoutes(int page, int size) {
+    public List<Route> findAllRoutes(int page, int size) {
         return routeRepository.findAllRoutes(page, size);
     }
 
     @Override
-    public long getTotalRoutes() {
+    public long countAllRoutes() {
         return routeRepository.countAllRoutes();
-    }
-
-    @Override
-    public int getTotalPages(int size) {
-        long totalRoutes = getTotalRoutes();
-        return (int) Math.ceil((double) totalRoutes / size);
-    }
-
-    @Override
-    public List<RouteVariant> getRouteVariantsByRouteId(Long routeId) {
-        return routeRepository.findRouteVariantsByRouteId(routeId);
-    }
-
-    @Override
-    public Route getRouteById(Long id) {
-        return routeRepository.findById(id);
-    }
-
-    @Override
-    public void saveRoute(Route route) {
-        routeRepository.save(route);
-    }
-
-    @Override
-    public void updateRoute(Route route) {
-        routeRepository.update(route);
-    }
-
-    @Override
-    public void deleteRoute(Long id) {
-        routeRepository.delete(id);
     }
 
     @Override
@@ -68,8 +37,27 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public int getTotalPagesByParams(Map<String, String> params, int size) {
-        long totalRoutes = countRoutesByParams(params);
-        return (int) Math.ceil((double) totalRoutes / size);
+    public List<RouteVariant> findRouteVariantsByRouteId(Long routeId) {
+        return routeRepository.findRouteVariantsByRouteId(routeId);
+    }
+
+    @Override
+    public Route findById(Long id) {
+        return routeRepository.findById(id);
+    }
+
+    @Override
+    public void save(Route route) {
+        routeRepository.save(route);
+    }
+
+    @Override
+    public void update(Route route) {
+        routeRepository.update(route);
+    }
+
+    @Override
+    public void delete(Long id) {
+        routeRepository.delete(id);
     }
 }

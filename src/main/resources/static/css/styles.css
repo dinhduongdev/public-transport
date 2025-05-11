@@ -1,0 +1,113 @@
+.action-buttons a {
+    padding: 5px 10px;
+    text-decoration: none;
+    border-radius: 3px;
+    margin-right: 5px;
+    color: white;
+}
+.action-buttons .detail-btn {
+    background-color: #007bff;
+}
+.action-buttons .edit-btn {
+    background-color: #ffc107;
+    color: black;
+}
+.action-buttons .delete-btn {
+    background-color: #dc3545;
+}
+.action-buttons a:hover {
+    opacity: 0.8;
+}
+.add-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 3px;
+    margin-bottom: 20px;
+}
+.add-btn:hover {
+    background-color: #218838;
+}
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+.pagination a {
+    padding: 8px 12px;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background-color: #fff;
+    color: #333;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+.pagination a.active {
+    background-color: #dc3545;
+    color: white;
+    border: 1px solid #dc3545;
+}
+.pagination a:hover:not(.active) {
+    background-color: #e9ecef;
+}
+.pagination .dots {
+    padding: 8px 12px;
+    color: #333;
+}
+.pagination .nav-btn {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background-color: #fff;
+    color: #333;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+.pagination .nav-btn:hover {
+    background-color: #e9ecef;
+}
+.search-form {
+    margin-bottom: 20px;
+}
+.search-form .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+.search-form .form-group {
+    flex: 1 1 200px; /* Mỗi ô input chiếm tối thiểu 200px */
+}
+.search-form .form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+.search-form .form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+.search-form .btn {
+    padding: 8px 20px;
+    margin-top: 20px;
+    margin-right: 10px;
+}
+.search-form .reset-btn {
+    background-color: #6c757d;
+    color: white;
+}
+.search-form .reset-btn:hover {
+    background-color: #5a6268;
+}
+.search-results-info {
+    margin-bottom: 20px;
+    font-style: italic;
+    color: #666;
+}
