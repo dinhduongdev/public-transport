@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -39,4 +41,6 @@ public class RouteVariant implements Serializable {
     @Column(name = "end_stop")
     private String endStop;
 
+    @OneToMany(mappedBy = "routeVariant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Stop> stops = new ArrayList<>();
 }

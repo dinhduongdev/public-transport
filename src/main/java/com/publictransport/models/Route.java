@@ -5,13 +5,11 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.Serializable;
-
 @Getter
 @Setter
 @Entity
 @Table(name = "route")
-public class Route implements Serializable {
+public class Route {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -25,8 +23,10 @@ public class Route implements Serializable {
     @Column(name = "name", length = 100)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "type")
-    private com.publictransport.models.TypeRoute type;
-
+//    @Lob
+//    @Column(name = "type")
+//    private String type;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('BUS','ELECTRIC_TRAIN')")
+    private TypeRoute type;
 }

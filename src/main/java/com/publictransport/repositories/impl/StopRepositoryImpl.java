@@ -45,4 +45,22 @@ public class StopRepositoryImpl implements StopRepository {
         Session session = getCurrentSession();
         session.persist(stop);
     }
+
+    @Override
+    public Stop findById(Long id) {
+        Session session = getCurrentSession();
+        return session.get(Stop.class, id);
+    }
+
+    @Override
+    public void deleteByRouteVariantId(Long routeVariantId) {
+        Session session = getCurrentSession();
+        List<Stop> stops = findStopsByRouteVariantId(routeVariantId);
+        for (Stop stop : stops) {
+            Stop stopToDelete = findById(stop.getId());
+            if (stopToDelete != null) {
+                session.remove(stopToDelete);
+            }
+        }
+    }
 }

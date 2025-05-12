@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
 <head>
     <!-- Định nghĩa tiêu đề cho trang -->
-    <title th:replace="~{base :: title}">Thêm Lộ trình</title>
+    <title th:replace="~{base :: title}">Chỉnh sửa lộ trình</title>
     <!-- Định nghĩa CSS bổ sung -->
     <th:block th:fragment="extraStyles">
         <style>
@@ -16,19 +16,20 @@
 <!-- Định nghĩa nội dung chính của trang -->
 <th:block th:fragment="content">
     <div class="container mt-5">
-        <h1>Thêm Lộ Trình Mới</h1>
+        <h1>Chỉnh sửa Lộ trình</h1>
 
         <!-- Hiển thị thông báo lỗi từ backend nếu có -->
         <div th:if="${msg}" class="alert alert-danger" role="alert">
             <span th:text="${msg}"></span>
         </div>
 
-        <form id="routeVariantForm" th:action="@{/manage-route-variants/add}" th:object="${routeVariantDTO}" method="post">
+        <!-- Form chỉnh sửa -->
+        <form id="routeVariantForm" th:action="@{/manage-route-variants/edit/{id}(id=${outboundRouteVariant.id})}" th:object="${routeVariantDTO}" method="post">
             <div class="mb-3">
                 <label for="routeId" class="form-label">Tuyến đường</label>
-                <select id="routeId" th:field="*{routeId}" class="form-select" required>
+                <select id="routeId" th:field="*{routeId}" class="form-select" required disabled>
                     <option value="">Chọn tuyến đường</option>
-                    <option th:each="route : ${routes}" th:value="${route.id}" th:text="${route.name}"></option>
+                    <option th:each="route : ${routes}" th:value="${route.id}" th:text="${route.name}" th:selected="${route.id == outboundRouteVariant.route.id}"></option>
                 </select>
             </div>
 
@@ -43,13 +44,13 @@
                 <div class="mb-3">
                     <h3>Chọn các trạm dừng (Lượt đi)</h3>
                     <div id="outbound-stops-container">
-                        <!-- Các trạm dừng ban đầu cho Lượt đi -->
-                        <div th:each="stopDTO, iter : *{outboundStops}" class="stop-item row">
+                        <!-- Các trạm dừng của Lượt đi -->
+                        <div th:each="stop, iter : ${outboundStops}" class="stop-item row">
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Chọn trạm</label>
                                 <select th:field="*{outboundStops[__${iter.index}__].stationId}" class="form-select outbound-station" required>
                                     <option value="">Chọn trạm</option>
-                                    <option th:each="station : ${stations}" th:value="${station.id}" th:text="${station.name}"></option>
+                                    <option th:each="station : ${stations}" th:value="${station.id}" th:text="${station.name}" th:selected="${station.id == stop.station.id}"></option>
                                 </select>
                             </div>
                             <div class="col-md-4 mb-2">
@@ -77,13 +78,13 @@
                 <div class="mb-3">
                     <h3>Chọn các trạm dừng (Lượt về)</h3>
                     <div id="inbound-stops-container">
-                        <!-- Các trạm dừng ban đầu cho Lượt về -->
-                        <div th:each="stopDTO, iter : *{inboundStops}" class="stop-item row">
+                        <!-- Các trạm dừng của Lượt về -->
+                        <div th:each="stop, iter : ${inboundStops}" class="stop-item row">
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Chọn trạm</label>
                                 <select th:field="*{inboundStops[__${iter.index}__].stationId}" class="form-select inbound-station" required>
                                     <option value="">Chọn trạm</option>
-                                    <option th:each="station : ${stations}" th:value="${station.id}" th:text="${station.name}"></option>
+                                    <option th:each="station : ${stations}" th:value="${station.id}" th:text="${station.name}" th:selected="${station.id == stop.station.id}"></option>
                                 </select>
                             </div>
                             <div class="col-md-4 mb-2">
@@ -108,7 +109,7 @@
     </div>
 </th:block>
 
-<!-- Định nghĩa JavaScript bổ sung -->
+<!-- Liên kết file JavaScript -->
 <th:block th:fragment="extraScripts">
     <script th:src="@{/js/add-routevariant.js}"></script>
 </th:block>

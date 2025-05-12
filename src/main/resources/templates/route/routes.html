@@ -62,7 +62,7 @@
             <td th:text="${route.id}"></td>
             <td th:text="${route.code}"></td>
             <td th:text="${route.name}"></td>
-            <td th:text="${route.type != null} ? ${route.type.name} : 'N/A'"></td>
+            <td th:text="${route.type}"></td>
             <td class="action-buttons">
                 <a th:href="@{/manage-routes/detail/{id}(id=${route.id})}" class="detail-btn">Xem chi tiết</a>
                 <a th:href="@{/manage-routes/edit/{id}(id=${route.id})}" class="edit-btn">Sửa</a>

@@ -28,15 +28,24 @@
                 <form th:action="@{/manage-routes/add}" th:object="${route}" method="post">
                     <div class="mb-3">
                         <label for="routeName" class="form-label">Tên tuyến</label>
-                        <input type="text" class="form-control" id="routeName" name="name" th:field="*{name}" required>
+                        <input type="text" class="form-control" id="routeName" th:field="*{name}" required>
                     </div>
                     <div class="mb-3">
                         <label for="routeCode" class="form-label">Mã tuyến</label>
-                        <input type="text" class="form-control" id="routeCode" name="code" th:field="*{code}" required>
+                        <input type="text" class="form-control" id="routeCode" th:field="*{code}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="routeType" class="form-label">Loại</label>
+                        <select class="form-select" id="routeType" th:field="*{type}" required>
+                            <option value="" disabled selected>-- Chọn loại tuyến --</option>
+                            <option value="BUS">Xe buýt</option>
+                            <option value="ELECTRIC_TRAIN">Tàu điện</option>
+                        </select>
                     </div>
                     <button type="submit" class="btn btn-success">Thêm</button>
                     <a th:href="@{/manage-routes}" class="btn btn-secondary">Hủy</a>
                 </form>
+
             </div>
         </div>
     </div>

@@ -21,4 +21,14 @@ public class StopServiceImpl implements StopService {
     public void save(Stop stop) {
         stopRepository.save(stop);
     }
+
+    @Override
+    public Stop findById(Long id) {
+        return stopRepository.findById(id);
+    }
+
+    @Override
+    public void deleteByRouteVariantId(Long routeVariantId) {
+        stopRepository.deleteByRouteVariantId(routeVariantId);
+    }
 }

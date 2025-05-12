@@ -55,4 +55,9 @@ public class RouteVariantServiceImpl implements RouteVariantService {
     public void delete(Long id) {
         routeVariantRepository.delete(id);
     }
+
+    @Override
+    public List<RouteVariant> findByRouteId(Long routeId) {
+        return routeVariantRepository.findByRouteId(routeId);
+    }
 }

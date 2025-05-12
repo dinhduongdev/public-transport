@@ -14,4 +14,5 @@ public interface RouteVariantRepository {
     void save(RouteVariant routeVariant);
     void update(RouteVariant routeVariant);
     void delete(Long id);
+    List<RouteVariant> findByRouteId(Long routeId);
 }

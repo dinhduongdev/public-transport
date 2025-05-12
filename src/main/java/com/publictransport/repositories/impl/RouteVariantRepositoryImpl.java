@@ -103,6 +103,21 @@ public class RouteVariantRepositoryImpl implements RouteVariantRepository {
             session.remove(routeVariant);
         }
     }
+
+    @Override
+    public List<RouteVariant> findByRouteId(Long routeId) {
+        Session session = getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<RouteVariant> cq = cb.createQuery(RouteVariant.class);
+        Root<RouteVariant> root = cq.from(RouteVariant.class);
+
+        // Thêm điều kiện lọc theo routeId
+        Predicate routeIdPredicate = cb.equal(root.get("route").get("id"), routeId);
+        cq.select(root).where(routeIdPredicate);
+
+        return session.createQuery(cq).getResultList();
+    }
+
     private List<RouteVariant> getRouteVariants(Map<String, String> params, int page, int size) {
         Session session = getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
