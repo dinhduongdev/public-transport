@@ -7,9 +7,9 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +20,15 @@ import java.util.Map;
 @Repository
 @Transactional
 public class RouteVariantRepositoryImpl implements RouteVariantRepository {
+    private final SessionFactory factory;
+
     @Autowired
-    LocalSessionFactoryBean factory;
+    public RouteVariantRepositoryImpl(SessionFactory factory) {
+        this.factory = factory;
+    }
 
     private Session getCurrentSession() {
-        return factory.getObject().getCurrentSession();
+        return factory.getCurrentSession();
     }
 
 

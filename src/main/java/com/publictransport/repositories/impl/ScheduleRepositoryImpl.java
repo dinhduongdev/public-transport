@@ -7,9 +7,9 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +23,15 @@ import java.util.Map;
 @Transactional
 public class ScheduleRepositoryImpl implements ScheduleRepository {
     private static final int PAGE_SIZE = 10;
+    private final SessionFactory factory;
+
     @Autowired
-    private LocalSessionFactoryBean factory;
+    public ScheduleRepositoryImpl(SessionFactory factory) {
+        this.factory = factory;
+    }
 
     private Session getCurrentSession() {
-        return factory.getObject().getCurrentSession();
+        return factory.getCurrentSession();
     }
 
     @Override
@@ -110,6 +114,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
             session.remove(schedule);
         }
     }
+
     private List<Schedule> getSchedules(Map<String, String> params, int page, int size) {
         Session session = getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();

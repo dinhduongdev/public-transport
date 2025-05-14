@@ -6,9 +6,8 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
-import org.hibernate.query.Query;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +17,16 @@ import java.util.List;
 @Transactional
 public class StopRepositoryImpl implements StopRepository {
 
-    @Autowired
-    private LocalSessionFactoryBean factory;
+    private final SessionFactory factory;
 
-    private Session getCurrentSession() {
-        return factory.getObject().getCurrentSession();
+    @Autowired
+    public StopRepositoryImpl(SessionFactory factory) {
+        this.factory = factory;
     }
 
+    private Session getCurrentSession() {
+        return factory.getCurrentSession();
+    }
 
     @Override
     public List<Stop> findStopsByRouteVariantId(Long routeVariantId) {

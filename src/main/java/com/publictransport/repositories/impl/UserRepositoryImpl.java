@@ -6,32 +6,32 @@ package com.publictransport.repositories.impl;
 
 import com.publictransport.models.User;
 import com.publictransport.repositories.UserRepository;
-
 import jakarta.persistence.Query;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- *
  * @author duong
  */
 @Repository
 @Transactional
 public class UserRepositoryImpl implements UserRepository {
-    @Autowired
-    private LocalSessionFactoryBean factory;
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final SessionFactory FACTORY;
 
-
+    @Autowired
+    public UserRepositoryImpl(SessionFactory factory, BCryptPasswordEncoder passwordEncoder) {
+        this.FACTORY = factory;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public User getUserByEmail(String email) {
-        Session s = this.factory.getObject().getCurrentSession();
+        Session s = this.FACTORY.getCurrentSession();
         Query q = s.createQuery("FROM User u WHERE u.email = :email", User.class);
         q.setParameter("email", email);
         return (User) q.getSingleResult();

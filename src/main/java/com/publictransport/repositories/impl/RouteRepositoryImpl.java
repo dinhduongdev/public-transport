@@ -8,9 +8,9 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,12 +23,16 @@ import java.util.Map;
 public class RouteRepositoryImpl implements RouteRepository {
 
     private static final int PAGE_SIZE = 10;
+    private final SessionFactory factory;
+
 
     @Autowired
-    private LocalSessionFactoryBean factory;
+    public RouteRepositoryImpl(SessionFactory factory) {
+        this.factory = factory;
+    }
 
     private Session getCurrentSession() {
-        return factory.getObject().getCurrentSession();
+        return factory.getCurrentSession();
     }
 
     @Override
