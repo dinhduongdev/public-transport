@@ -5,13 +5,16 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements Serializable {
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Size(max = 255)
@@ -30,15 +33,12 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role")
-    private Role role;
-
     @Size(max = 255)
     @Column(name = "avatar")
     private String avatar;
 
-    public String getUserRole() {
-        return this.role != null ? this.role.getName() : "ROLE_USER";
-    }
+    @Lob
+    @Column(name = "role")
+    private String role;
+
 }

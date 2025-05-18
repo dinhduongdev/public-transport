@@ -1,6 +1,7 @@
 package com.publictransport.repositories;
 
 import com.publictransport.models.Stop;
+
 import java.util.List;
 
 public interface StopRepository {

@@ -5,6 +5,7 @@
 
     <th:block th:fragment="extraStyles">
         <link rel="stylesheet" th:href="@{/css/styles.css}">
+        <link href='https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.css' rel='stylesheet' />
         <style>
             .detail-table, .stops-table {
                 width: 100%;
@@ -68,7 +69,7 @@
             <td th:text="${routeVariant.distance} + ' km'"></td>
         </tr>
     </table>
-
+    <div id="goong-map" style="height: 500px; margin-top: 20px;"></div>
     <!-- Danh sách các Stop -->
     <h2>Danh sách trạm dừng</h2>
     <table class="stops-table">
@@ -92,10 +93,119 @@
         </tr>
         </tbody>
     </table>
-</th:block>
 
+
+</th:block>
 <th:block th:fragment="extraScripts">
-    <!-- Không cần JavaScript bổ sung -->
+    <script src='https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.js'></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener("DOMContentLoaded", function () {
+            goongjs.accessToken = 'WAehmMsAqDms9ahfWjFAq5a1E90zEKXJfFUChL0r';
+            const api_key = "UJT54kxPWU3gD68kUfcAzWLx4Yqn885FsovZMk9y";
+            let map = new goongjs.Map({
+                container: 'goong-map',
+                style: 'https://tiles.goong.io/assets/goong_map_web.json',
+                center: [105.8544441, 21.028511], // Default center (Hà Nội)
+                zoom: 12
+            });
+
+            let stops = /*[[${stops}]]*/ [];
+
+            if (stops && stops.length > 0) {
+                let bounds = new goongjs.LngLatBounds();
+                let coordinates = [];
+
+                // Sắp xếp stops theo thứ tự (stopOrder)
+                stops.sort((a, b) => a.stopOrder - b.stopOrder);
+
+                // Thêm marker cho mỗi trạm dừng
+                stops.forEach((stop, index) => {
+                    if (stop.station) {
+                        let lat = stop.station.lat;
+                        let lng = stop.station.lng;
+                        let name = stop.station.name;
+
+                        // Thêm marker
+                        new goongjs.Marker()
+                            .setLngLat([lng, lat])
+                            .setPopup(new goongjs.Popup().setText(name))
+                            .addTo(map);
+
+                        coordinates.push([lng, lat]);
+                        bounds.extend([lng, lat]);
+                    }
+                });
+
+                // Hàm gọi API Trip để lấy lộ trình
+                async function getRoute(coordinates) {
+                    if (coordinates.length < 2) {
+                        console.error('Cần ít nhất 2 điểm để vẽ lộ trình');
+                        return coordinates;
+                    }
+
+                    // Tạo URL cho API Trip
+                    let origin = coordinates[0].join(',');
+                    let destination = coordinates[coordinates.length - 1].join(',');
+                    let waypoints = coordinates.slice(1, -1).map(coord => coord.join(',')).join(';');
+                    let url = `https://rsapi.goong.io/trip?origin=${origin}&destination=${destination}${waypoints ? '&waypoints=' + waypoints : ''}&vehicle=car&api_key=${api_key}`;
+
+                    try {
+                        let response = await fetch(url);
+                        let data = await response.json();
+                        if (data.trips && data.trips.length > 0) {
+                            return data.trips[0].geometry.coordinates; // Lấy tọa độ lộ trình
+                        }
+                        console.error('Không tìm thấy lộ trình');
+                        return coordinates; // Fallback: vẽ đường thẳng
+                    } catch (error) {
+                        console.error('Lỗi khi lấy lộ trình:', error);
+                        return coordinates; // Fallback: vẽ đường thẳng
+                    }
+                }
+
+                // Vẽ lộ trình khi bản đồ được tải
+                map.on('load', async function () {
+                    // Lấy tọa độ lộ trình từ API
+                    let routeCoordinates = await getRoute(coordinates);
+
+                    // Thêm nguồn dữ liệu cho lộ trình
+                    map.addSource('route-line', {
+                        'type': 'geojson',
+                        'data': {
+                            'type': 'Feature',
+                            'properties': {},
+                            'geometry': {
+                                'type': 'LineString',
+                                'coordinates': routeCoordinates
+                            }
+                        }
+                    });
+
+                    // Thêm lớp để vẽ đường lộ trình
+                    map.addLayer({
+                        'id': 'route-line-layer',
+                        'type': 'line',
+                        'source': 'route-line',
+                        'layout': {
+                            'line-join': 'round',
+                            'line-cap': 'round'
+                        },
+                        'paint': {
+                            'line-color': '#ff0000',
+                            'line-width': 4
+                        }
+                    });
+
+                    // Điều chỉnh bản đồ để hiển thị toàn bộ lộ trình
+                    map.fitBounds(bounds, { padding: 50 });
+                });
+            } else {
+                console.warn('Không có trạm dừng để hiển thị');
+            }
+        });
+        /*]]>*/
+    </script>
 </th:block>
 </body>
 </html>

@@ -3,10 +3,7 @@ package com.publictransport.repositories.impl;
 import com.publictransport.models.Route;
 import com.publictransport.models.RouteVariant;
 import com.publictransport.repositories.RouteRepository;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -24,7 +21,6 @@ public class RouteRepositoryImpl implements RouteRepository {
 
     private static final int PAGE_SIZE = 10;
     private final SessionFactory factory;
-
 
     @Autowired
     public RouteRepositoryImpl(SessionFactory factory) {
@@ -64,23 +60,10 @@ public class RouteRepositoryImpl implements RouteRepository {
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
         Root<Route> root = cq.from(Route.class);
 
-        List<Predicate> predicates = new ArrayList<>();
-        if (params != null) {
-            if (params.containsKey("name")) {
-                String namePattern = "%" + params.get("name").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("name")), namePattern));
-            }
-            if (params.containsKey("code")) {
-                String codePattern = "%" + params.get("code").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("code")), codePattern));
-            }
-            if (params.containsKey("type")) {
-                String typePattern = "%" + params.get("type").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("type").get("name")), typePattern));
-            }
-        }
+        Join<Route, RouteVariant>[] variantJoinHolder = new Join[1];
+        List<Predicate> predicates = buildPredicates(params, cb, root, variantJoinHolder);
 
-        cq.select(cb.count(root)).where(predicates.toArray(new Predicate[0]));
+        cq.select(cb.countDistinct(root)).where(predicates.toArray(new Predicate[0]));
 
         return session.createQuery(cq).getSingleResult();
     }
@@ -99,20 +82,17 @@ public class RouteRepositoryImpl implements RouteRepository {
 
     @Override
     public Route findById(Long id) {
-        Session session = getCurrentSession();
-        return session.get(Route.class, id);
+        return getCurrentSession().get(Route.class, id);
     }
 
     @Override
     public void save(Route route) {
-        Session session = getCurrentSession();
-        session.persist(route);
+        getCurrentSession().persist(route);
     }
 
     @Override
     public void update(Route route) {
-        Session session = getCurrentSession();
-        session.merge(route);
+        getCurrentSession().merge(route);
     }
 
     @Override
@@ -129,24 +109,12 @@ public class RouteRepositoryImpl implements RouteRepository {
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Route> cq = cb.createQuery(Route.class);
         Root<Route> root = cq.from(Route.class);
-        cq.select(root);
+        cq.select(root).distinct(true);
 
-        if (params != null) {
-            List<Predicate> predicates = new ArrayList<>();
-            if (params.containsKey("name")) {
-                String namePattern = "%" + params.get("name").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("name")), namePattern));
-            }
-            if (params.containsKey("code")) {
-                String codePattern = "%" + params.get("code").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("code")), codePattern));
-            }
-            if (params.containsKey("type")) {
-                String typePattern = "%" + params.get("type").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("type").get("name")), typePattern));
-            }
-            cq.where(predicates.toArray(new Predicate[0]));
-        }
+        Join<Route, RouteVariant>[] variantJoinHolder = new Join[1];
+        List<Predicate> predicates = buildPredicates(params, cb, root, variantJoinHolder);
+
+        cq.where(predicates.toArray(new Predicate[0]));
 
         Query<Route> query = session.createQuery(cq);
 
@@ -157,5 +125,37 @@ public class RouteRepositoryImpl implements RouteRepository {
         }
 
         return query.getResultList();
+    }
+
+    private List<Predicate> buildPredicates(Map<String, String> params, CriteriaBuilder cb, Root<Route> root, Join<Route, RouteVariant>[] variantJoinHolder) {
+        List<Predicate> predicates = new ArrayList<>();
+
+        if (params == null || params.isEmpty()) {
+            return predicates;
+        }
+
+        Join<Route, RouteVariant> variantJoin = null;
+        if (params.containsKey("startStop") || params.containsKey("endStop")) {
+            variantJoin = root.join("routeVariants", JoinType.INNER);
+            variantJoinHolder[0] = variantJoin;
+        }
+
+        if (params.containsKey("name")) {
+            predicates.add(cb.like(cb.lower(root.get("name")), "%" + params.get("name").toLowerCase() + "%"));
+        }
+        if (params.containsKey("code")) {
+            predicates.add(cb.like(cb.lower(root.get("code")), "%" + params.get("code").toLowerCase() + "%"));
+        }
+        if (params.containsKey("type")) {
+            predicates.add(cb.like(cb.lower(root.get("type")), "%" + params.get("type").toLowerCase() + "%"));
+        }
+        if (params.containsKey("startStop") && variantJoin != null) {
+            predicates.add(cb.like(cb.lower(variantJoin.get("startStop")), "%" + params.get("startStop").toLowerCase() + "%"));
+        }
+        if (params.containsKey("endStop") && variantJoin != null) {
+            predicates.add(cb.like(cb.lower(variantJoin.get("endStop")), "%" + params.get("endStop").toLowerCase() + "%"));
+        }
+
+        return predicates;
     }
 }

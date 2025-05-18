@@ -1,12 +1,13 @@
 package com.publictransport.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.DayOfWeek;
 import java.time.Instant;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -19,24 +20,19 @@ public class Schedule {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "route_variant_id")
     private RouteVariant routeVariant;
 
     @Column(name = "start_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Instant startDate;
 
     @Column(name = "end_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Instant endDate;
 
     @Column(name = "priority")
     private Integer priority;
 
-    @ElementCollection(targetClass = DayOfWeek.class)
-    @CollectionTable(
-            name = "Schedule_Day",
-            joinColumns = @JoinColumn(name = "schedule_id")
-    )
-    @Column(name = "day", columnDefinition = "ENUM('MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY')")
-    @Enumerated(EnumType.STRING)
-    private Set<DayOfWeek> daysOfWeek;
 }

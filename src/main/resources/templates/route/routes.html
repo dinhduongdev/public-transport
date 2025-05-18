@@ -1,3 +1,120 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">-->
+<!--<head>-->
+<!--    <title th:replace="~{base :: title}">Danh sách tuyến đường</title>-->
+
+<!--    <th:block th:fragment="extraStyles">-->
+<!--        <link rel="stylesheet" th:href="@{/css/styles.css}">-->
+<!--    </th:block>-->
+<!--</head>-->
+<!--<body>-->
+<!--<th:block th:fragment="content">-->
+<!--    <h1>Danh sách tuyến đường</h1>-->
+
+<!--    &lt;!&ndash; Form tìm kiếm &ndash;&gt;-->
+<!--    <form th:action="@{/manage-routes}" method="get" class="search-form">-->
+<!--        <div class="form-row">-->
+<!--            <div class="form-group">-->
+<!--                <label for="name">Tên tuyến</label>-->
+<!--                <input type="text" class="form-control" id="name" name="name" th:value="${name}">-->
+<!--            </div>-->
+<!--            <div class="form-group">-->
+<!--                <label for="code">Mã tuyến</label>-->
+<!--                <input type="text" class="form-control" id="code" name="code" th:value="${code}">-->
+<!--            </div>-->
+<!--            <div class="form-group">-->
+<!--                <label for="type">Loại</label>-->
+<!--                <input type="text" class="form-control" id="type" name="type" th:value="${type}">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <input type="hidden" name="page" value="1">-->
+<!--        <input type="hidden" name="size" th:value="${size}">-->
+<!--        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Tìm kiếm</button>-->
+<!--        <a th:href="@{/manage-routes}" class="btn reset-btn">Reset</a>-->
+<!--    </form>-->
+
+<!--    &lt;!&ndash; Hiển thị số lượng kết quả &ndash;&gt;-->
+<!--    <div class="search-results-info">-->
+<!--        <span th:if="${totalItems != null}">-->
+<!--            Tìm thấy <strong th:text="${totalItems}"></strong> kết quả-->
+<!--            (<strong th:text="${totalPages}"></strong> trang).-->
+<!--        </span>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Nút Thêm mới &ndash;&gt;-->
+<!--    <a th:href="@{/manage-routes/add}" class="add-btn">Thêm mới tuyến đường</a>-->
+
+<!--    <table class="table table-bordered table-hover">-->
+<!--        <thead class="table-dark">-->
+<!--        <tr>-->
+<!--            <th>ID</th>-->
+<!--            <th>Mã tuyến</th>-->
+<!--            <th>Tên tuyến</th>-->
+<!--            <th>Loại</th>-->
+<!--            <th>Hành động</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr th:if="${routes == null or routes.isEmpty}">-->
+<!--            <td colspan="5" class="text-center">Không tìm thấy tuyến đường nào.</td>-->
+<!--        </tr>-->
+<!--        <tr th:each="route : ${routes}">-->
+<!--            <td th:text="${route.id}"></td>-->
+<!--            <td th:text="${route.code}"></td>-->
+<!--            <td th:text="${route.name}"></td>-->
+<!--            <td th:text="${route.type}"></td>-->
+<!--            <td class="action-buttons">-->
+<!--                <a th:href="@{/manage-routes/detail/{id}(id=${route.id})}" class="detail-btn">Xem chi tiết</a>-->
+<!--                <a th:href="@{/manage-routes/edit/{id}(id=${route.id})}" class="edit-btn">Sửa</a>-->
+<!--                <a th:href="@{/manage-routes/delete/{id}(id=${route.id})}" class="delete-btn"-->
+<!--                   onclick="return confirm('Bạn có chắc chắn muốn xóa tuyến đường này?')">Xóa</a>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->
+
+<!--    &lt;!&ndash; Phân trang &ndash;&gt;-->
+<!--    <div class="pagination">-->
+<!--        &lt;!&ndash; Nút Trước &ndash;&gt;-->
+<!--        <a th:if="${currentPage > 1}" th:href="@{/manage-routes(page=${currentPage - 1}, size=${size}, name=${name}, code=${code}, type=${type})}" class="nav-btn">←</a>-->
+
+<!--        &lt;!&ndash; Trang 1 &ndash;&gt;-->
+<!--        <a th:href="@{/manage-routes(page=1, size=${size}, name=${name}, code=${code}, type=${type})}"-->
+<!--           th:classappend="${currentPage == 1} ? 'active'" th:text="1"></a>-->
+
+<!--        &lt;!&ndash; Dấu ... nếu cần &ndash;&gt;-->
+<!--        <span th:if="${currentPage > 4}" class="dots">...</span>-->
+
+<!--        &lt;!&ndash; Các trang xung quanh trang hiện tại (hiển thị tối đa 5 trang) &ndash;&gt;-->
+<!--        <th:block th:with="startPage=${currentPage - 2 > 1 ? currentPage - 2 : 2}, endPage=${currentPage + 2 < totalPages ? currentPage + 2 : totalPages - 1}">-->
+<!--            <a th:each="i : ${#numbers.sequence(startPage, endPage)}"-->
+<!--               th:if="${i > 1 and i < totalPages}"-->
+<!--               th:href="@{/manage-routes(page=${i}, size=${size}, name=${name}, code=${code}, type=${type})}"-->
+<!--               th:classappend="${i == currentPage} ? 'active'"-->
+<!--               th:text="${i}"></a>-->
+<!--        </th:block>-->
+
+<!--        &lt;!&ndash; Dấu ... nếu cần &ndash;&gt;-->
+<!--        <span th:if="${currentPage < totalPages - 3}" class="dots">...</span>-->
+
+<!--        &lt;!&ndash; Trang cuối &ndash;&gt;-->
+<!--        <a th:if="${totalPages > 1}"-->
+<!--           th:href="@{/manage-routes(page=${totalPages}, size=${size}, name=${name}, code=${code}, type=${type})}"-->
+<!--           th:classappend="${currentPage == totalPages} ? 'active'"-->
+<!--           th:text="${totalPages}"></a>-->
+
+<!--        &lt;!&ndash; Nút Sau &ndash;&gt;-->
+<!--        <a th:if="${currentPage < totalPages}" th:href="@{/manage-routes(page=${currentPage + 1}, size=${size}, name=${name}, code=${code}, type=${type})}" class="nav-btn">→</a>-->
+<!--    </div>-->
+<!--</th:block>-->
+
+<!--<th:block th:fragment="extraScripts">-->
+<!--    &lt;!&ndash; Không cần JavaScript bổ sung &ndash;&gt;-->
+<!--</th:block>-->
+<!--</body>-->
+<!--</html>-->
+
+
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
 <head>
@@ -10,6 +127,10 @@
 <body>
 <th:block th:fragment="content">
     <h1>Danh sách tuyến đường</h1>
+
+    <!-- Hiển thị thông báo flash -->
+    <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+    <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>
 
     <!-- Form tìm kiếm -->
     <form th:action="@{/manage-routes}" method="get" class="search-form">
@@ -26,11 +147,19 @@
                 <label for="type">Loại</label>
                 <input type="text" class="form-control" id="type" name="type" th:value="${type}">
             </div>
+            <div class="form-group">
+                <label for="startStop">Điểm bắt đầu</label>
+                <input type="text" class="form-control" id="startStop" name="startStop" th:value="${startStop}">
+            </div>
+            <div class="form-group">
+                <label for="endStop">Điểm kết thúc</label>
+                <input type="text" class="form-control" id="endStop" name="endStop" th:value="${endStop}">
+            </div>
         </div>
         <input type="hidden" name="page" value="1">
         <input type="hidden" name="size" th:value="${size}">
         <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Tìm kiếm</button>
-        <a th:href="@{/manage-routes}" class="btn reset-btn">Reset</a>
+        <a th:href="@{/manage-routes}" class="btn reset-btn">Làm mới</a>
     </form>
 
     <!-- Hiển thị số lượng kết quả -->
@@ -44,6 +173,7 @@
     <!-- Nút Thêm mới -->
     <a th:href="@{/manage-routes/add}" class="add-btn">Thêm mới tuyến đường</a>
 
+    <!-- Bảng danh sách tuyến đường -->
     <table class="table table-bordered table-hover">
         <thead class="table-dark">
         <tr>
@@ -51,18 +181,25 @@
             <th>Mã tuyến</th>
             <th>Tên tuyến</th>
             <th>Loại</th>
+            <th>Biến thể tuyến</th>
             <th>Hành động</th>
         </tr>
         </thead>
         <tbody>
         <tr th:if="${routes == null or routes.isEmpty}">
-            <td colspan="5" class="text-center">Không tìm thấy tuyến đường nào.</td>
+            <td colspan="6" class="text-center">Không tìm thấy tuyến đường nào.</td>
         </tr>
         <tr th:each="route : ${routes}">
             <td th:text="${route.id}"></td>
             <td th:text="${route.code}"></td>
             <td th:text="${route.name}"></td>
             <td th:text="${route.type}"></td>
+            <td>
+                <ul>
+                    <li th:each="variant : ${routeVariantsMap[route.id]}"
+                        th:text="${variant.startStop} + ' → ' + ${variant.endStop}"></li>
+                </ul>
+            </td>
             <td class="action-buttons">
                 <a th:href="@{/manage-routes/detail/{id}(id=${route.id})}" class="detail-btn">Xem chi tiết</a>
                 <a th:href="@{/manage-routes/edit/{id}(id=${route.id})}" class="edit-btn">Sửa</a>
@@ -76,20 +213,22 @@
     <!-- Phân trang -->
     <div class="pagination">
         <!-- Nút Trước -->
-        <a th:if="${currentPage > 1}" th:href="@{/manage-routes(page=${currentPage - 1}, size=${size}, name=${name}, code=${code}, type=${type})}" class="nav-btn">←</a>
+        <a th:if="${currentPage > 1}"
+           th:href="@{/manage-routes(page=${currentPage - 1}, size=${size}, name=${name}, code=${code}, type=${type}, startStop=${startStop}, endStop=${endStop})}"
+           class="nav-btn">←</a>
 
         <!-- Trang 1 -->
-        <a th:href="@{/manage-routes(page=1, size=${size}, name=${name}, code=${code}, type=${type})}"
+        <a th:href="@{/manage-routes(page=1, size=${size}, name=${name}, code=${code}, type=${type}, startStop=${startStop}, endStop=${endStop})}"
            th:classappend="${currentPage == 1} ? 'active'" th:text="1"></a>
 
         <!-- Dấu ... nếu cần -->
         <span th:if="${currentPage > 4}" class="dots">...</span>
 
-        <!-- Các trang xung quanh trang hiện tại (hiển thị tối đa 5 trang) -->
+        <!-- Các trang xung quanh trang hiện tại -->
         <th:block th:with="startPage=${currentPage - 2 > 1 ? currentPage - 2 : 2}, endPage=${currentPage + 2 < totalPages ? currentPage + 2 : totalPages - 1}">
             <a th:each="i : ${#numbers.sequence(startPage, endPage)}"
                th:if="${i > 1 and i < totalPages}"
-               th:href="@{/manage-routes(page=${i}, size=${size}, name=${name}, code=${code}, type=${type})}"
+               th:href="@{/manage-routes(page=${i}, size=${size}, name=${name}, code=${code}, type=${type}, startStop=${startStop}, endStop=${endStop})}"
                th:classappend="${i == currentPage} ? 'active'"
                th:text="${i}"></a>
         </th:block>
@@ -99,12 +238,14 @@
 
         <!-- Trang cuối -->
         <a th:if="${totalPages > 1}"
-           th:href="@{/manage-routes(page=${totalPages}, size=${size}, name=${name}, code=${code}, type=${type})}"
+           th:href="@{/manage-routes(page=${totalPages}, size=${size}, name=${name}, code=${code}, type=${type}, startStop=${startStop}, endStop=${endStop})}"
            th:classappend="${currentPage == totalPages} ? 'active'"
            th:text="${totalPages}"></a>
 
         <!-- Nút Sau -->
-        <a th:if="${currentPage < totalPages}" th:href="@{/manage-routes(page=${currentPage + 1}, size=${size}, name=${name}, code=${code}, type=${type})}" class="nav-btn">→</a>
+        <a th:if="${currentPage < totalPages}"
+           th:href="@{/manage-routes(page=${currentPage + 1}, size=${size}, name=${name}, code=${code}, type=${type}, startStop=${startStop}, endStop=${endStop})}"
+           class="nav-btn">→</a>
     </div>
 </th:block>
 
