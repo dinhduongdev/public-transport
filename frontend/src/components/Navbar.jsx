@@ -1,206 +1,117 @@
-import React, { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Fixed import
-import { MyUserContext, MyDispatcherContext } from "../configs/MyContexts";
+// import { useSelector, useDispatch } from 'react-redux';
+// import { Link, useNavigate } from 'react-router-dom';
+// import { logout } from '../features/user/userSlice';
 
-export default function Navbar() {
-  const user = useContext(MyUserContext);
-  const dispatch = useContext(MyDispatcherContext);
-  const nav = useNavigate();
-  const [isOpen, setIsOpen] = useState(false); // State for mobile menu toggle
+// const Navbar = () => {
+//   const user = useSelector((state) => state.user);
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
 
-  const logout = () => {
-    dispatch({ type: "logout" });
-    nav("/login");
-  };
+//   const handleLogout = () => {
+//     dispatch(logout());
+//     navigate('/login');
+//   };
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
+//   return (
+//     <nav className="bg-green-600 p-4">
+//       <div className="container mx-auto flex justify-between items-center">
+//         <Link to="/" className="text-white text-xl font-bold">
+//           MyApp
+//         </Link>
+//         <div className="space-x-4">
+//           <Link to="/" className="text-white hover:underline">
+//             Trang Chủ
+//           </Link>
+//           {user ? (
+//             <>
+//               <Link to="/profile" className="text-white hover:underline">
+//                 Xin chào, {user.firstName}
+//               </Link>
+//               <button
+//                 onClick={handleLogout}
+//                 className="text-white hover:underline"
+//               >
+//                 Đăng xuất
+//               </button>
+//             </>
+//           ) : (
+//             <>
+//               <Link to="/login" className="text-white hover:underline">
+//                 Đăng nhập
+//               </Link>
+//               <Link to="/register" className="text-white hover:underline">
+//                 Đăng ký
+//               </Link>
+//             </>
+//           )}
+//         </div>
+//       </div>
+//     </nav>
+//   );
+// };
+
+// export default Navbar;
+import { useSelector, useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { logout } from '../features/user/userSlice';
+import { FaBus, FaUserCircle, FaSignOutAlt, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
+
+const Navbar = () => {
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
   };
 
   return (
-    <nav className="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        {/* Logo/Title */}
-        <h1 className="text-2xl font-extrabold tracking-tight">
-          <Link to="/" className="hover:text-blue-200 transition-colors">
-            Giao Thông Công Cộng
+    <nav className="bg-blue-700 p-4 shadow-lg">
+      <div className="container mx-auto flex justify-between items-center">
+        <Link to="/" className="flex items-center space-x-2 text-white text-2xl font-bold">
+          <FaBus className="text-yellow-300" />
+          <span>TransitEasy</span>
+        </Link>
+        <div className="flex space-x-6">
+          <Link to="/" className="flex items-center text-white hover:text-yellow-300 transition">
+            <span>Home</span>
           </Link>
-        </h1>
-
-        {/* Desktop Menu */}
-        <div className="hidden md:flex items-center space-x-6">
-          <Link
-            to="/"
-            className="py-2 px-3 rounded-md hover:bg-blue-700 hover:text-blue-100 transition-all duration-300"
-          >
-            Trang chủ
-          </Link>
-          <Link
-            to="/search"
-            className="py-2 px-3 rounded-md hover:bg-blue-700 hover:text-blue-100 transition-all duration-300"
-          >
-            Tìm đường
-          </Link>
-          <Link
-            to="/favorites"
-            className="py-2 px-3 rounded-md hover:bg-blue-700 hover:text-blue-100 transition-all duration-300"
-          >
-            Yêu thích
-          </Link>
-          <Link
-            to="/realtime"
-            className="py-2 px-3 rounded-md hover:bg-blue-700 hover:text-blue-100 transition-all duration-300"
-          >
-            Thời gian thực
-          </Link>
-          <Link
-            to="/profile"
-            className="py-2 px-3 rounded-md hover:bg-blue-700 hover:text-blue-100 transition-all duration-300"
-          >
-            hồ sơ
-          </Link>
-
-          {user ? (
-            <div className="flex items-center space-x-4">
-              <span className="font-semibold text-blue-100">
-                Chào, {user.lastname}
-              </span>
-              <button
-                onClick={logout}
-                className="py-2 px-4 bg-red-500 rounded-md hover:bg-red-600 transition-colors duration-300"
-              >
-                Đăng xuất
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center space-x-4">
-              <Link
-                to="/login"
-                className="py-2 px-4 bg-green-500 rounded-md hover:bg-green-600 transition-colors duration-300"
-              >
-                Đăng nhập
-              </Link>
-              <Link
-                to="/register"
-                className="py-2 px-4 bg-blue-500 rounded-md hover:bg-blue-600 transition-colors duration-300"
-              >
-                Đăng ký
-              </Link>
-            </div>
-          )}
-        </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden focus:outline-none"
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"}
-            />
-          </svg>
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-      <div
-        className={`md:hidden transition-all duration-300 ease-in-out ${
-          isOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0 overflow-hidden"
-        }`}
-      >
-        <div className="flex flex-col space-y-2 px-4 pb-4">
-          <Link
-            to="/"
-            className="py-2 px-3 rounded-md hover:bg-blue-700 hover:text-blue-100 transition-all duration-300"
-            onClick={toggleMenu}
-          >
-            Trang chủ
-          </Link>
-          <Link
-            to="/search"
-            className="py-2 px-3 rounded-md hover:bg-blue-700 hover:text-blue-100 transition-all duration-300"
-            onClick={toggleMenu}
-          >
-            Tìm đường
-          </Link>
-          <Link
-            to="/favorites"
-            className="py-2 px-3 rounded-md hover:bg-blue-700 hover:text-blue-100 transition-all duration-300"
-            onClick={toggleMenu}
-          >
-            Yêu thích
-          </Link>
-          <Link
-            to="/realtime"
-            className="py-2 px-3 rounded-md hover:bg-blue-700 hover:text-blue-100 transition-all duration-300"
-            onClick={toggleMenu}
-          >
-            Thời gian thực
-          </Link>
-
           {user ? (
             <>
-              <span className="py-2 px-3 font-semibold text-blue-100">
-                Chào, {user.username}
-              </span>
+              {user.role === 'admin' && (
+                <Link to="/admin/dashboard" className="flex items-center text-white hover:text-yellow-300 transition">
+                  <span>Admin Dashboard</span>
+                </Link>
+              )}
+              <Link to="/profile" className="flex items-center space-x-1 text-white hover:text-yellow-300 transition">
+                <FaUserCircle />
+                <span>Hello, {user.lastname}</span>
+              </Link>
               <button
-                onClick={() => {
-                  logout();
-                  toggleMenu();
-                }}
-                className="py-2 px-4 bg-red-500 rounded-md hover:bg-red-600 transition-colors duration-300 text-left"
+                onClick={handleLogout}
+                className="flex items-center space-x-1 text-white hover:text-yellow-300 transition"
               >
-                Đăng xuất
+                <FaSignOutAlt />
+                <span>Logout</span>
               </button>
             </>
           ) : (
             <>
-              <Link
-                to="/login"
-                className="py-2 px-4 bg-green-500 rounded-md hover:bg-green-600 transition-colors duration-300"
-                onClick={toggleMenu}
-              >
-                Đăng nhập
+              <Link to="/login" className="flex items-center space-x-1 text-white hover:text-yellow-300 transition">
+                <FaSignInAlt />
+                <span>Login</span>
               </Link>
-              <Link
-                to="/register"
-                className="py-2 px-4 bg-blue-500 rounded-md hover:bg-blue-600 transition-colors duration-300"
-                onClick={toggleMenu}
-              >
-                Đăng ký
+              <Link to="/register" className="flex items-center space-x-1 text-white hover:text-yellow-300 transition">
+                <FaUserPlus />
+                <span>Register</span>
               </Link>
             </>
           )}
         </div>
       </div>
-
-      {/* Custom CSS for additional polish */}
-      <style jsx>{`
-        nav {
-          transition: all 0.3s ease;
-        }
-        .container {
-          max-width: 1200px;
-        }
-        svg {
-          transition: transform 0.3s ease;
-        }
-        a:hover,
-        button:hover {
-          transform: translateY(-1px);
-        }
-      `}</style>
     </nav>
   );
-}
+};
+
+export default Navbar;

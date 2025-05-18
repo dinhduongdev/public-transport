@@ -1,41 +1,13 @@
-import { useRef, useState } from "react";
-import Apis, { endpoints } from "../configs/apis";
-import { useNavigate } from "react-router-dom";
+import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Apis, endpoints } from '../configs/apis';
 
 const Register = () => {
-  const info = [
-    {
-      title: "Tên",
-      field: "firstName",
-      type: "text",
-    },
-    {
-      title: "Họ và tên lót",
-      field: "lastName",
-      type: "text",
-    },
-    {
-      title: "Email",
-      field: "email",
-      type: "email",
-    },
-    {
-      title: "Mật khẩu",
-      field: "password",
-      type: "password",
-    },
-    {
-      title: "Xác nhận mật khẩu",
-      field: "confirm",
-      type: "password",
-    },
-  ];
-
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState({ firstName: '', lastName: '', email: '', password: '', confirm: '' });
   const avatar = useRef();
-  const [msg, setMsg] = useState();
+  const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
-  const nav = useNavigate();
+  const navigate = useNavigate();
 
   const setState = (value, field) => {
     setUser({ ...user, [field]: value });
@@ -44,26 +16,27 @@ const Register = () => {
   const register = async (e) => {
     e.preventDefault();
     if (user.password !== user.confirm) {
-      setMsg("Mật khẩu KHÔNG khớp");
+      setMsg('Mật khẩu KHÔNG khớp');
     } else {
-      let form = new FormData();
-      for (let key in user) {
-        console.log(key);
-        if (key !== "confirm") form.append(key, user[key]);
+      const form = new FormData();
+      for (const key in user) {
+        if (key !== 'confirm') form.append(key, user[key]);
       }
-      form.append("avatar", avatar.current.files[0]);
+      if (avatar.current.files[0]) {
+        form.append('avatar', avatar.current.files[0]);
+      }
 
       try {
         setLoading(true);
-        await Apis.post(endpoints["register"], form, {
+        await Apis.post(endpoints['register'], form, {
           headers: {
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
           },
         });
-
-        nav("/login");
+        navigate('/login');
       } catch (ex) {
         console.error(ex);
+        setMsg('Đăng ký thất bại. Vui lòng thử lại.');
       } finally {
         setLoading(false);
       }
@@ -72,41 +45,76 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center text-green-600 mb-6">
-          ĐĂNG KÝ
-        </h1>
-
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+        <h1 className="text-2xl font-semibold text-center mb-4">Sign Up</h1>
         {msg && (
-          <div className="bg-red-100 text-red-700 p-3 rounded mb-4 text-center">
+          <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-center text-sm">
             {msg}
           </div>
         )}
-
-        <form onSubmit={register} className="space-y-3">
-          {info.map((i) => (
+        <form onSubmit={register} className="space-y-4">
+          <div>
             <input
-              key={i.field}
-              type={i.type}
-              value={user[i.field] || ""}
-              onChange={(e) => setState(e.target.value, i.field)}
-              placeholder={i.title}
+              type="text"
+              value={user.firstName}
+              onChange={(e) => setState(e.target.value, 'firstName')}
+              placeholder="First Name"
               required
-              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-gray-400"
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
             />
-          ))}
-
-          <input
-            ref={avatar}
-            type="file"
-            required
-            className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-
+          </div>
+          <div>
+            <input
+              type="text"
+              value={user.lastName}
+              onChange={(e) => setState(e.target.value, 'lastName')}
+              placeholder="Last Name"
+              required
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+            />
+          </div>
+          <div>
+            <input
+              type="email"
+              value={user.email}
+              onChange={(e) => setState(e.target.value, 'email')}
+              placeholder="Email"
+              required
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+            />
+          </div>
+          <div>
+            <input
+              type="password"
+              value={user.password}
+              onChange={(e) => setState(e.target.value, 'password')}
+              placeholder="Password"
+              required
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+            />
+          </div>
+          <div>
+            <input
+              type="password"
+              value={user.confirm}
+              onChange={(e) => setState(e.target.value, 'confirm')}
+              placeholder="Confirm Password"
+              required
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+            />
+          </div>
+          <div>
+            <input
+              ref={avatar}
+              type="file"
+              required
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
           {loading ? (
             <div className="flex justify-center">
               <svg
-                className="animate-spin h-5 w-5 text-green-500"
+                className="animate-spin h-5 w-5 text-blue-500"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -129,12 +137,18 @@ const Register = () => {
           ) : (
             <button
               type="submit"
-              className="w-full bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 transition"
+              className="w-full bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition"
             >
-              Đăng ký
+              Sign Up
             </button>
           )}
         </form>
+        <p className="mt-4 text-center text-sm text-gray-600">
+          Already have an account?{' '}
+          <a href="/login" className="text-blue-500 hover:underline">
+            Sign in
+          </a>
+        </p>
       </div>
     </div>
   );

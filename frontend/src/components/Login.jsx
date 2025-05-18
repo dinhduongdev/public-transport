@@ -1,54 +1,33 @@
-import { useContext, useState } from "react";
-import Apis, { authApis, endpoints } from "../configs/apis";
-import { useNavigate } from "react-router-dom";
-import cookie from "react-cookies";
-import { MyDispatcherContext } from "../configs/MyContexts";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import cookie from 'react-cookies';
+import { Apis, authApis, endpoints } from '../configs/apis';
+import { login } from '../features/user/userSlice';
 
 const Login = () => {
-  const info = [
-    {
-      title: "Email",
-      field: "email",
-      type: "email",
-    },
-    {
-      title: "Mật khẩu",
-      field: "password",
-      type: "password",
-    },
-  ];
-
-  const [user, setUser] = useState({});
-  const [msg, setMsg] = useState();
+  const [user, setUser] = useState({ email: '', password: '' });
+  const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
-  const nav = useNavigate();
-  const dispatch = useContext(MyDispatcherContext);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const setState = (value, field) => {
     setUser({ ...user, [field]: value });
   };
 
-  const login = async (e) => {
+  const loginUser = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
-      let res = await Apis.post(endpoints["login"], {
-        ...user,
-      });
-
-      cookie.save("token", res.data.token);
-
-      let u = await authApis().get(endpoints["current-user"]);
-      console.info(u.data);
-
-      dispatch({
-        type: "login",
-        payload: u.data,
-      });
-      nav("/");
+      const res = await Apis.post(endpoints['login'], { ...user });
+      cookie.save('token', res.data.token);
+      const u = await authApis().get(endpoints['current-user']);
+      dispatch(login(u.data)); // Dispatch action login
+      navigate('/');
     } catch (ex) {
       console.error(ex);
-      setMsg("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+      setMsg('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
     } finally {
       setLoading(false);
     }
@@ -56,34 +35,47 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center text-green-600 mb-6">
-          ĐĂNG NHẬP
-        </h1>
-
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+        <h1 className="text-2xl font-semibold text-center mb-4">Sign In</h1>
         {msg && (
-          <div className="bg-red-100 text-red-700 p-3 rounded mb-4 text-center">
+          <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-center text-sm">
             {msg}
           </div>
         )}
-
-        <form onSubmit={login} className="space-y-3">
-          {info.map((i) => (
+        <form onSubmit={loginUser} className="space-y-4">
+          <div>
             <input
-              key={i.field}
-              type={i.type}
-              value={user[i.field] || ""}
-              onChange={(e) => setState(e.target.value, i.field)}
-              placeholder={i.title}
+              type="email"
+              value={user.email}
+              onChange={(e) => setState(e.target.value, 'email')}
+              placeholder="Email"
               required
-              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-gray-400"
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
             />
-          ))}
-
+          </div>
+          <div>
+            <input
+              type="password"
+              value={user.password}
+              onChange={(e) => setState(e.target.value, 'password')}
+              placeholder="Password"
+              required
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+            />
+          </div>
+          <div className="flex justify-between text-sm text-gray-600">
+            <label className="flex items-center">
+              <input type="checkbox" className="mr-1" />
+              Remember me
+            </label>
+            <a href="/forgot-password" className="text-blue-500 hover:underline">
+              Forgot password?
+            </a>
+          </div>
           {loading ? (
             <div className="flex justify-center">
               <svg
-                className="animate-spin h-5 w-5 text-green-500"
+                className="animate-spin h-5 w-5 text-blue-500"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -106,17 +98,16 @@ const Login = () => {
           ) : (
             <button
               type="submit"
-              className="w-full bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 transition"
+              className="w-full bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition"
             >
-              Đăng nhập
+              Sign In
             </button>
           )}
         </form>
-
         <p className="mt-4 text-center text-sm text-gray-600">
-          Chưa có tài khoản?{" "}
-          <a href="/register" className="text-green-500 hover:underline">
-            Đăng ký
+          Don't have an account?{' '}
+          <a href="/register" className="text-blue-500 hover:underline">
+            Sign up
           </a>
         </p>
       </div>

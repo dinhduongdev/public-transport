@@ -1,12 +1,12 @@
-import React from 'react'
-import BusMapUI from '../components/RouteSearch'
+import React from "react";
+import BusMapUI from "../components/BusMapUI";
 
 const Home = () => {
   return (
     <div>
-      <BusMapUI/>
+      <BusMapUI />
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
