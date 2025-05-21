@@ -87,9 +87,9 @@
         </tr>
         <tr th:each="stop : ${stops}">
             <td th:text="${stop.stopOrder}"></td>
-            <td th:text="${stop.station != null} ? ${stop.station.name} : 'N/A'"></td>
-            <td th:text="${stop.station != null} ? ${stop.station.address} : 'N/A'"></td>
-            <td th:text="${stop.station != null} ? (${stop.station.lat} + ', ' + ${stop.station.lng}) : 'N/A'"></td>
+            <td th:text="${stop.station.name}"></td>
+            <td th:text="${stop.station.location.address}"></td>
+            <td th:text="(${stop.station.coordinates.lat} + ', ' + ${stop.station.coordinates.lng})"></td>
         </tr>
         </tbody>
     </table>

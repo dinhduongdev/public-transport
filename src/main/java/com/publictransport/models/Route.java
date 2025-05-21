@@ -14,6 +14,7 @@ import java.util.Set;
 @Table(name = "route")
 public class Route {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 

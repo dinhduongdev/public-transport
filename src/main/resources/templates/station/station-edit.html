@@ -45,27 +45,27 @@
             </div>
             <div class="form-group">
                 <label for="lat">Kinh độ (lat):</label>
-                <input type="number" step="any" class="form-control" id="lat" th:field="*{lat}">
+                <input type="number" step="any" class="form-control" id="lat" th:field="*{coordinates.lat}">
             </div>
             <div class="form-group">
                 <label for="lng">Vĩ độ (lng):</label>
-                <input type="number" step="any" class="form-control" id="lng" th:field="*{lng}">
+                <input type="number" step="any" class="form-control" id="lng" th:field="*{coordinates.lng}">
             </div>
             <div class="form-group">
                 <label for="address">Địa chỉ:</label>
-                <input type="text" class="form-control" id="address" th:field="*{address}">
+                <input type="text" class="form-control" id="address" th:field="*{location.address}">
             </div>
             <div class="form-group">
                 <label for="street">Phố:</label>
-                <input type="text" class="form-control" id="street" th:field="*{street}">
+                <input type="text" class="form-control" id="street" th:field="*{location.street}">
             </div>
             <div class="form-group">
                 <label for="ward">Phường:</label>
-                <input type="text" class="form-control" id="ward" th:field="*{ward}">
+                <input type="text" class="form-control" id="ward" th:field="*{location.ward}">
             </div>
             <div class="form-group">
                 <label for="zone">Khu vực:</label>
-                <input type="text" class="form-control" id="zone" th:field="*{zone}">
+                <input type="text" class="form-control" id="zone" th:field="*{location.zone}">
             </div>
             <button type="submit" class="btn btn-primary">Lưu</button>
             <a th:href="@{/manage-stations}" class="btn back-btn">Hủy</a>

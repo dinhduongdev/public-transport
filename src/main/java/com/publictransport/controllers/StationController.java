@@ -73,7 +73,7 @@ public class StationController {
         model.addAttribute("street", street);
         model.addAttribute("ward", ward);
         model.addAttribute("zone", zone);
-        return "stations";
+        return "station/stations";
     }
 
     @GetMapping("/manage-stations/detail/{id}")
@@ -84,13 +84,13 @@ public class StationController {
             return "redirect:/manage-stations";
         }
         model.addAttribute("station", station);
-        return "station-detail";
+        return "station/station-detail";
     }
 
     @GetMapping("/manage-stations/add")
     public String showAddStationForm(Model model) {
         model.addAttribute("station", new Station());
-        return "station-add";
+        return "station/station-add";
     }
 
     @PostMapping("/manage-stations/add")
@@ -107,7 +107,7 @@ public class StationController {
             return "redirect:/manage-stations";
         }
         model.addAttribute("station", station);
-        return "station-edit";
+        return "station/station-edit";
     }
 
     @PostMapping("/manage-stations/edit/{id}")

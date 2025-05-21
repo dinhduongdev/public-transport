@@ -45,19 +45,19 @@
             <dt>ID:</dt>
             <dd th:text="${station.id}"></dd>
             <dt>Tên trạm:</dt>
-            <dd th:text="${station.name != null} ? ${station.name} : 'N/A'"></dd>
+            <dd th:text=" ${station.name}"></dd>
             <dt>Kinh độ (lat):</dt>
-            <dd th:text="${station.lat != null} ? ${station.lat} : 'N/A'"></dd>
+            <dd th:text="${station.coordinates.lat}"></dd>
             <dt>Vĩ độ (lng):</dt>
-            <dd th:text="${station.lng != null} ? ${station.lng} : 'N/A'"></dd>
+            <dd th:text="${station.coordinates.lng}"></dd>
             <dt>Địa chỉ:</dt>
-            <dd th:text="${station.address != null} ? ${station.address} : 'N/A'"></dd>
+            <dd th:text="${station.location.address}"></dd>
             <dt>Phố:</dt>
-            <dd th:text="${station.street != null} ? ${station.street} : 'N/A'"></dd>
+            <dd th:text="${station.location.street}"></dd>
             <dt>Phường:</dt>
-            <dd th:text="${station.ward != null} ? ${station.ward} : 'N/A'"></dd>
+            <dd th:text="${station.location.ward}"></dd>
             <dt>Khu vực:</dt>
-            <dd th:text="${station.zone != null} ? ${station.zone} : 'N/A'"></dd>
+            <dd th:text="${station.location.zone}"></dd>
         </dl>
         <a th:href="@{/manage-stations}" class="back-btn">Quay lại danh sách</a>
     </div>

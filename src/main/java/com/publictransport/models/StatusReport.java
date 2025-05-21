@@ -1,9 +1,6 @@
 package com.publictransport.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +11,7 @@ import lombok.Setter;
 @Table(name = "status_report")
 public class StatusReport {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Size(max = 20)
     @Column(name = "name", nullable = false, length = 20)
     private String name;

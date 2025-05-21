@@ -14,6 +14,7 @@ import org.hibernate.annotations.OnDeleteAction;
 public class RouteVariant {
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
