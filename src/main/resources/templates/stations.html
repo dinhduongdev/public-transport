@@ -70,10 +70,10 @@
         <tr th:each="station : ${stations}">
             <td th:text="${station.id}"></td>
             <td th:text="${station.name}"></td>
-            <td th:text="${station.address != null} ? ${station.address} : 'N/A'"></td>
-            <td th:text="${station.street != null} ? ${station.street} : 'N/A'"></td>
-            <td th:text="${station.ward != null} ? ${station.ward} : 'N/A'"></td>
-            <td th:text="${station.zone != null} ? ${station.zone} : 'N/A'"></td>
+            <td th:text=" ${station.location.address}"></td>
+            <td th:text=" ${station.location.street}"></td>
+            <td th:text=" ${station.location.ward}"></td>
+            <td th:text=" ${station.location.zone}"></td>
             <td class="action-buttons">
                 <a th:href="@{/manage-stations/detail/{id}(id=${station.id})}" class="detail-btn">Xem chi tiết</a>
                 <a th:href="@{/manage-stations/edit/{id}(id=${station.id})}" class="edit-btn">Sửa</a>

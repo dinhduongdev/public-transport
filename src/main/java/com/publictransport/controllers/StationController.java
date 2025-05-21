@@ -94,7 +94,7 @@ public class StationController {
     }
 
     @PostMapping("/manage-stations/add")
-    public String addStation(Station station) {
+    public String addStation( Station station) {
         stationService.save(station);
         return "redirect:/manage-stations";
     }
