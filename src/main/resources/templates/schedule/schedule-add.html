@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
+<head>
+    <title th:replace="~{base :: title}">Thêm lịch trình</title>
+    <th:block th:fragment="extraStyles">
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+        <!-- Thêm CSS Select2 -->
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+
+        <!-- Thêm CSS riêng -->
+        <link rel="stylesheet" th:href="@{/css/schedule-add.css}">
+
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <div class="schedule-info">
+        <h2>Thêm lịch trình mới</h2>
+
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+            <span th:text="${error}"></span>
+        </div>
+
+        <form th:action="@{/manage-schedules/add}" th:object="${scheduleDTO}" method="post" id="scheduleForm">
+            <!-- Route Variant -->
+            <div class="mb-3">
+                <label for="routeVariantId" class="form-label">Tuyến đường</label>
+                <select class="form-select select2" id="routeVariantId" th:field="*{routeVariantId}" required>
+                    <option value="">Chọn tuyến đường</option>
+                    <option th:each="rv : ${routeVariants}"
+                            th:value="${rv.id}"
+                            th:text="${rv.startStop} + ' - ' + ${rv.endStop}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- Schedule Fields -->
+            <div class="mb-3">
+                <label for="startDate" class="form-label">Ngày bắt đầu</label>
+                <input type="datetime-local" class="form-control" id="startDate" th:field="*{startDate}" required>
+            </div>
+            <div class="mb-3">
+                <label for="endDate" class="form-label">Ngày kết thúc</label>
+                <input type="datetime-local" class="form-control" id="endDate" th:field="*{endDate}" required>
+            </div>
+            <div class="mb-3">
+                <label for="priority" class="form-label">Độ ưu tiên</label>
+                <input type="number" class="form-control" id="priority" th:field="*{priority}" required>
+            </div>
+
+            <!-- Schedule Trips -->
+            <div class="schedule-trips">
+                <h4>Danh sách chuyến đi</h4>
+                <div id="tripContainer" class="mb-3">
+                    <div class="trip-row row mb-2" id="tripTemplate" style="display: none;">
+                        <div class="col">
+                            <input type="time" class="form-control start-time" name="startTimes">
+                        </div>
+                        <div class="col">
+                            <input type="time" class="form-control end-time" name="endTimes">
+                        </div>
+                        <div class="col-2">
+                            <button type="button" class="btn btn-danger remove-trip">Xóa</button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="addTrip" class="btn btn-primary">Thêm chuyến</button>
+            </div>
+
+            <!-- Submit -->
+            <div class="mb-3">
+                <button type="submit" class="btn btn-success">Lưu lịch trình</button>
+                <a th:href="@{/manage-schedules}" class="btn btn-secondary">Hủy</a>
+            </div>
+        </form>
+    </div>
+</th:block>
+
+<th:block th:fragment="extraScripts">
+    <!-- Thêm jQuery  -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Thêm JS Select2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script th:src="@{/js/schedule-add.js}"></script>
+</th:block>
+</body>
+</html>

@@ -60,4 +60,9 @@ public class ScheduleTripRepositoryImpl implements ScheduleTripRepository {
 
         return session.createQuery(cq).getSingleResult();
     }
+
+    @Override
+    public void save(ScheduleTrip scheduleTrip) {
+        getCurrentSession().persist(scheduleTrip);
+    }
 }

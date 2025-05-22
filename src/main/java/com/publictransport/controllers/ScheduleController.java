@@ -1,17 +1,19 @@
 package com.publictransport.controllers;
 
-import com.publictransport.models.Schedule;
-import com.publictransport.models.ScheduleTrip;
+import com.publictransport.dto.ScheduleDTO;
+import com.publictransport.models.*;
+import com.publictransport.services.RouteVariantService;
+import com.publictransport.services.ScheduleDayService;
 import com.publictransport.services.ScheduleService;
 import com.publictransport.services.ScheduleTripService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,12 @@ public class ScheduleController {
 
     @Autowired
     private ScheduleTripService scheduleTripService;
+    @Autowired
+    private RouteVariantService routeVariantService;
+    @Autowired
+    private ScheduleDayService scheduleDayService;
+
+
 
     @GetMapping("/manage-schedules")
     public String getAllSchedules(Model model,
@@ -118,14 +126,44 @@ public class ScheduleController {
 
     @GetMapping("/manage-schedules/add")
     public String showAddScheduleForm(Model model) {
-        model.addAttribute("schedule", new Schedule());
-        return "schedule-add";
+        model.addAttribute("scheduleDTO", new ScheduleDTO());
+        model.addAttribute("routeVariants", routeVariantService.findAllRouteVariants(1, Integer.MAX_VALUE));
+        return "schedule/schedule-add";
     }
 
     @PostMapping("/manage-schedules/add")
-    public String addSchedule(Schedule schedule) {
-        scheduleService.save(schedule);
-        return "redirect:/manage-schedules";
+    public String addSchedule(@ModelAttribute ScheduleDTO scheduleDTO,
+                              RedirectAttributes redirectAttributes,
+                              Model model) {
+        try {
+            if (scheduleDTO.getRouteVariantId() == null) {
+                model.addAttribute("error", "Vui lòng chọn tuyến đường.");
+                model.addAttribute("scheduleDTO", scheduleDTO);
+                model.addAttribute("routeVariants", routeVariantService.findAllRouteVariants(1,Integer.MAX_VALUE));
+                return "schedule/schedule-add";
+            }
+            if (scheduleDTO.getStartDate() == null || scheduleDTO.getEndDate() == null) {
+                model.addAttribute("error", "Ngày bắt đầu và ngày kết thúc không được để trống.");
+                model.addAttribute("scheduleDTO", scheduleDTO);
+                model.addAttribute("routeVariants", routeVariantService.findAllRouteVariants(1,Integer.MAX_VALUE));
+                return "schedule/schedule-add";
+            }
+
+            // Lưu Schedule
+            scheduleService.saveFromDTO(scheduleDTO);
+            redirectAttributes.addFlashAttribute("success", "Thêm lịch trình thành công!");
+            return "redirect:/manage-schedules";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("scheduleDTO", scheduleDTO);
+            model.addAttribute("routeVariants", routeVariantService.findAllRouteVariants(1,Integer.MAX_VALUE));
+            return "schedule/schedule-add";
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi khi thêm lịch trình: " + e.getMessage());
+            model.addAttribute("scheduleDTO", scheduleDTO);
+            model.addAttribute("routeVariants", routeVariantService.findAllRouteVariants(1, Integer.MAX_VALUE));
+            return "schedule/schedule-add";
+        }
     }
 
     @GetMapping("/manage-schedules/edit/{id}")

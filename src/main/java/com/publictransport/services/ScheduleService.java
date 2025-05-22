@@ -1,5 +1,6 @@
 package com.publictransport.services;
 
+import com.publictransport.dto.ScheduleDTO;
 import com.publictransport.models.Schedule;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public interface ScheduleService {
     void save(Schedule schedule);
     void update(Schedule schedule);
     void delete(Long id);
+    void saveFromDTO(ScheduleDTO scheduleDTO);
 }

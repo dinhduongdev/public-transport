@@ -25,4 +25,9 @@ public class ScheduleTripServiceImpl implements ScheduleTripService {
     public long countByScheduleId(Long scheduleId) {
         return scheduleTripRepository.countByScheduleId(scheduleId);
     }
+
+    @Override
+    public void save(ScheduleTrip scheduleTrip) {
+        scheduleTripRepository.save(scheduleTrip);
+    }
 }

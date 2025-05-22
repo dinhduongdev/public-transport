@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalTime;
 
@@ -14,6 +15,7 @@ import java.time.LocalTime;
 @Table(name = "schedule_trip")
 public class ScheduleTrip {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -23,9 +25,11 @@ public class ScheduleTrip {
     private Schedule schedule;
 
     @Column(name = "start_time")
+    @DateTimeFormat(pattern = "HH:mm")
     private LocalTime startTime;
 
     @Column(name = "end_time")
+    @DateTimeFormat(pattern = "HH:mm")
     private LocalTime endTime;
 
 }

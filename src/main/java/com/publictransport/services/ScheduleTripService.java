@@ -7,4 +7,5 @@ import java.util.List;
 public interface ScheduleTripService {
     List<ScheduleTrip> findByScheduleId(Long scheduleId, int page, int size);
     long countByScheduleId(Long scheduleId);
+    void save(ScheduleTrip scheduleTrip);
 }

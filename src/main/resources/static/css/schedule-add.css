@@ -1,0 +1,98 @@
+.schedule-info {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+}
+.schedule-info h2 {
+    color: #2c3e50;
+    font-size: 28px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+.schedule-info .form-label {
+    font-weight: 600;
+    color: #34495e;
+    margin-top: 10px;
+}
+.schedule-info .form-control, .schedule-info .form-select {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 5px;
+    padding: 8px 12px;
+}
+.schedule-trips {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+.schedule-trips h4 {
+    color: #2c3e50;
+    font-size: 22px;
+    margin-bottom: 25px;
+    border-left: 4px solid #e74c3c;
+    padding-left: 10px;
+}
+.trip-row {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #e9ecef;
+}
+.trip-row .form-control {
+    margin-bottom: 0;
+}
+.add-trip-btn {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+.add-trip-btn:hover {
+    background-color: #2980b9;
+}
+.remove-trip {
+    padding: 6px 12px;
+    font-size: 14px;
+}
+.submit-btn, .cancel-btn {
+    padding: 12px 25px;
+    border-radius: 5px;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+}
+.submit-btn {
+    background-color: #2ecc71;
+}
+.submit-btn:hover {
+    background-color: #27ae60;
+}
+.cancel-btn {
+    background-color: #6c757d;
+}
+.cancel-btn:hover {
+    background-color: #5a6268;
+}
+/* Style cho Select2 */
+.select2-container--default .select2-selection--single {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 5px;
+    height: 38px;
+    padding: 8px 12px;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #555;
+    line-height: 22px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 38px;
+}

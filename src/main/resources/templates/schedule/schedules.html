@@ -8,6 +8,10 @@
 </head>
 <body>
 <th:block th:fragment="content">
+    <!-- Hiển thị thông báo flash success -->
+    <div th:if="${success}" class="alert alert-success" role="alert" id="successAlert">
+        <span th:text="${success}"></span>
+    </div>
     <h1>Danh sách lịch trình</h1>
 
     <!-- Form tìm kiếm -->
@@ -116,7 +120,8 @@
 </th:block>
 
 <th:block th:fragment="extraScripts">
-    <!-- Không cần JavaScript bổ sung -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:src="@{/js/flash-message.js}"></script>
 </th:block>
 </body>
 </html>
