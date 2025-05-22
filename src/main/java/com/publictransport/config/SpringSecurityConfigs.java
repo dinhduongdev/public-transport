@@ -1,5 +1,6 @@
 package com.publictransport.config;
 
+import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -7,6 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,7 +17,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
-import com.cloudinary.Cloudinary;
 
 import java.util.List;
 
@@ -24,14 +25,15 @@ import java.util.List;
 @EnableWebSecurity
 @EnableTransactionManagement
 @ComponentScan(basePackages = {
-    "com.publictransport.controllers",
-    "com.publictransport.repositories",
-    "com.publictransport.services"
+        "com.publictransport.controllers",
+        "com.publictransport.repositories",
+        "com.publictransport.services"
 })
 public class SpringSecurityConfigs {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
     @Bean
     public BCryptPasswordEncoder getBCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -44,31 +46,31 @@ public class SpringSecurityConfigs {
     }
 
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(c -> c.disable()).authorizeHttpRequests(requests
-                                -> requests
-                .requestMatchers("/", "/manage-routes",
-                        "/manage-routes/**",
-                        "/manage-stations/**",
-                        "/manage-route-variants/**",
-                        "/manage-schedules/**").authenticated()
-                .requestMatchers("/api/**").permitAll()
-                .requestMatchers("/js/**", "/css/**").permitAll()
+                .csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(requests
+                        -> requests
+                        .requestMatchers("/", "/manage-routes",
+                                "/manage-routes/**",
+                                "/manage-stations/**",
+                                "/manage-route-variants/**",
+                                "/manage-schedules/**").authenticated()
+                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/js/**", "/css/**").permitAll()
                 )
                 .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", true)
-                .failureUrl("/login?error=true")
-                .permitAll()
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/", true)
+                        .failureUrl("/login?error=true")
+                        .permitAll()
                 )
                 .logout(logout -> logout
-                .logoutSuccessUrl("/login").permitAll());
+                        .logoutSuccessUrl("/login").permitAll());
         return http.build();
     }
+
     @Bean
     public Cloudinary cloudinary() {
         Cloudinary cloudinary
@@ -79,6 +81,7 @@ public class SpringSecurityConfigs {
                 "secure", true));
         return cloudinary;
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 

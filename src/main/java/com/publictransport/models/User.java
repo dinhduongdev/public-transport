@@ -1,6 +1,7 @@
 package com.publictransport.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class User implements Serializable {
 
     @Size(max = 255)
     @Column(name = "email")
+    @Email
     private String email;
 
     @Size(max = 255)

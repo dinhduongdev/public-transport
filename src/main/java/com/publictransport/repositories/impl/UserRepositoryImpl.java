@@ -8,8 +8,8 @@ import com.publictransport.models.User;
 import com.publictransport.repositories.UserRepository;
 import jakarta.persistence.Query;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,29 +20,33 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public class UserRepositoryImpl implements UserRepository {
+    private final SessionFactory factory;
+    private final BCryptPasswordEncoder passwordEncoder;
+
     @Autowired
-    private LocalSessionFactoryBean factory;
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    public UserRepositoryImpl(SessionFactory factory, BCryptPasswordEncoder passwordEncoder) {
+        this.factory = factory;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public User getUserByEmail(String email) {
-        Session s = this.factory.getObject().getCurrentSession();
+        Session s = this.factory.getCurrentSession();
         Query q = s.createQuery("FROM User u WHERE u.email = :email", User.class);
         q.setParameter("email", email);
         return (User) q.getSingleResult();
     }
 
     @Override
-    public User register(User user){
-        Session s = this.factory.getObject().getCurrentSession();
+    public User register(User user) {
+        Session s = this.factory.getCurrentSession();
         s.persist(user);
         s.refresh(user);
         return user;
     }
 
     public boolean existsByEmail(String email) {
-        Session s = this.factory.getObject().getCurrentSession();
+        Session s = this.factory.getCurrentSession();
         Query q = s.createQuery("SELECT COUNT(*) FROM User u WHERE u.email = :email", Long.class);
         q.setParameter("email", email);
         return (Long) q.getSingleResult() > 0;

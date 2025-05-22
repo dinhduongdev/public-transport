@@ -10,37 +10,63 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-public class JwtFilter implements Filter{
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        if (httpRequest.getRequestURI().startsWith(String.format("%s/api/secure", httpRequest.getContextPath())) == true) {
-            String header = httpRequest.getHeader("Authorization");
-            if (header == null || !header.startsWith("Bearer ")) {
-                ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization header.");
-                return;
-            }
-            else {
-                String token = header.substring(7);
-                try {
-                    String email = JwtUtils.validateTokenAndGetEmail(token);
-                    if (email != null) {
-                        httpRequest.setAttribute("email", email);
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, null, null);
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                        chain.doFilter(request, response);
-                        return;
-                    }
-                } catch (Exception e) {
-                    // Log lỗi
-                }
-            }
+@Component
+public class JwtFilter implements Filter {
+    private final JwtUtils jwtUtils;
 
-            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                    "Token không hợp lệ hoặc hết hạn");
-        }
-        chain.doFilter(request, response);
+    @Autowired
+    public JwtFilter(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        String requestURI = httpRequest.getRequestURI();
+
+        // Check if the request is for a secure API
+        if (requestURI.startsWith(String.format("%s/api/secure", httpRequest.getContextPath()))) {
+            String authorizationHeader = httpRequest.getHeader("Authorization");
+
+            // Validate the Authorization header
+            if (isInvalidAuthorizationHeader(authorizationHeader)) {
+                sendUnauthorizedError(response, "Missing or invalid Authorization header.");
+                return;
+            }
+
+            String token = authorizationHeader.substring(7); // Extract token
+            try {
+                String email = jwtUtils.validateTokenAndGetEmail(token);
+                if (email != null) {
+                    setAuthentication(email);
+                    chain.doFilter(request, response); // Proceed with the request
+                    return;
+                }
+            } catch (Exception e) {
+                // Log the error (optional)
+            }
+
+            sendUnauthorizedError(response, "Invalid or expired token.");
+            return;
+        }
+
+        chain.doFilter(request, response); // Proceed for non-secure requests
+    }
+
+    private boolean isInvalidAuthorizationHeader(String header) {
+        return header == null || !header.startsWith("Bearer ");
+    }
+
+    private void sendUnauthorizedError(ServletResponse response, String message) throws IOException {
+        ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
+    }
+
+    private void setAuthentication(String email) {
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(email, null, null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
 }

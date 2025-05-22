@@ -1,7 +1,7 @@
 package com.publictransport.config;
 
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -13,46 +13,40 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import javax.sql.DataSource;
 import java.util.Properties;
 
-import static org.hibernate.cfg.JdbcSettings.DIALECT;
-import static org.hibernate.cfg.JdbcSettings.SHOW_SQL;
-
+import static org.hibernate.cfg.AvailableSettings.DIALECT;
+import static org.hibernate.cfg.AvailableSettings.SHOW_SQL;
 
 @Configuration
 @PropertySource("classpath:database.properties")
 public class HibernateConfigs {
-    private final String driverClass;
-    private final String url;
-    private final String username;
-    private final String password;
-    private final Properties hibernateProperties;
-
-    @Autowired
-    public HibernateConfigs(Environment env) {
-        this.driverClass = env.getProperty("hibernate.connection.driverClass");
-        this.url = env.getProperty("hibernate.connection.url");
-        this.username = env.getProperty("hibernate.connection.username");
-        this.password = env.getProperty("hibernate.connection.password");
-        this.hibernateProperties = new Properties();
-        hibernateProperties.put(DIALECT, env.getProperty("hibernate.dialect"));
-        hibernateProperties.put(SHOW_SQL, env.getProperty("hibernate.showSql"));
-    }
 
     @Bean
-    public DataSource dataSource() {
+    public DataSource dataSource(Environment env) {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(driverClass);
-        dataSource.setUrl(url);
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
+        dataSource.setDriverClassName(env.getProperty("hibernate.connection.driverClass"));
+        dataSource.setUrl(env.getProperty("hibernate.connection.url"));
+        dataSource.setUsername(env.getProperty("hibernate.connection.username"));
+        dataSource.setPassword(env.getProperty("hibernate.connection.password"));
         return dataSource;
     }
 
     @Bean
-    public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
-        var sessionFactory = new LocalSessionFactoryBean();
+    public Properties hibernateProperties(Environment env) {
+        Properties properties = new Properties();
+        properties.put(DIALECT, env.getProperty("hibernate.dialect"));
+        properties.put(SHOW_SQL, env.getProperty("hibernate.showSql"));
+        return properties;
+    }
+
+    @Bean
+    public LocalSessionFactoryBean sessionFactory(
+            DataSource dataSource,
+            @Qualifier("hibernateProperties") Properties hibernateProperties
+    ) {
+        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setPackagesToScan("com.publictransport.models");
         sessionFactory.setDataSource(dataSource);
-        sessionFactory.setHibernateProperties(this.hibernateProperties);
+        sessionFactory.setHibernateProperties(hibernateProperties);
         return sessionFactory;
     }
 

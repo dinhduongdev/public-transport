@@ -2,12 +2,10 @@ package com.publictransport.services.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.publictransport.dto.UserRegisterDTO;
 import com.publictransport.models.User;
 import com.publictransport.repositories.UserRepository;
 import com.publictransport.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,17 +18,21 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 
 @Service("userDetailsService")
 public class UserServiceImpl implements UserService {
+    private final UserRepository userRepository;
+    private final Cloudinary cloudinary;
+    private final BCryptPasswordEncoder passwordEncoder;
+
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private Cloudinary cloudinary;
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    public UserServiceImpl(UserRepository userRepository, Cloudinary cloudinary, BCryptPasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.cloudinary = cloudinary;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     @Override
     public User getUserByEmail(String email) {
         return this.userRepository.getUserByEmail(email);
@@ -57,8 +59,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean authenticate(String username, String password) {
-        return this.userRepository.authenticate(username, password);
+    public boolean authenticate(String email, String password) {
+        return this.userRepository.authenticate(email, password);
     }
 
     @Override
@@ -67,7 +69,7 @@ public class UserServiceImpl implements UserService {
         if (u == null) {
             throw new UsernameNotFoundException("Invalid username.");
         }
-        Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+        Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority(u.getRole()));
 
         return new org.springframework.security.core.userdetails.User(

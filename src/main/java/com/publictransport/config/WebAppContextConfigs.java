@@ -1,9 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.publictransport.config;
-
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -14,19 +9,12 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.*;
 
-/**
- * @author duong
- */
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
-@ComponentScan(basePackages = {
-        "com.publictransport.models",
-        "com.publictransport.config",
-        "com.publictransport.controllers",
-        "com.publictransport.repositories",
-        "com.publictransport.services"
-})
+@ComponentScan(basePackages = {"com.publictransport"})
 public class WebAppContextConfigs implements WebMvcConfigurer {
 
     @Override
@@ -45,6 +33,7 @@ public class WebAppContextConfigs implements WebMvcConfigurer {
 //        registry.addFormatter(new VehicleTypeFormatter());
 //        registry.addFormatter(new VehicleFormatter());
     }
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // cho phép tất cả endpoint
@@ -52,12 +41,13 @@ public class WebAppContextConfigs implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*");
     }
+
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         // Tùy chọn: Tắt tính năng ghi ngày giờ dưới dạng timestamp (số mili giây)
-        objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.disable(WRITE_DATES_AS_TIMESTAMPS);
         return objectMapper;
     }
 }

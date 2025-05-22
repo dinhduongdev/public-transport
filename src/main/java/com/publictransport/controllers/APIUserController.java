@@ -2,7 +2,6 @@ package com.publictransport.controllers;
 
 
 import com.publictransport.models.User;
-import com.publictransport.repositories.UserRepository;
 import com.publictransport.services.UserService;
 import com.publictransport.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,26 +19,34 @@ import java.util.Map;
 @RequestMapping("/api")
 @CrossOrigin
 public class APIUserController {
+    private final UserService userService;
+    private final JwtUtils jwtUtils;
+
     @Autowired
-    private UserService userService;
+    public APIUserController(UserService userService, JwtUtils jwtUtils) {
+        this.userService = userService;
+        this.jwtUtils = jwtUtils;
+    }
+
     @PostMapping(value = "/users",
-            consumes  = MediaType.MULTIPART_FORM_DATA_VALUE,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> register(@RequestParam Map<String, String> params,@RequestParam(value = "avatar") MultipartFile avatar){
+    public ResponseEntity<User> register(@RequestParam Map<String, String> params, @RequestParam(value = "avatar") MultipartFile avatar) {
         return new ResponseEntity<>(this.userService.register(params, avatar), HttpStatus.CREATED);
     }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User u) {
-        if (this.userService.authenticate(u.getEmail(), u.getPassword())) {
-            try {
-                String token = JwtUtils.generateToken(u.getEmail());
-                return ResponseEntity.ok().body(Collections.singletonMap("token", token));
-            } catch (Exception e) {
-                return ResponseEntity.status(500).body("Lỗi khi tạo JWT");
-            }
+        if (!this.userService.authenticate(u.getEmail(), u.getPassword()))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai thông tin đăng nhập");
+        try {
+            String token = jwtUtils.generateToken(u.getEmail());
+            return ResponseEntity.ok().body(Collections.singletonMap("token", token));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Lỗi khi tạo JWT");
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai thông tin đăng nhập");
     }
+
     @RequestMapping("/secure/profile")
     @ResponseBody
     public ResponseEntity<User> getProfile(Principal principal) {
