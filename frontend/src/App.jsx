@@ -7,8 +7,15 @@ import UserProfile from "./pages/user/UserProfile";
 // import RouteSearch from "./components/RouteSearch";
 import FavoriteRoutes from "./components/FavoriteRoutes";
 import TrafficReport from "./components/TrafficReport";
+import { useEffect } from "react";
+import { restoreUser } from "./utils/authInit";
+import { useDispatch } from "react-redux";
 
 const App = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    restoreUser(dispatch); 
+  }, [dispatch]);
   return (
     <BrowserRouter>
       <Navbar />

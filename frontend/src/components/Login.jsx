@@ -23,7 +23,7 @@ const Login = () => {
       const res = await Apis.post(endpoints['login'], { ...user });
       cookie.save('token', res.data.token);
       const u = await authApis().get(endpoints['current-user']);
-      dispatch(login(u.data)); // Dispatch action login
+      dispatch(login(u.data));
       navigate('/');
     } catch (ex) {
       console.error(ex);

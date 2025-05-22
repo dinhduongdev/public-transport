@@ -1,56 +1,3 @@
-// import { useSelector, useDispatch } from 'react-redux';
-// import { Link, useNavigate } from 'react-router-dom';
-// import { logout } from '../features/user/userSlice';
-
-// const Navbar = () => {
-//   const user = useSelector((state) => state.user);
-//   const dispatch = useDispatch();
-//   const navigate = useNavigate();
-
-//   const handleLogout = () => {
-//     dispatch(logout());
-//     navigate('/login');
-//   };
-
-//   return (
-//     <nav className="bg-green-600 p-4">
-//       <div className="container mx-auto flex justify-between items-center">
-//         <Link to="/" className="text-white text-xl font-bold">
-//           MyApp
-//         </Link>
-//         <div className="space-x-4">
-//           <Link to="/" className="text-white hover:underline">
-//             Trang Chủ
-//           </Link>
-//           {user ? (
-//             <>
-//               <Link to="/profile" className="text-white hover:underline">
-//                 Xin chào, {user.firstName}
-//               </Link>
-//               <button
-//                 onClick={handleLogout}
-//                 className="text-white hover:underline"
-//               >
-//                 Đăng xuất
-//               </button>
-//             </>
-//           ) : (
-//             <>
-//               <Link to="/login" className="text-white hover:underline">
-//                 Đăng nhập
-//               </Link>
-//               <Link to="/register" className="text-white hover:underline">
-//                 Đăng ký
-//               </Link>
-//             </>
-//           )}
-//         </div>
-//       </div>
-//     </nav>
-//   );
-// };
-
-// export default Navbar;
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../features/user/userSlice';
@@ -60,6 +7,8 @@ const Navbar = () => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  console.log("user", user);
+  
 
   const handleLogout = () => {
     dispatch(logout());
@@ -84,6 +33,12 @@ const Navbar = () => {
                   <span>Admin Dashboard</span>
                 </Link>
               )}
+              <Link to="/favorite-routes" className="flex items-center space-x-1 text-white hover:text-yellow-300 transition">
+                <span>Favorite Routes</span>
+              </Link>
+              <Link to="/favorite-schedules" className="flex items-center space-x-1 text-white hover:text-yellow-300 transition">
+                <span>Favorite Schedules</span>
+              </Link>
               <Link to="/profile" className="flex items-center space-x-1 text-white hover:text-yellow-300 transition">
                 <FaUserCircle />
                 <span>Hello, {user.lastname}</span>
