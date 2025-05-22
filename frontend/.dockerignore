@@ -1,0 +1,27 @@
+# Ignore Git folder
+.git
+.gitignore
+
+# Ignore host node_modules, as dependencies are installed inside the container
+node_modules
+
+# Ignore build output (if any, though for dev this might not be present or needed in the image)
+build
+dist
+
+# Ignore IDE/editor specific files
+.vscode
+.idea
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files (if they contain secrets and are mounted or provided differently)
+.env
+.env*.local

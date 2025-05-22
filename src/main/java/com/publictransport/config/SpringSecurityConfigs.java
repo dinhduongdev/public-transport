@@ -24,11 +24,6 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableTransactionManagement
-@ComponentScan(basePackages = {
-        "com.publictransport.controllers",
-        "com.publictransport.repositories",
-        "com.publictransport.services"
-})
 public class SpringSecurityConfigs {
 
     @Autowired

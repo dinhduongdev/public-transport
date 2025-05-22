@@ -1,9 +1,9 @@
 package com.publictransport.config;
 
-import com.publictransport.filters.JwtFilter;
 import jakarta.servlet.Filter;
 import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.ServletRegistration;
+import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 public class DispatcherServletInit extends AbstractAnnotationConfigDispatcherServletInitializer {
@@ -42,6 +42,6 @@ public class DispatcherServletInit extends AbstractAnnotationConfigDispatcherSer
 
     @Override
     protected Filter[] getServletFilters() {
-        return new Filter[]{null}; // Filter sẽ áp dụng cho mọi request
+        return new Filter[]{new DelegatingFilterProxy("jwtFilter")}; // Filter sẽ áp dụng cho mọi request
     }
 }

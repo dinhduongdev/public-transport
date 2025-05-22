@@ -5,9 +5,12 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+@Component
 public class JwtUtils {
     private final String SECRET;
     private final long EXPIRATION_MS;
@@ -16,7 +19,9 @@ public class JwtUtils {
     private final JWSVerifier VERIFIER;
     private final JWSHeader HEADER;
 
-    public JwtUtils(String secret, long expirationMs) throws JOSEException {
+    public JwtUtils(
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.expiration_ms}") long expirationMs) throws JOSEException {
         this.SECRET = secret;
         this.EXPIRATION_MS = expirationMs;
         this.ALGORITHM = JWSAlgorithm.HS256;
