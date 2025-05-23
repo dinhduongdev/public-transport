@@ -8,16 +8,14 @@ DROP TABLE IF EXISTS Stop;
 DROP TABLE IF EXISTS Station;
 DROP TABLE IF EXISTS Location;
 DROP TABLE IF EXISTS Coordinates;
-DROP TABLE IF EXISTS Schedule_Trip;
-DROP TABLE IF EXISTS Schedule_Day;
+DROP TABLE IF EXISTS ScheduleTrip;
+DROP TABLE IF EXISTS ScheduleDay;
 DROP TABLE IF EXISTS Schedule;
-DROP TABLE IF EXISTS Route_Variant;
-DROP TABLE IF EXISTS User_Route;
+DROP TABLE IF EXISTS RouteVariant;
 DROP TABLE IF EXISTS Route;
-DROP TABLE IF EXISTS Type_Route;
 DROP TABLE IF EXISTS Notification;
 DROP TABLE IF EXISTS Report;
-DROP TABLE IF EXISTS Status_Report;
+DROP TABLE IF EXISTS StatusReport;
 DROP TABLE IF EXISTS User;
 DROP TABLE IF EXISTS Role;
 DROP TABLE IF EXISTS Favorite;
@@ -50,11 +48,11 @@ CREATE TABLE User
     FOREIGN KEY (role) REFERENCES Role (name)
 );
 
-CREATE TABLE Status_Report
+CREATE TABLE StatusReport
 (
     name VARCHAR(20) PRIMARY KEY
 );
-INSERT INTO Status_Report (name)
+INSERT INTO StatusReport (name)
 VALUES ('PENDING'),
        ('VERIFIED');
 
@@ -69,7 +67,7 @@ CREATE TABLE Report
     status      VARCHAR(20),
     user_id     BIGINT,
     FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE,
-    FOREIGN KEY (status) REFERENCES Status_Report (name) ON DELETE CASCADE
+    FOREIGN KEY (status) REFERENCES StatusReport (name) ON DELETE CASCADE
 );
 
 -- Notification
@@ -92,7 +90,7 @@ CREATE TABLE Route
 );
 
 -- RouteVariant
-CREATE TABLE Route_Variant
+CREATE TABLE RouteVariant
 (
     id          BIGINT PRIMARY KEY AUTO_INCREMENT,
     route_id    BIGINT,
@@ -112,11 +110,11 @@ CREATE TABLE Schedule
     start_date       DATETIME,
     end_date         DATETIME,
     priority         INT,
-    FOREIGN KEY (route_variant_id) REFERENCES Route_Variant (id)
+    FOREIGN KEY (route_variant_id) REFERENCES RouteVariant (id)
 );
 -- INSERT INTO schedule (routevariant_id, start_date, end_date, priority)
 -- Schedule_DayOfWeek
-CREATE TABLE Schedule_Day
+CREATE TABLE ScheduleDay
 (
     schedule_id BIGINT,
     day         ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'),
@@ -126,7 +124,7 @@ CREATE TABLE Schedule_Day
 -- INSERT INTO schedule_day (schedule_id, day)
 
 -- ScheduleTrip
-CREATE TABLE Schedule_Trip
+CREATE TABLE ScheduleTrip
 (
     id          BIGINT PRIMARY KEY AUTO_INCREMENT,
     schedule_id BIGINT,
@@ -159,7 +157,7 @@ CREATE TABLE Stop
     station_id       BIGINT,
     stop_order       INT,
     FOREIGN KEY (station_id) REFERENCES Station (id),
-    FOREIGN KEY (route_variant_id) REFERENCES Route_Variant (id)
+    FOREIGN KEY (route_variant_id) REFERENCES RouteVariant (id)
 );
 -- INSERT INTO stop (route_variant_id, station_id, stop_order)
 

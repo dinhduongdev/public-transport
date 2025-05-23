@@ -10,7 +10,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 @Entity
-@Table(name = "route_variant")
+@Table(name = "RouteVariant")
 public class RouteVariant {
     @Id
     @Column(name = "id", nullable = false)

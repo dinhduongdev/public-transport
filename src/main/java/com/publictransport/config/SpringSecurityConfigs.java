@@ -1,12 +1,10 @@
 package com.publictransport.config;
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
+
 import com.publictransport.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,6 +29,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import java.util.List;
 
+
 @Configuration
 @EnableWebSecurity
 @EnableTransactionManagement
@@ -39,7 +38,6 @@ import java.util.List;
         "com.publictransport.repositories",
         "com.publictransport.services"
 })
-@PropertySource("classpath:application.properties")
 public class SpringSecurityConfigs {
 
     @Autowired
@@ -54,10 +52,12 @@ public class SpringSecurityConfigs {
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
     public HandlerMappingIntrospector mvcHandlerMappingIntrospector() {
         return new HandlerMappingIntrospector();
     }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -65,8 +65,12 @@ public class SpringSecurityConfigs {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/", "/manage-routes", "/manage-routes/**",
-                                "/manage-stations/**", "/manage-route-variants/**",
+                        .requestMatchers(
+                                "/",
+                                "/manage-routes",
+                                "/manage-routes/**",
+                                "/manage-stations/**",
+                                "/manage-route-variants/**",
                                 "/manage-schedules/**").authenticated()
                         .requestMatchers("/api/**", "/login", "/oauth2/**").permitAll()
                         .requestMatchers("/js/**", "/css/**").permitAll()
@@ -125,15 +129,6 @@ public class SpringSecurityConfigs {
                 .build();
     }
 
-    @Bean
-    public Cloudinary cloudinary() {
-        Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", "djhy5nwhy",
-                "api_key", "572218854938465",
-                "api_secret", "PzLj3wB1a1lNBcR2TdX7nY6ykco",
-                "secure", true));
-        return cloudinary;
-    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

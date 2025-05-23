@@ -9,7 +9,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 @Entity
-@Table(name = "schedule_day")
+@Table(name = "ScheduleDay")
 public class ScheduleDay {
     @EmbeddedId
     private ScheduleDayId id;

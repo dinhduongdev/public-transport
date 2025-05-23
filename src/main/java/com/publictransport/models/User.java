@@ -5,13 +5,14 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.io.Serializable;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "user")
+@Table(name = "User")
 public class User implements Serializable {
     @Id
     @Column(name = "id", nullable = false)
@@ -19,15 +20,15 @@ public class User implements Serializable {
     private Long id;
 
     @Size(max = 255)
-    @Column(name = "firstname")
+    @Column(name = "first_name")
     private String firstname;
 
     @Size(max = 255)
-    @Column(name = "lastname")
+    @Column(name = "last_name")
     private String lastname;
 
     @Size(max = 255)
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     @Email
     private String email;
 

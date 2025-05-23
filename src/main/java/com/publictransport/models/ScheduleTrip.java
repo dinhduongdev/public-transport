@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "schedule_trip")
+@Table(name = "ScheduleTrip")
 public class ScheduleTrip {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,4 +37,6 @@ public class ScheduleTrip {
     @Column(name = "license_plate", length = 20)
     private String license;
 
+    @Column(name = "trip_order")
+    private Integer tripOrder;
 }
