@@ -73,34 +73,81 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (routeVariant == null) {
             throw new IllegalArgumentException("Tuyến đường không tồn tại.");
         }
-        // chuyển qua Schedule
+
         Schedule schedule = new Schedule();
         schedule.setRouteVariant(routeVariant);
         schedule.setStartDate(scheduleDTO.getStartDate());
         schedule.setEndDate(scheduleDTO.getEndDate());
         schedule.setPriority(scheduleDTO.getPriority());
         scheduleRepository.save(schedule);
-        //ScheduleTrips
+
         List<String> startTimes = scheduleDTO.getStartTimes();
         List<String> endTimes = scheduleDTO.getEndTimes();
-        if (startTimes != null && endTimes != null && startTimes.size() == endTimes.size()) {
+        List<String> licenses = scheduleDTO.getLicenses();
+        if (startTimes != null && endTimes != null && licenses != null
+                && startTimes.size() == endTimes.size() && startTimes.size() == licenses.size()) {
             for (int i = 0; i < startTimes.size(); i++) {
                 String startTimeStr = startTimes.get(i);
                 String endTimeStr = endTimes.get(i);
-                // Bỏ qua nếu cả startTime và endTime đều rỗng
-                if (startTimeStr.isEmpty() && endTimeStr.isEmpty()) {
+                String license = licenses.get(i);
+                if (startTimeStr.isEmpty() && endTimeStr.isEmpty() && license.isEmpty()) {
                     continue;
                 }
-                if (startTimeStr.isEmpty() || endTimeStr.isEmpty()) {
-                    throw new IllegalArgumentException("Thời gian bắt đầu và kết thúc của chuyến không được để trống.");
+                if (startTimeStr.isEmpty() || endTimeStr.isEmpty() || license.isEmpty()) {
+                    throw new IllegalArgumentException("Thời gian bắt đầu, kết thúc và biển số xe không được để trống.");
                 }
                 ScheduleTrip trip = new ScheduleTrip();
                 trip.setSchedule(schedule);
                 trip.setStartTime(LocalTime.parse(startTimeStr));
                 trip.setEndTime(LocalTime.parse(endTimeStr));
+                trip.setLicense(license);
                 scheduleTripService.save(trip);
             }
         }
+    }
 
+    @Override
+    public void updateFromDTO(ScheduleDTO scheduleDTO) {
+        RouteVariant routeVariant = routeVariantService.findById(scheduleDTO.getRouteVariantId());
+        if (routeVariant == null) {
+            throw new IllegalArgumentException("Tuyến đường không tồn tại.");
+        }
+
+        Schedule schedule = scheduleRepository.findById(scheduleDTO.getId());
+        if (schedule == null) {
+            throw new IllegalArgumentException("Lịch trình không tồn tại.");
+        }
+
+        schedule.setRouteVariant(routeVariant);
+        schedule.setStartDate(scheduleDTO.getStartDate());
+        schedule.setEndDate(scheduleDTO.getEndDate());
+        schedule.setPriority(scheduleDTO.getPriority());
+        scheduleRepository.save(schedule);
+
+        scheduleTripService.deleteByScheduleId(scheduleDTO.getId());
+
+        List<String> startTimes = scheduleDTO.getStartTimes();
+        List<String> endTimes = scheduleDTO.getEndTimes();
+        List<String> licenses = scheduleDTO.getLicenses();
+        if (startTimes != null && endTimes != null && licenses != null
+                && startTimes.size() == endTimes.size() && startTimes.size() == licenses.size()) {
+            for (int i = 0; i < startTimes.size(); i++) {
+                String startTimeStr = startTimes.get(i);
+                String endTimeStr = endTimes.get(i);
+                String license = licenses.get(i);
+                if (startTimeStr.isEmpty() && endTimeStr.isEmpty() && license.isEmpty()) {
+                    continue;
+                }
+                if (startTimeStr.isEmpty() || endTimeStr.isEmpty() || license.isEmpty()) {
+                    throw new IllegalArgumentException("Thời gian bắt đầu, kết thúc và biển số xe không được để trống.");
+                }
+                ScheduleTrip trip = new ScheduleTrip();
+                trip.setSchedule(schedule);
+                trip.setStartTime(LocalTime.parse(startTimeStr));
+                trip.setEndTime(LocalTime.parse(endTimeStr));
+                trip.setLicense(license);
+                scheduleTripService.save(trip);
+            }
+        }
     }
 }

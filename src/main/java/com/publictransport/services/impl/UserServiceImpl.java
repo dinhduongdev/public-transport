@@ -13,6 +13,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -63,6 +66,25 @@ public class UserServiceImpl implements UserService {
 
         return this.userRepository.createUser(user);
     }
+    private User registerFromGoogle(OidcUser oidcUser) {
+        if (oidcUser.getEmail() == null) {
+            throw new IllegalArgumentException("Email from Google is null, cannot register user.");
+        }
+
+        User user = new User();
+        user.setEmail(oidcUser.getEmail());
+        user.setFirstname(oidcUser.getGivenName() != null ? oidcUser.getGivenName() : "");
+        user.setLastname(oidcUser.getFamilyName() != null ? oidcUser.getFamilyName() : "");
+        user.setAvatar(oidcUser.getPicture() != null ? oidcUser.getPicture() : "");
+        user.setPassword(this.passwordEncoder.encode("google-oauth-" + oidcUser.getSubject()));
+        user.setRole("USER");
+
+        System.out.println("Registering Google user: " + user.getEmail());
+        User registeredUser = this.userRepository.createUser(user);
+        System.out.println("Google user registered: " + (registeredUser != null ? registeredUser.getEmail() : "null"));
+        return registeredUser;
+    }
+
 
     @Override
     public boolean authenticate(String email, String password) {
@@ -80,5 +102,23 @@ public class UserServiceImpl implements UserService {
 
         return new org.springframework.security.core.userdetails.User(
                 u.getEmail(), u.getPassword(), authorities);
+    }
+
+    public OidcUser loadUserByOAuth2(OidcUserRequest userRequest) {
+        // Dùng OidcUserService mặc định của Spring để lấy OidcUser
+        OidcUserService delegate = new OidcUserService();
+        OidcUser oidcUser = delegate.loadUser(userRequest);
+
+        System.out.println("Processing OAuth2 user: " + oidcUser.getEmail());
+        User user = this.getUserByEmail(oidcUser.getEmail());
+
+        if (user == null) {
+            System.out.println("User not found, registering new Google user: " + oidcUser.getEmail());
+            registerFromGoogle(oidcUser);
+        } else {
+            System.out.println("User already exists: " + user.getEmail());
+        }
+
+        return oidcUser;
     }
 }

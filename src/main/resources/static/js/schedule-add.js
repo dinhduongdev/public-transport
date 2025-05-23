@@ -26,10 +26,11 @@ $(document).ready(function() {
         tripRows.each(function() {
             let startTime = $(this).find('.start-time').val();
             let endTime = $(this).find('.end-time').val();
-            if (!startTime && !endTime) {
-                $(this).remove(); // Xóa hàng nếu cả hai đều rỗng
-            } else if (!startTime || !endTime) {
-                alert('Thời gian bắt đầu và kết thúc của chuyến không được để trống.');
+            let license = $(this).find('.license').val();
+            if (!startTime && !endTime && !license) {
+                $(this).remove(); // Xóa hàng nếu tất cả đều rỗng
+            } else if (!startTime || !endTime || !license) {
+                alert('Thời gian bắt đầu, kết thúc và biển số xe không được để trống.');
                 e.preventDefault();
                 return false;
             } else {

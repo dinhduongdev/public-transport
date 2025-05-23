@@ -1,6 +1,7 @@
 package com.publictransport.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
@@ -34,4 +35,9 @@ public class ScheduleTrip {
 
     @Column(name = "trip_order")
     private Integer tripOrder;
+
+    @Size(max = 20)
+    @Column(name = "license", length = 20)
+    private String license;
+
 }
