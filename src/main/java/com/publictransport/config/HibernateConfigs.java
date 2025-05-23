@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 import static org.hibernate.cfg.AvailableSettings.*;
+import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 public class HibernateConfigs {

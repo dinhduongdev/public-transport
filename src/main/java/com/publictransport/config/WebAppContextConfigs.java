@@ -3,6 +3,7 @@ package com.publictransport.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -13,6 +14,7 @@ import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
+@ComponentScan(basePackages = {"com.publictransport"})
 public class WebAppContextConfigs implements WebMvcConfigurer {
 
     @Override
