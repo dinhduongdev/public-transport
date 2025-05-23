@@ -8,7 +8,14 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @Configuration
 @PropertySource("classpath:application.properties")
-@ComponentScan(basePackages = {"com.publictransport"})
+@ComponentScan(basePackages = {
+        "com.publictransport.config",
+        "com.publictransport.controllers",
+        "com.publictransport.filters",
+        "com.publictransport.repositories",
+        "com.publictransport.services",
+        "com.publictransport.utils"
+})
 public class AppConfig {
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
