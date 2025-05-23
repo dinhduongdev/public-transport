@@ -30,4 +30,9 @@ public class ScheduleTripServiceImpl implements ScheduleTripService {
     public void save(ScheduleTrip scheduleTrip) {
         scheduleTripRepository.save(scheduleTrip);
     }
+
+    @Override
+    public void deleteByScheduleId(Long scheduleId) {
+        scheduleTripRepository.deleteByScheduleId(scheduleId);
+    }
 }

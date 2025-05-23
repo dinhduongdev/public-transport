@@ -125,6 +125,7 @@
                     <th>ID</th>
                     <th>Giờ bắt đầu</th>
                     <th>Giờ kết thúc</th>
+                    <th>Biển số xe</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -135,6 +136,7 @@
                     <td th:text="${trip.id}"></td>
                     <td th:text="${trip.startTime != null} ? ${trip.startTime} : 'N/A'"></td>
                     <td th:text="${trip.endTime != null} ? ${trip.endTime} : 'N/A'"></td>
+                    <td th:text="${trip.license != null} ? ${trip.license} : 'N/A'"></td>
                 </tr>
                 </tbody>
             </table>

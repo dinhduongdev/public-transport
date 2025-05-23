@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class ScheduleController {
@@ -136,19 +137,6 @@ public class ScheduleController {
                               RedirectAttributes redirectAttributes,
                               Model model) {
         try {
-            if (scheduleDTO.getRouteVariantId() == null) {
-                model.addAttribute("error", "Vui lòng chọn tuyến đường.");
-                model.addAttribute("scheduleDTO", scheduleDTO);
-                model.addAttribute("routeVariants", routeVariantService.findAllRouteVariants(1,Integer.MAX_VALUE));
-                return "schedule/schedule-add";
-            }
-            if (scheduleDTO.getStartDate() == null || scheduleDTO.getEndDate() == null) {
-                model.addAttribute("error", "Ngày bắt đầu và ngày kết thúc không được để trống.");
-                model.addAttribute("scheduleDTO", scheduleDTO);
-                model.addAttribute("routeVariants", routeVariantService.findAllRouteVariants(1,Integer.MAX_VALUE));
-                return "schedule/schedule-add";
-            }
-
             // Lưu Schedule
             scheduleService.saveFromDTO(scheduleDTO);
             redirectAttributes.addFlashAttribute("success", "Thêm lịch trình thành công!");
@@ -169,19 +157,50 @@ public class ScheduleController {
     @GetMapping("/manage-schedules/edit/{id}")
     public String showEditScheduleForm(@PathVariable("id") Long id, Model model) {
         Schedule schedule = scheduleService.findById(id);
-        if (schedule == null) {
-            model.addAttribute("msg", "Lịch trình không tồn tại.");
-            return "redirect:/manage-schedules";
-        }
-        model.addAttribute("schedule", schedule);
-        return "schedule-edit";
+        // Chuyển Schedule thành ScheduleDTO
+        ScheduleDTO scheduleDTO = new ScheduleDTO();
+        scheduleDTO.setId(id);
+        scheduleDTO.setRouteVariantId(schedule.getRouteVariant() != null ? schedule.getRouteVariant().getId() : null);
+        scheduleDTO.setStartDate(schedule.getStartDate());
+        scheduleDTO.setEndDate(schedule.getEndDate());
+        scheduleDTO.setPriority(schedule.getPriority());
+
+        // Lấy danh sách ScheduleTrip
+        List<ScheduleTrip> trips = scheduleTripService.findByScheduleId(id, 1, Integer.MAX_VALUE);
+        scheduleDTO.setStartTimes(trips.stream().map(trip -> trip.getStartTime().toString()).collect(Collectors.toList()));
+        scheduleDTO.setEndTimes(trips.stream().map(trip -> trip.getEndTime().toString()).collect(Collectors.toList()));
+        scheduleDTO.setLicenses(trips.stream().map(trip -> trip.getLicense() != null ? trip.getLicense() : "").collect(Collectors.toList()));
+
+
+        model.addAttribute("scheduleDTO", scheduleDTO);
+        model.addAttribute("routeVariants", routeVariantService.findAllRouteVariants(1, Integer.MAX_VALUE));
+        return "schedule/schedule-edit";
     }
 
     @PostMapping("/manage-schedules/edit/{id}")
-    public String updateSchedule(@PathVariable("id") Long id, Schedule schedule) {
-        schedule.setId(id);
-        scheduleService.update(schedule);
-        return "redirect:/manage-schedules";
+    public String updateSchedule(@PathVariable("id") Long id,
+                                 @ModelAttribute ScheduleDTO scheduleDTO,
+                                 Model model,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            // Cập nhật lịch trình
+            scheduleDTO.setId(id);
+            scheduleService.updateFromDTO(scheduleDTO);
+            // Thêm flash attribute cho thông báo thành công
+            redirectAttributes.addFlashAttribute("success", "Cập nhật lịch trình thành công!");
+
+            return "redirect:/manage-schedules";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("scheduleDTO", scheduleDTO);
+            model.addAttribute("routeVariants", routeVariantService.findAllRouteVariants(1, Integer.MAX_VALUE));
+            return "schedule/schedule-edit";
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi khi cập nhật lịch trình: " + e.getMessage());
+            model.addAttribute("scheduleDTO", scheduleDTO);
+            model.addAttribute("routeVariants", routeVariantService.findAllRouteVariants(1, Integer.MAX_VALUE ));
+            return "schedule/schedule-edit";
+        }
     }
 
     @GetMapping("/manage-schedules/delete/{id}")

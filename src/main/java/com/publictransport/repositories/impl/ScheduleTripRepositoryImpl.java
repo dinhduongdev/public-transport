@@ -3,6 +3,7 @@ package com.publictransport.repositories.impl;
 import com.publictransport.models.ScheduleTrip;
 import com.publictransport.repositories.ScheduleTripRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
@@ -64,5 +65,15 @@ public class ScheduleTripRepositoryImpl implements ScheduleTripRepository {
     @Override
     public void save(ScheduleTrip scheduleTrip) {
         getCurrentSession().persist(scheduleTrip);
+    }
+
+    @Override
+    public void deleteByScheduleId(Long scheduleId) {
+        Session session = getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaDelete<ScheduleTrip> cd = cb.createCriteriaDelete(ScheduleTrip.class);
+        Root<ScheduleTrip> root = cd.from(ScheduleTrip.class);
+        cd.where(cb.equal(root.get("schedule").get("id"), scheduleId));
+        session.createQuery(cd).executeUpdate();
     }
 }

@@ -1,19 +1,24 @@
-package com.publictransport.dto;
+    package com.publictransport.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+    import lombok.Getter;
+    import lombok.Setter;
+    import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
-import java.util.List;
+    import java.time.LocalDateTime;
+    import java.util.List;
 
 
-@Getter
-@Setter
-public class ScheduleDTO {
-    private Long routeVariantId;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private Integer priority;
-    private List<String> startTimes;
-    private List<String> endTimes;
-}
+    @Getter
+    @Setter
+    public class ScheduleDTO {
+        private Long id;
+        private Long routeVariantId;
+        @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+        private LocalDateTime startDate;
+        @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+        private LocalDateTime endDate;
+        private Integer priority;
+        private List<String> startTimes;
+        private List<String> endTimes;
+        private List<String> licenses;
+    }
