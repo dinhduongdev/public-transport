@@ -1,10 +1,12 @@
 package com.publictransport.services.impl;
 
-import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.publictransport.dto.UserRegisterDTO;
 import com.publictransport.models.User;
+import com.publictransport.proxies.MediaFileProxy;
 import com.publictransport.repositories.UserRepository;
 import com.publictransport.services.UserService;
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,13 +25,13 @@ import java.util.Set;
 @Service("userDetailsService")
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final Cloudinary cloudinary;
+    private final MediaFileProxy cloudinaryProxy;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, Cloudinary cloudinary, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, MediaFileProxy cloudinaryProxy, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.cloudinary = cloudinary;
+        this.cloudinaryProxy = cloudinaryProxy;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -39,23 +41,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User register(Map<String, String> params, MultipartFile avatar) {
-        User u = new User();
-        u.setFirstname(params.get("firstName"));
-        u.setLastname(params.get("lastName"));
-        u.setEmail(params.get("email"));
-        u.setPassword(this.passwordEncoder.encode(params.get("password")));
-        u.setRole("USER");
-
-        if (!avatar.isEmpty()) {
-            try {
-                Map res = cloudinary.uploader().upload(avatar.getBytes(), ObjectUtils.asMap("resource_type", "auto"));
-                u.setAvatar(res.get("secure_url").toString());
-            } catch (IOException ex) {
-            }
+    public User register(UserRegisterDTO dto) throws ValidationException, IOException {
+        if (this.userRepository.existsByEmail(dto.getEmail())) {
+            throw new ValidationException("Email already exists");
         }
 
-        return this.userRepository.register(u);
+        User user = new User();
+        user.setFirstname(dto.getFirstName());
+        user.setLastname(dto.getLastName());
+        user.setEmail(dto.getEmail());
+        user.setPassword(this.passwordEncoder.encode(dto.getPassword()));
+        user.setRole("USER");
+        MultipartFile avatar = dto.getAvatar();
+        if (avatar != null && !avatar.isEmpty()) {
+            Map uploadResult = (Map) this.cloudinaryProxy.uploadFile(
+                    avatar.getBytes(),
+                    ObjectUtils.asMap("resource_type", "auto"
+                    ));
+            user.setAvatar(uploadResult.get("secure_url").toString());
+        }
+
+        return this.userRepository.createUser(user);
     }
 
     @Override

@@ -12,7 +12,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "schedule_trip")
+@Table(name = "ScheduleTrip")
 public class ScheduleTrip {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,4 +32,6 @@ public class ScheduleTrip {
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime endTime;
 
+    @Column(name = "trip_order")
+    private Integer tripOrder;
 }

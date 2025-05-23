@@ -1,7 +1,5 @@
 package com.publictransport.config;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -62,6 +60,7 @@ public class SpringSecurityConfigs {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
+                        .usernameParameter("email")
                         .defaultSuccessUrl("/", true)
                         .failureUrl("/login?error=true")
                         .permitAll()
@@ -71,16 +70,6 @@ public class SpringSecurityConfigs {
         return http.build();
     }
 
-    @Bean
-    public Cloudinary cloudinary() {
-        Cloudinary cloudinary
-                = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", "djhy5nwhy",
-                "api_key", "572218854938465",
-                "api_secret", "PzLj3wB1a1lNBcR2TdX7nY6ykco",
-                "secure", true));
-        return cloudinary;
-    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

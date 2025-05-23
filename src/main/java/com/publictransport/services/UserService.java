@@ -2,13 +2,15 @@ package com.publictransport.services;
 
 import com.publictransport.dto.UserRegisterDTO;
 import com.publictransport.models.User;
+import jakarta.validation.ValidationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
+import java.io.IOException;
 
 public interface UserService extends UserDetailsService {
     User getUserByEmail(String email);
-    User register(Map<String,String> params, MultipartFile avatar);
+
+    User register(UserRegisterDTO userRegisterDTO) throws ValidationException, IOException;
+
     boolean authenticate(String username, String password);
 }
