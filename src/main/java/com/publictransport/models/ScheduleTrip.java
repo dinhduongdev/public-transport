@@ -34,7 +34,7 @@ public class ScheduleTrip {
     private LocalTime endTime;
 
     @Size(max = 20)
-    @Column(name = "license", length = 20)
+    @Column(name = "license_plate", length = 20)
     private String license;
 
 }

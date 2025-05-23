@@ -133,6 +133,7 @@ CREATE TABLE Schedule_Trip
     start_time  TIME,
     end_time    TIME,
     trip_order  INT,
+    license_plate VARCHAR(20),
     FOREIGN KEY (schedule_id) REFERENCES Schedule (id)
 );
 -- INSERT INTO scheduletrip (schedule_id, start_time, end_time) VALUES
