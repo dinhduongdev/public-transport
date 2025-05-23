@@ -6,6 +6,7 @@ package com.publictransport.repositories.impl;
 
 import com.publictransport.models.User;
 import com.publictransport.repositories.UserRepository;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -34,7 +35,11 @@ public class UserRepositoryImpl implements UserRepository {
         Session s = this.factory.getCurrentSession();
         Query q = s.createQuery("FROM User u WHERE u.email = :email", User.class);
         q.setParameter("email", email);
-        return (User) q.getSingleResult();
+        try {
+            return (User) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override
