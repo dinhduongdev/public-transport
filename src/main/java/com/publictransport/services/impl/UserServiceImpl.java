@@ -84,6 +84,7 @@ public class UserServiceImpl implements UserService {
 
         return this.userRepository.createUser(user);
     }
+
     private User registerFromGoogle(OidcUser oidcUser) {
         if (oidcUser.getEmail() == null) {
             throw new IllegalArgumentException("Email from Google is null, cannot register user.");

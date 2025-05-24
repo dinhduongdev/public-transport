@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Draw route on map using Goong Directions API</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.css" rel="stylesheet" />
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    </style>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/@mapbox/polyline/src/polyline.js"></script>
+<script src="https://unpkg.com/@goongmaps/goong-sdk/umd/goong-sdk.min.js"></script>
+
+<div id="map"></div>
+<script>
+    goongjs.accessToken = '2AqrQhr7BHeCfY9LgLINFfIXnjJeBfiwzBtuOoBv';
+    var map = new goongjs.Map({
+        container: 'map',
+        style: 'https://tiles.goong.io/assets/goong_map_web.json',
+        center: [ 106.652565,10.751253],
+        zoom: 15
+    });
+    new goongjs.Marker()
+        .setLngLat([106.652565,10.751253])
+        .addTo(map);
+    new goongjs.Marker()
+        .setLngLat([106.64975,10.752271])
+        .addTo(map);
+    new goongjs.Marker()
+        .setLngLat([106.64926,10.753689])
+        .addTo(map);
+
+    map.on('load', function () {
+        var layers = map.getStyle().layers;
+        // Find the index of the first symbol layer in the map style
+        var firstSymbolId;
+        for (var i = 0; i < layers.length; i++) {
+            if (layers[i].type === 'symbol') {
+                firstSymbolId = layers[i].id;
+                break;
+            }
+        }
+        // Initialize goongClient with an API KEY
+        var goongClient = goongSdk({
+            accessToken: '5OMH433NbFHoE2JRN61m5H52qEdUBNTpBp90VHiG'
+        });
+        // Get Directions
+        goongClient.directions
+            .getDirections({
+                origin: '10.751253, 106.652565',
+                destination: '10.752271, 106.64975; 10.753689, 106.64926',
+                vehicle: 'car'
+            })
+            .send()
+            .then(function (response) {
+                var directions = response.body;
+                var route = directions.routes[0];
+
+                var geometry_string = route.overview_polyline.points;
+                var geoJSON = polyline.toGeoJSON(geometry_string);
+                map.addSource('route', {
+                    'type': 'geojson',
+                    'data': geoJSON
+                });
+                // Add route layer below symbol layers
+                map.addLayer(
+                    {
+                        'id': 'route',
+                        'type': 'line',
+                        'source': 'route',
+                        'layout': {
+                            'line-join': 'round',
+                            'line-cap': 'round'
+                        },
+                        'paint': {
+                            'line-color': '#FF0000',
+                            'line-width': 8
+                        }
+                    },
+                    firstSymbolId
+                );
+            });
+    });
+</script>
+
+</body>
+</html>

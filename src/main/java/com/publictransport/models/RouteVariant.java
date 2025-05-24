@@ -7,6 +7,8 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -40,4 +42,7 @@ public class RouteVariant {
     @Column(name = "end_stop")
     private String endStop;
 
+    @OneToMany(mappedBy = "routeVariant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("stopOrder ASC")
+    private List<Stop> stops;
 }

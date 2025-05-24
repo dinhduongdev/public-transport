@@ -38,7 +38,7 @@ public class RouteVariantServiceImpl implements RouteVariantService {
 
     @Override
     public RouteVariant findById(Long id) {
-        return routeVariantRepository.findById(id);
+        return routeVariantRepository.findById(id).orElseThrow();
     }
 
     @Override

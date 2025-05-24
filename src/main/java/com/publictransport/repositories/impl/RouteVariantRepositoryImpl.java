@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @Transactional
@@ -27,11 +28,6 @@ public class RouteVariantRepositoryImpl implements RouteVariantRepository {
         this.factory = factory;
     }
 
-    private Session getCurrentSession() {
-        return factory.getCurrentSession();
-    }
-
-
     @Override
     public List<RouteVariant> findAllRouteVariants(int page, int size) {
         return getRouteVariants(null, page, size);
@@ -39,7 +35,7 @@ public class RouteVariantRepositoryImpl implements RouteVariantRepository {
 
     @Override
     public long countAllRouteVariants() {
-        Session session = getCurrentSession();
+        Session session = factory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
         Root<RouteVariant> root = cq.from(RouteVariant.class);
@@ -55,7 +51,7 @@ public class RouteVariantRepositoryImpl implements RouteVariantRepository {
 
     @Override
     public long countRouteVariantsByParams(Map<String, String> params) {
-        Session session = getCurrentSession();
+        Session session = factory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
         Root<RouteVariant> root = cq.from(RouteVariant.class);
@@ -82,35 +78,33 @@ public class RouteVariantRepositoryImpl implements RouteVariantRepository {
     }
 
     @Override
-    public RouteVariant findById(Long id) {
-        Session session = getCurrentSession();
-        return session.get(RouteVariant.class, id);
+    public Optional<RouteVariant> findById(Long id) {
+        Session session = factory.getCurrentSession();
+        return Optional.ofNullable(session.get(RouteVariant.class, id));
     }
 
     @Override
     public void save(RouteVariant routeVariant) {
-        Session session = getCurrentSession();
+        Session session = factory.getCurrentSession();
         session.persist(routeVariant);
     }
 
     @Override
     public void update(RouteVariant routeVariant) {
-        Session session = getCurrentSession();
+        Session session = factory.getCurrentSession();
         session.merge(routeVariant);
     }
 
     @Override
     public void delete(Long id) {
-        Session session = getCurrentSession();
-        RouteVariant routeVariant = findById(id);
-        if (routeVariant != null) {
-            session.remove(routeVariant);
-        }
+        Session session = factory.getCurrentSession();
+        RouteVariant routeVariant = findById(id).orElseThrow();
+        session.remove(routeVariant);
     }
 
     @Override
     public List<RouteVariant> findByRouteId(Long routeId) {
-        Session session = getCurrentSession();
+        Session session = factory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<RouteVariant> cq = cb.createQuery(RouteVariant.class);
         Root<RouteVariant> root = cq.from(RouteVariant.class);
@@ -123,7 +117,7 @@ public class RouteVariantRepositoryImpl implements RouteVariantRepository {
     }
 
     private List<RouteVariant> getRouteVariants(Map<String, String> params, int page, int size) {
-        Session session = getCurrentSession();
+        Session session = factory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<RouteVariant> cq = cb.createQuery(RouteVariant.class);
         Root<RouteVariant> root = cq.from(RouteVariant.class);

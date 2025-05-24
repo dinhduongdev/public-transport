@@ -73,7 +73,10 @@ public class SpringSecurityConfigs {
                                 "/manage-stations/**",
                                 "/manage-route-variants/**",
                                 "/manage-schedules/**").authenticated()
-                        .requestMatchers("/api/**", "/login", "/oauth2/**").permitAll()
+                        .requestMatchers(
+                                "/api/**",
+                                "/login",
+                                "/oauth2/**").permitAll()
                         .requestMatchers("/js/**", "/css/**").permitAll()
                         .anyRequest().authenticated()
                 )
