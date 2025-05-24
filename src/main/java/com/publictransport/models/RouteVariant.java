@@ -42,7 +42,7 @@ public class RouteVariant {
     @Column(name = "end_stop")
     private String endStop;
 
-    @OneToMany(mappedBy = "routeVariant", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("stopOrder ASC")
-    private List<Stop> stops;
+//    @OneToMany(mappedBy = "routeVariant", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @OrderBy("stopOrder ASC")
+//    private List<Stop> stops;
 }

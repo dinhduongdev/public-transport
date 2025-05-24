@@ -1,6 +1,7 @@
 package com.publictransport.controllers;
 
 
+import com.publictransport.dto.GoogleLoginRequest;
 import com.publictransport.dto.UserRegisterDTO;
 import com.publictransport.models.User;
 import com.publictransport.services.UserService;
@@ -14,14 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -56,36 +55,32 @@ public class APIUserController {
     }
 
     @PostMapping("/google-login")
-    public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginRequest request){
-        try {
-            String email = request.getEmail();
-            // Tìm người dùng theo email
-            User user = userService.getUserByEmail(email);
-            UserRegisterDTO dto = new UserRegisterDTO();
-            dto.setFirstName(request.getName() != null ? request.getName().split(" ")[0] : "");
-            dto.setLastName(request.getName() != null && request.getName().split(" ").length > 1 ? request.getName().split(" ")[1] : "");
-            dto.setEmail(email);
-            dto.setPassword("google-oauth-" + email);
+    public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginRequest request) throws Exception {
+        String email = request.getEmail();
+        // Tìm người dùng theo email
+        User user = userService.getUserByEmail(email);
+        UserRegisterDTO dto = new UserRegisterDTO();
+        dto.setFirstName(request.getName() != null ? request.getName().split(" ")[0] : "");
+        dto.setLastName(request.getName() != null && request.getName().split(" ").length > 1 ? request.getName().split(" ")[1] : "");
+        dto.setEmail(email);
+        dto.setPassword(UUID.randomUUID().toString());
 
-            if (user == null) {
-                // Nếu không tồn tại, đăng ký người dùng mới
-                dto.setRole("USER");
-                user = userService.register(dto);
-            }
-            // Cập nhật avatar từ Google
-            user.setAvatar(request.getAvatar());
-            user = userService.update(user);
-            // Tạo token JWT
-            String token = jwtUtils.generateToken(user.getEmail());
-
-            // Đặt thông tin xác thực vào SecurityContext để tạo phiên (session)
-            Authentication auth = new UsernamePasswordAuthenticationToken(user.getEmail(), null, userService.loadUserByUsername(user.getEmail()).getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            // Trả về token cho frontend
-            return ResponseEntity.ok().body(Collections.singletonMap("token", token));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi xử lý đăng nhập Google: " + e.getMessage());
+        if (user == null) {
+            // Nếu không tồn tại, đăng ký người dùng mới
+            dto.setRole("USER");
+            user = userService.register(dto);
         }
+        // Cập nhật avatar từ Google
+        user.setAvatar(request.getAvatar());
+        user = userService.update(user);
+        // Tạo token JWT
+        String token = jwtUtils.generateToken(user.getEmail());
+
+        // Đặt thông tin xác thực vào SecurityContext để tạo phiên (session)
+        Authentication auth = new UsernamePasswordAuthenticationToken(user.getEmail(), null, userService.loadUserByUsername(user.getEmail()).getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        // Trả về token cho frontend
+        return ResponseEntity.ok().body(Collections.singletonMap("token", token));
     }
 
     @RequestMapping("/secure/profile")
@@ -94,34 +89,4 @@ public class APIUserController {
         return new ResponseEntity<>(this.userService.getUserByEmail(principal.getName()), HttpStatus.OK);
     }
 
-}
-class GoogleLoginRequest {
-    private String email;
-    private String name;
-    private String avatar;
-
-    // Getters và setters
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
 }
