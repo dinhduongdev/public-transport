@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
         u.setPassword(this.passwordEncoder.encode(params.get("password")));
         u.setRole("USER");
 
-        if (!avatar.isEmpty()) {
+        if (avatar != null && !avatar.isEmpty()) {
             try {
                 Map res = cloudinary.uploader().upload(avatar.getBytes(), ObjectUtils.asMap("resource_type", "auto"));
                 u.setAvatar(res.get("secure_url").toString());
@@ -83,6 +83,32 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean authenticate(String email, String password) {
         return this.userRepository.authenticate(email, password);
+    }
+
+    @Override
+    public User update(User user) {
+        if (user == null || user.getEmail() == null) {
+            throw new IllegalArgumentException("User hoặc email không hợp lệ");
+        }
+
+        // Tìm người dùng để đảm bảo tồn tại
+        User existingUser = getUserByEmail(user.getEmail());
+        if (existingUser == null) {
+            throw new UsernameNotFoundException("Không tìm thấy người dùng với email: " + user.getEmail());
+        }
+
+        // Cập nhật thông tin người dùng
+        existingUser.setFirstname(user.getFirstname());
+        existingUser.setLastname(user.getLastname());
+        existingUser.setAvatar(user.getAvatar());
+        if (user.getPassword() != null) {
+            existingUser.setPassword(this.passwordEncoder.encode(user.getPassword()));
+        }
+        existingUser.setRole(user.getRole());
+
+        // Lưu lại thông tin người dùng
+        System.out.println("Updating user: " + existingUser.getEmail());
+        return this.userRepository.update(existingUser);
     }
 
     @Override

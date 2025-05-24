@@ -50,6 +50,19 @@ public class UserRepositoryImpl implements UserRepository {
         return user;
     }
 
+    @Override
+    public User update(User user) {
+        Session s = this.factory.getCurrentSession();
+        // Kiểm tra xem user đã tồn tại chưa
+        if (user.getEmail() == null || !existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Không tìm thấy người dùng với email " + user.getEmail());
+        }
+        s.merge(user);
+        s.flush();
+        s.refresh(user);
+        return user;
+    }
+
     public boolean existsByEmail(String email) {
         Session s = this.factory.getCurrentSession();
         Query q = s.createQuery("SELECT COUNT(*) FROM User u WHERE u.email = :email", Long.class);

@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "schedule_trip")
+@Table(name = "ScheduleTrip")
 public class ScheduleTrip {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,7 @@ public class ScheduleTrip {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
-
+    
     @Column(name = "start_time")
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime startTime;
@@ -36,5 +36,4 @@ public class ScheduleTrip {
     @Size(max = 20)
     @Column(name = "license_plate", length = 20)
     private String license;
-
 }

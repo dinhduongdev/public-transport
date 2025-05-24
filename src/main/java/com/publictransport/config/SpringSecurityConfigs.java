@@ -35,6 +35,7 @@ import java.util.List;
 @EnableWebSecurity
 @EnableTransactionManagement
 @ComponentScan(basePackages = {
+        "com.publictransport.config",
         "com.publictransport.controllers",
         "com.publictransport.repositories",
         "com.publictransport.services"

@@ -13,6 +13,7 @@ import com.publictransport.models.User;
 public interface UserRepository {
     User getUserByEmail(String email);
     User register(User user);
+    User update(User user);
     boolean existsByEmail(String email);
     boolean authenticate(String email, String password);
 }

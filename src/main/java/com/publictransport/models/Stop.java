@@ -9,7 +9,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 @Entity
-@Table(name = "stop")
+@Table(name = "Stop")
 public class Stop {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
