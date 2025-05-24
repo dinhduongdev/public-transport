@@ -16,5 +16,4 @@ public class StatusReport {
     @Column(name = "name", nullable = false, length = 20)
     private String name;
 
-    //TODO [Reverse Engineering] generate columns from DB
 }

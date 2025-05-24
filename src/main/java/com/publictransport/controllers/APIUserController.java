@@ -1,9 +1,12 @@
 package com.publictransport.controllers;
 
 
+import com.publictransport.dto.UserRegisterDTO;
 import com.publictransport.models.User;
 import com.publictransport.services.UserService;
 import com.publictransport.utils.JwtUtils;
+import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,9 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,23 +36,23 @@ public class APIUserController {
         this.jwtUtils = jwtUtils;
     }
 
-    @PostMapping(value = "/users",
+    @PostMapping(
+            value = "/register/",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> register(@RequestParam Map<String, String> params, @RequestParam(value = "avatar") MultipartFile avatar) {
-        return new ResponseEntity<>(this.userService.register(params, avatar), HttpStatus.CREATED);
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<Object> register(
+            @ModelAttribute @Valid UserRegisterDTO dto
+    ) throws ValidationException, IOException {
+        return new ResponseEntity<>(this.userService.register(dto), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User u) {
+    public ResponseEntity<?> login(@RequestBody User u) throws Exception {
         if (!this.userService.authenticate(u.getEmail(), u.getPassword()))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai thông tin đăng nhập");
-        try {
-            String token = jwtUtils.generateToken(u.getEmail());
-            return ResponseEntity.ok().body(Collections.singletonMap("token", token));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Lỗi khi tạo JWT");
-        }
+        String token = jwtUtils.generateToken(u.getEmail());
+        return ResponseEntity.ok().body(Collections.singletonMap("token", token));
     }
 
     @PostMapping("/google-login")
@@ -57,16 +61,16 @@ public class APIUserController {
             String email = request.getEmail();
             // Tìm người dùng theo email
             User user = userService.getUserByEmail(email);
-            Map<String, String> params = new HashMap<>();
-            params.put("firstName", request.getName() != null ? request.getName().split(" ")[0] : "");
-            params.put("lastName", request.getName() != null && request.getName().split(" ").length > 1 ? request.getName().split(" ")[1] : "");
-            params.put("email", email);
-            params.put("password", "google-oauth-" + email);
+            UserRegisterDTO dto = new UserRegisterDTO();
+            dto.setFirstName(request.getName() != null ? request.getName().split(" ")[0] : "");
+            dto.setLastName(request.getName() != null && request.getName().split(" ").length > 1 ? request.getName().split(" ")[1] : "");
+            dto.setEmail(email);
+            dto.setPassword("google-oauth-" + email);
 
             if (user == null) {
                 // Nếu không tồn tại, đăng ký người dùng mới
-                user = userService.register(params, null); // Chỉ tạo mới
-                user.setRole("USER");
+                dto.setRole("USER");
+                user = userService.register(dto);
             }
             // Cập nhật avatar từ Google
             user.setAvatar(request.getAvatar());

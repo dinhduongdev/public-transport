@@ -1,19 +1,15 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.publictransport.repositories;
 
 import com.publictransport.models.User;
 
-/**
- *
- * @author duong
- */
 public interface UserRepository {
     User getUserByEmail(String email);
-    User register(User user);
+//<<<<<<< HEAD
+//    User register(User user);
     User update(User user);
+//=======
+    User createUser(User user);
+//>>>>>>> 316244e0d60b925879b815cfd5da02ddea00e6e6
     boolean existsByEmail(String email);
     boolean authenticate(String email, String password);
 }

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.publictransport.repositories.impl;
 
 import com.publictransport.models.User;
@@ -15,9 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * @author duong
- */
 @Repository
 @Transactional
 public class UserRepositoryImpl implements UserRepository {
@@ -43,7 +36,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User register(User user) {
+    public User createUser(User user) {
         Session s = this.factory.getCurrentSession();
         s.persist(user);
         s.refresh(user);
@@ -51,6 +44,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+//<<<<<<< HEAD
     public User update(User user) {
         Session s = this.factory.getCurrentSession();
         // Kiểm tra xem user đã tồn tại chưa
@@ -63,6 +57,8 @@ public class UserRepositoryImpl implements UserRepository {
         return user;
     }
 
+//=======
+//>>>>>>> 316244e0d60b925879b815cfd5da02ddea00e6e6
     public boolean existsByEmail(String email) {
         Session s = this.factory.getCurrentSession();
         Query q = s.createQuery("SELECT COUNT(*) FROM User u WHERE u.email = :email", Long.class);

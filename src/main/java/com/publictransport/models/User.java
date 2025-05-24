@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.io.Serializable;
 
@@ -27,7 +28,7 @@ public class User implements Serializable {
     private String lastname;
 
     @Size(max = 255)
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     @Email
     private String email;
 
