@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchRoutes } from '../features/routes/routeSlice';
-import RouteSearch from './RouteSearch';
 import RouteDetail from './RouteDetail';
+import SearchTabs from './SearchTabs'; // 🔁 thêm dòng này
 
 export default function BusMapUI() {
   const dispatch = useDispatch();
@@ -22,7 +22,8 @@ export default function BusMapUI() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 h-screen">
-      {selectedRoute ? <RouteDetail /> : <RouteSearch />}
+      {selectedRoute ? <RouteDetail /> : <SearchTabs />} 
+
       <div className="col-span-2 relative">
         <iframe
           title="Google Map"
