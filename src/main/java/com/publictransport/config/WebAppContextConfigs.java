@@ -7,6 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.*;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
@@ -49,5 +50,11 @@ public class WebAppContextConfigs implements WebMvcConfigurer {
         // Tùy chọn: Tắt tính năng ghi ngày giờ dưới dạng timestamp (số mili giây)
         objectMapper.disable(WRITE_DATES_AS_TIMESTAMPS);
         return objectMapper;
+    }
+
+
+    @Bean
+    public StandardServletMultipartResolver multipartResolver() {
+        return new StandardServletMultipartResolver();
     }
 }
