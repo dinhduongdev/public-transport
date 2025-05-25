@@ -10,11 +10,13 @@ import TrafficReport from "./components/TrafficReport";
 import { useEffect } from "react";
 import { restoreUser } from "./utils/authInit";
 import { useDispatch } from "react-redux";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    restoreUser(dispatch); 
+    restoreUser(dispatch);
   }, [dispatch]);
   return (
     <BrowserRouter>
@@ -27,6 +29,7 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<UserProfile />} />
       </Routes>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </BrowserRouter>
   );
 };

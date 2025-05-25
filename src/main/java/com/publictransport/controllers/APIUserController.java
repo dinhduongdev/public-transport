@@ -4,6 +4,8 @@ package com.publictransport.controllers;
 import com.publictransport.dto.GoogleLoginRequest;
 import com.publictransport.dto.UserRegisterDTO;
 import com.publictransport.models.User;
+import com.publictransport.services.EmailService;
+import com.publictransport.services.EmailVerificationService;
 import com.publictransport.services.UserService;
 import com.publictransport.utils.JwtUtils;
 import jakarta.validation.Valid;
@@ -16,35 +18,63 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
 @CrossOrigin
 public class APIUserController {
+
     private final UserService userService;
     private final JwtUtils jwtUtils;
+    private final EmailService emailService;
+    private final EmailVerificationService emailVerificationService;
 
     @Autowired
-    public APIUserController(UserService userService, JwtUtils jwtUtils) {
+    public APIUserController(UserService userService, JwtUtils jwtUtils,
+                             EmailService emailService, EmailVerificationService emailVerificationService) {
         this.userService = userService;
         this.jwtUtils = jwtUtils;
+        this.emailService = emailService;
+        this.emailVerificationService = emailVerificationService;
+    }
+    // Hàm tạo mã xác thực
+    private String generateVerificationCode() {
+        int code = 100000 + new Random().nextInt(900000); // 6 chữ số
+        return String.valueOf(code);
     }
 
+
+    // 1. Gửi mã xác nhận đến email (dùng chung cho đăng ký email)
+    @PostMapping("/send-verification-code")
+    public ResponseEntity<?> sendVerificationCode(@RequestParam("email") String email) {
+        emailVerificationService.generateCodeForEmail(email); // Tạo mã mới, lưu trong bộ nhớ hoặc DB
+        String code = emailVerificationService.getCode(email); // Lấy mã vừa tạo
+        emailService.sendVerificationEmail(email, "Xác nhận đăng ký", "Mã xác nhận của bạn là: " + code);
+        return ResponseEntity.ok("Đã gửi mã xác nhận đến email");
+    }
+
+    // 2. Đăng ký người dùng mới (cần mã xác nhận)
     @PostMapping(
             value = "/register/",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<Object> register(
-            @ModelAttribute @Valid UserRegisterDTO dto
+            @ModelAttribute @Valid UserRegisterDTO dto,
+            @RequestParam("verificationCode") String verificationCode
     ) throws ValidationException, IOException {
+        if (!emailVerificationService.verifyCode(dto.getEmail(), verificationCode)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Mã xác nhận không hợp lệ hoặc đã hết hạn");
+        }
+        emailVerificationService.removeCode(dto.getEmail());
         return new ResponseEntity<>(this.userService.register(dto), HttpStatus.CREATED);
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User u) throws Exception {

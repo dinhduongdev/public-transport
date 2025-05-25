@@ -4,8 +4,9 @@ import cookie from 'react-cookies';
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 const endpoints = {
-  register: `${BASE_URL}/api/users`,
+  register: `${BASE_URL}/api/register/`,
   login: `${BASE_URL}/api/login`,
+  'send-verification-code': `${BASE_URL}/api/send-verification-code`,
   'google-login': `${BASE_URL}/api/google-login`,
   'current-user': `${BASE_URL}/api/secure/profile`,
   route: `${BASE_URL}/api/routes`,
