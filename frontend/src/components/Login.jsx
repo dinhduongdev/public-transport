@@ -49,7 +49,8 @@ const Login = () => {
         name: decoded.name,
         avatar: decoded.picture,
       });
-
+      console.log("res.data.token", res.data.token);
+      
       if (res.data.token) {
         cookie.save("token", res.data.token);
       }
