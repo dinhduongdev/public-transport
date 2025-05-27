@@ -2,6 +2,7 @@ package com.publictransport.services.impl;
 
 import com.publictransport.dto.params.RouteFilter;
 import com.publictransport.models.Route;
+import com.publictransport.proxies.MapProxy;
 import com.publictransport.repositories.RouteRepository;
 import com.publictransport.services.RouteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,13 +46,13 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public List<Route> findRoutes(RouteFilter optionalRouteFilter) {
-        return routeRepository.findRoutes(optionalRouteFilter);
+    public List<Route> findRoutes(RouteFilter filter) {
+        return routeRepository.findRoutes(filter);
     }
 
     @Override
-    public List<Route> findRoutes(RouteFilter optionalRouteFilter, boolean fetchRouteVariants) {
-        return routeRepository.findRoutes(optionalRouteFilter, fetchRouteVariants);
+    public List<Route> findRoutes(RouteFilter filter, boolean fetchRouteVariants) {
+        return routeRepository.findRoutes(filter, fetchRouteVariants);
     }
 
     @Override

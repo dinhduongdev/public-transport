@@ -79,7 +79,6 @@ public class GoongMapProxy implements MapProxy {
         JsonNode firstResult;
         try {
             firstResult = mapper.readTree(response.getBody()).get("results").get(0);
-            System.out.println(response.getBody());
         } catch (Exception e) {
             System.err.println("Error parsing response for coordinates: " + kw);
             return Optional.empty();

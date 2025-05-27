@@ -5,12 +5,15 @@ import com.publictransport.models.Station;
 import com.publictransport.proxies.MapProxy;
 import com.publictransport.repositories.StationRepository;
 import com.publictransport.services.StationService;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -49,6 +52,26 @@ public class StationServiceImpl implements StationService {
     @Override
     public List<Station> findStations(StationFilter filter) {
         return stationRepository.findStations(filter);
+    }
+
+    @Override
+    public Optional<StationFilter> buildNewFilterByKeyword(StationFilter oldFilter) {
+        var newFilter = new StationFilter();
+        newFilter.setRadiusKm(oldFilter.getRadiusKm());
+        newFilter.setPage(oldFilter.getPage());
+        newFilter.setSize(oldFilter.getSize());
+
+        var optAddrAndCoords = mapProxy.getCoordinates(oldFilter.getKeyword());
+
+        if (optAddrAndCoords.isEmpty()) {
+            return Optional.empty();
+        }
+        var addrAndCoords = optAddrAndCoords.get();
+        newFilter.setFormattedAddress(addrAndCoords.getLeft());
+        newFilter.setLng(addrAndCoords.getRight().getLng());
+        newFilter.setLat(addrAndCoords.getRight().getLat());
+
+        return Optional.of(newFilter);
     }
 
     @Override

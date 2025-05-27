@@ -21,43 +21,34 @@ import java.util.Map;
 public class APIStationController {
 
     private final StationService stationService;
-    private final MapProxy mapProxy;
 
     @Autowired
-    public APIStationController(StationService stationService, MapProxy mapProxy) {
+    public APIStationController(StationService stationService) {
         this.stationService = stationService;
-        this.mapProxy = mapProxy;
     }
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getStations(@Valid StationFilter params) {
+        // nếu từ khóa được cung cấp, sử dụng proxy để tìm kiếm toa do
         if (params.isKeywordSet()) {
-            // nếu từ khóa được cung cấp, sử dụng proxy để tìm kiếm
-            var optAddrAndCoords = mapProxy.getCoordinates(params.getKeyword());
-            if (optAddrAndCoords.isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("message", "Không tìm thấy địa chỉ hoặc tọa độ cho từ khóa"));
+            var optNewFilter = stationService.buildNewFilterByKeyword(params);
+            if (optNewFilter.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Không tìm thấy"));
             }
-            var addrAndCoords = optAddrAndCoords.get();
-            var newFilter = new StationFilter();
-            newFilter.setLng(addrAndCoords.getRight().getLng());
-            newFilter.setLat(addrAndCoords.getRight().getLat());
-            newFilter.setRadiusKm(params.getRadiusKm());
-            newFilter.setPage(params.getPage());
-            newFilter.setSize(params.getSize());
-            newFilter.setFormattedAddress(addrAndCoords.getLeft());
-            params = newFilter;
+            params = optNewFilter.get();
         }
 
         long totalStations = stationService.countStations(params);
         int totalPages = (int) Math.ceil((double) totalStations / params.getSize());
 
         if (params.getPage() > totalPages) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Không tìm thấy gì trên trang này"));
+            return ResponseEntity.badRequest().body(Map.of("message", "Không tìm thấy"));
         }
 
         List<Station> stations = stationService.findStations(params);
+
         Map<String, Object> response = Map.of(
-                "formattedAddress", params.getFormattedAddress(),
+                "formattedAddress", params.getFormattedAddress() != null ? params.getFormattedAddress() : "",
                 "stations", stations,
                 "totalStations", totalStations,
                 "totalPages", totalPages,

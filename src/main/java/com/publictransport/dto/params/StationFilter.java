@@ -5,6 +5,7 @@ import com.publictransport.utils.Constant;
 import com.publictransport.utils.PredicateUtils;
 import com.publictransport.utils.StringUtils;
 import com.publictransport.validation.CoordinatePair;
+import jakarta.persistence.Transient;
 import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.validation.constraints.DecimalMax;
@@ -38,7 +39,7 @@ public class StationFilter extends BaseFilter {
     // Từ khóa để dùng proxy tìm tọa độ
     // nếu được cung cấp, sẽ bỏ qua hết đống còn lại trừ radius
     private String keyword;
-    // Địa chỉ đã được định dạng, được gán nếu tìm bằng keyword
+    // Địa chỉ đã được định dạng từ proxy
     private String formattedAddress;
 
     public boolean areCoordinatesSet() {
@@ -48,6 +49,7 @@ public class StationFilter extends BaseFilter {
     public boolean isKeywordSet() {
         return StringUtils.isNotEmpty(keyword);
     }
+
 
     public Map<SingularAttribute, String> toMapOfRootStringFields() {
         Map<SingularAttribute, String> map = new HashMap<>();
