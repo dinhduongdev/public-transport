@@ -196,7 +196,7 @@
             <td th:text="${route.type}"></td>
             <td>
                 <ul>
-                    <li th:each="variant : ${routeVariantsMap[route.id]}"
+                    <li th:each="variant : ${route.routeVariants}"
                         th:text="${variant.startStop} + ' → ' + ${variant.endStop}"></li>
                 </ul>
             </td>

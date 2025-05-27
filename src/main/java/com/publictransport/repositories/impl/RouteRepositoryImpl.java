@@ -1,8 +1,11 @@
 package com.publictransport.repositories.impl;
 
+import com.publictransport.dto.params.RouteFilter;
 import com.publictransport.models.Route;
-import com.publictransport.models.RouteVariant;
+import com.publictransport.models.Route_;
+import com.publictransport.models._Route;
 import com.publictransport.repositories.RouteRepository;
+import com.publictransport.utils.PaginationUtils;
 import jakarta.persistence.criteria.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -13,13 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @Transactional
 public class RouteRepositoryImpl implements RouteRepository {
 
-    private static final int PAGE_SIZE = 10;
     private final SessionFactory factory;
 
     @Autowired
@@ -27,135 +29,122 @@ public class RouteRepositoryImpl implements RouteRepository {
         this.factory = factory;
     }
 
-    private Session getCurrentSession() {
-        return factory.getCurrentSession();
+    @Override
+    public Optional<Route> findById(Long id) {
+        Session session = factory.getCurrentSession();
+        return Optional.ofNullable(session.get(Route.class, id));
     }
 
     @Override
-    public List<Route> findAllRoutes(int page, int size) {
-        return getRoutes(null, page, size);
-    }
-
-    @Override
-    public long countAllRoutes() {
-        Session session = getCurrentSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<Route> root = cq.from(Route.class);
-
-        cq.select(cb.count(root));
-
-        return session.createQuery(cq).getSingleResult();
-    }
-
-    @Override
-    public List<Route> searchRoutes(Map<String, String> params, int page, int size) {
-        return getRoutes(params, page, size);
-    }
-
-    @Override
-    public long countRoutesByParams(Map<String, String> params) {
-        Session session = getCurrentSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<Route> root = cq.from(Route.class);
-
-        Join<Route, RouteVariant>[] variantJoinHolder = new Join[1];
-        List<Predicate> predicates = buildPredicates(params, cb, root, variantJoinHolder);
-
-        cq.select(cb.countDistinct(root)).where(predicates.toArray(new Predicate[0]));
-
-        return session.createQuery(cq).getSingleResult();
-    }
-
-    @Override
-    public List<RouteVariant> findRouteVariantsByRouteId(Long routeId) {
-        Session session = getCurrentSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<RouteVariant> cq = cb.createQuery(RouteVariant.class);
-        Root<RouteVariant> root = cq.from(RouteVariant.class);
-
-        cq.select(root).where(cb.equal(root.get("route").get("id"), routeId));
-
-        return session.createQuery(cq).getResultList();
-    }
-
-    @Override
-    public Route findById(Long id) {
-        return getCurrentSession().get(Route.class, id);
+    public Optional<Route> findById(Long id, boolean fetchRouteVariants) {
+        if (!fetchRouteVariants) {
+            return findById(id);
+        }
+        Session session = factory.getCurrentSession();
+        String hql = "FROM Route r LEFT JOIN FETCH r.routeVariants WHERE r.id = :id";
+        Query<Route> query = session.createQuery(hql, Route.class);
+        return query.setParameter("id", id).uniqueResultOptional();
     }
 
     @Override
     public void save(Route route) {
-        getCurrentSession().persist(route);
+        factory.getCurrentSession().persist(route);
     }
 
     @Override
     public void update(Route route) {
-        getCurrentSession().merge(route);
+        factory.getCurrentSession().merge(route);
     }
 
     @Override
     public void delete(Long id) {
-        Session session = getCurrentSession();
-        Route route = findById(id);
-        if (route != null) {
-            session.remove(route);
-        }
+        Session session = factory.getCurrentSession();
+        Optional<Route> route = findById(id);
+        route.ifPresent(session::remove);
     }
 
-    private List<Route> getRoutes(Map<String, String> params, int page, int size) {
-        Session session = getCurrentSession();
+    // hàm tìm không fetch routeVariants
+    @Override
+    public List<Route> findRoutes(RouteFilter filter) {
+        Session session = factory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Route> cq = cb.createQuery(Route.class);
         Root<Route> root = cq.from(Route.class);
-        cq.select(root).distinct(true);
+        cq.select(root);
 
-        Join<Route, RouteVariant>[] variantJoinHolder = new Join[1];
-        List<Predicate> predicates = buildPredicates(params, cb, root, variantJoinHolder);
-
-        cq.where(predicates.toArray(new Predicate[0]));
-
+        List<Predicate> predicates = filter.toPredicateList(cb, root);
+        if (!predicates.isEmpty()) {
+            cq.where(cb.and(predicates.toArray(new Predicate[0])));
+        }
         Query<Route> query = session.createQuery(cq);
 
-        if (page > 0 && size > 0) {
-            int start = (page - 1) * size;
-            query.setMaxResults(size);
-            query.setFirstResult(start);
-        }
-
+        // Phân trang
+        PaginationUtils.setQueryResultsRange(query, filter);
         return query.getResultList();
     }
 
-    private List<Predicate> buildPredicates(Map<String, String> params, CriteriaBuilder cb, Root<Route> root, Join<Route, RouteVariant>[] variantJoinHolder) {
-        List<Predicate> predicates = new ArrayList<>();
 
-        if (params == null || params.isEmpty()) {
-            return predicates;
+    // Sinh ra 2 truy vấn nếu fetchRouteVariants = true:
+    // 1. Truy vấn lấy danh sách các Route ID theo filter (có phân trang)
+    // 2. Truy vấn lấy Route với các routeVar theo danh sách ID của Route
+    // Lý do: Nếu 1 truy vấn thì hibernate sẽ fetch hết và áp dụng phân trang sau (trong lớp ứng dụng)
+    @Override
+    public List<Route> findRoutes(RouteFilter filter, boolean fetchRouteVariants) {
+        if (!fetchRouteVariants) {
+            return findRoutes(filter);
         }
+        Session session = factory.getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
 
-        Join<Route, RouteVariant> variantJoin = null;
-        if (params.containsKey("startStop") || params.containsKey("endStop")) {
-            variantJoin = root.join("routeVariants", JoinType.INNER);
-            variantJoinHolder[0] = variantJoin;
-        }
-
-        if (params.containsKey("name")) {
-            predicates.add(cb.like(cb.lower(root.get("name")), "%" + params.get("name").toLowerCase() + "%"));
-        }
-        if (params.containsKey("code")) {
-            predicates.add(cb.like(cb.lower(root.get("code")), "%" + params.get("code").toLowerCase() + "%"));
-        }
-        if (params.containsKey("type")) {
-            predicates.add(cb.like(cb.lower(root.get("type")), "%" + params.get("type").toLowerCase() + "%"));
-        }
-        if (params.containsKey("startStop") && variantJoin != null) {
-            predicates.add(cb.like(cb.lower(variantJoin.get("startStop")), "%" + params.get("startStop").toLowerCase() + "%"));
-        }
-        if (params.containsKey("endStop") && variantJoin != null) {
-            predicates.add(cb.like(cb.lower(variantJoin.get("endStop")), "%" + params.get("endStop").toLowerCase() + "%"));
+        // ======== 1. Truy vấn lấy danh sách các Route ID theo filter (có phân trang) ========
+        CriteriaQuery<Long> idQuery = cb.createQuery(Long.class);
+        Root<Route> idRoot = idQuery.from(Route.class);
+        idQuery.select(idRoot.get(Route_.id)).distinct(true);
+        List<Predicate> predicates = filter.toPredicateList(cb, idRoot);
+        if (!predicates.isEmpty()){
+            idQuery.where(cb.and(predicates.toArray(new Predicate[0])));
         }
 
-        return predicates;
+        Query<Long> idHibernateQuery = session.createQuery(idQuery);
+
+        // Phân trang
+        PaginationUtils.setQueryResultsRange(idHibernateQuery, filter);
+        List<Long> routeIds = idHibernateQuery.getResultList();
+
+        if (routeIds.isEmpty()) return new ArrayList<>();
+
+        // ======== 2. Truy vấn lấy Route với các routeVar theo danh sách ID của Route ========
+        CriteriaQuery<Route> cq = cb.createQuery(Route.class);
+        Root<Route> root = cq.from(Route.class);
+
+        // Lấy routeVariants, join với RouteVariant
+        root.fetch(Route_.routeVariants, JoinType.LEFT);
+        cq.select(root);
+        cq.where(root.get(Route_.id).in(routeIds));
+        Query<Route> query = session.createQuery(cq);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Route> getAllRoutes() {
+        Session session = factory.getCurrentSession();
+        return session.createQuery("FROM Route", Route.class).getResultList();
+    }
+
+    @Override
+    public Long countRoutes(RouteFilter filter) {
+        Session session = factory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Route> root = criteriaQuery.from(Route.class);
+
+        criteriaQuery.select(criteriaBuilder.count(root));
+
+        List<Predicate> predicates = filter.toPredicateList(criteriaBuilder, root);
+        if (!predicates.isEmpty())
+            criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
+
+        return session.createQuery(criteriaQuery).getSingleResult();
     }
 }
+

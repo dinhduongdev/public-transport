@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StopServiceImpl implements StopService {
@@ -23,7 +24,7 @@ public class StopServiceImpl implements StopService {
     }
 
     @Override
-    public Stop findById(Long id) {
+    public Optional<Stop> findById(Long id) {
         return stopRepository.findById(id);
     }
 

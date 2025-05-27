@@ -1,5 +1,6 @@
 package com.publictransport.controllers;
 
+import com.publictransport.dto.params.StationFilter;
 import com.publictransport.models.Station;
 import com.publictransport.services.StationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +9,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Controller
 public class StationController {
@@ -21,69 +21,38 @@ public class StationController {
     private StationService stationService;
 
     @GetMapping("/manage-stations")
-    public String getAllStations(Model model,
-                                 @RequestParam(name = "page", defaultValue = "1") int page,
-                                 @RequestParam(name = "size", defaultValue = "10") int size,
-                                 @RequestParam(name = "name", required = false) String name,
-                                 @RequestParam(name = "address", required = false) String address,
-                                 @RequestParam(name = "street", required = false) String street,
-                                 @RequestParam(name = "ward", required = false) String ward,
-                                 @RequestParam(name = "zone", required = false) String zone) {
-        List<Station> stations;
-        long totalItems;
-        int totalPages;
+    public String getAllStations(Model model, StationFilter params, RedirectAttributes redirectAttributes) {
+        long totalStations = stationService.countStations(params);
+        int totalPages = (int) Math.ceil((double) totalStations / params.getSize());
 
-        // Tạo params để truyền vào phương thức tìm kiếm
-        Map<String, String> params = new HashMap<>();
-        if (name != null && !name.trim().isEmpty()) {
-            params.put("name", name);
-        }
-        if (address != null && !address.trim().isEmpty()) {
-            params.put("address", address);
-        }
-        if (street != null && !street.trim().isEmpty()) {
-            params.put("street", street);
-        }
-        if (ward != null && !ward.trim().isEmpty()) {
-            params.put("ward", ward);
-        }
-        if (zone != null && !zone.trim().isEmpty()) {
-            params.put("zone", zone);
+        if (params.getPage() > totalPages) {
+            redirectAttributes.addFlashAttribute("errorMsg", "Trang không tồn tại.");
+            params.setPage(totalPages);
         }
 
-        // Nếu có tham số tìm kiếm, gọi phương thức tìm kiếm
-        if (!params.isEmpty()) {
-            stations = stationService.searchStations(params, page, size);
-            totalItems = stationService.countStationsByParams(params);
-            totalPages = (int) Math.ceil((double) totalItems / size);
-        } else {
-            // Nếu không có tham số, lấy toàn bộ danh sách
-            stations = stationService.findAllStations(page, size);
-            totalItems = stationService.countAllStations();
-            totalPages = (int) Math.ceil((double) totalItems / size);
-        }
+        List<Station> stations = stationService.findStations(params);
 
         model.addAttribute("stations", stations);
-        model.addAttribute("currentPage", page);
+        model.addAttribute("currentPage", params.getPage());
         model.addAttribute("totalPages", totalPages);
-        model.addAttribute("totalItems", totalItems);
-        model.addAttribute("size", size);
-        model.addAttribute("name", name);
-        model.addAttribute("address", address);
-        model.addAttribute("street", street);
-        model.addAttribute("ward", ward);
-        model.addAttribute("zone", zone);
+        model.addAttribute("totalItems", totalStations);
+        model.addAttribute("size", params.getSize());
+        model.addAttribute("name", params.getName());
+        model.addAttribute("address", params.getAddress());
+        model.addAttribute("street", params.getStreet());
+        model.addAttribute("ward", params.getWard());
+        model.addAttribute("zone", params.getZone());
         return "station/stations";
     }
 
     @GetMapping("/manage-stations/detail/{id}")
     public String viewStationDetail(@PathVariable("id") Long id, Model model) {
-        Station station = stationService.findById(id);
-        if (station == null) {
+        Optional<Station> optStation = stationService.findById(id);
+        if (optStation.isEmpty()) {
             model.addAttribute("msg", "Trạm không tồn tại.");
             return "redirect:/manage-stations";
         }
-        model.addAttribute("station", station);
+        model.addAttribute("station", optStation.get());
         return "station/station-detail";
     }
 
@@ -94,19 +63,19 @@ public class StationController {
     }
 
     @PostMapping("/manage-stations/add")
-    public String addStation( Station station) {
+    public String addStation(Station station) {
         stationService.save(station);
         return "redirect:/manage-stations";
     }
 
     @GetMapping("/manage-stations/edit/{id}")
     public String showEditStationForm(@PathVariable("id") Long id, Model model) {
-        Station station = stationService.findById(id);
-        if (station == null) {
+        Optional<Station> optStation = stationService.findById(id);
+        if (optStation.isEmpty()) {
             model.addAttribute("msg", "Trạm không tồn tại.");
             return "redirect:/manage-stations";
         }
-        model.addAttribute("station", station);
+        model.addAttribute("station", optStation.get());
         return "station/station-edit";
     }
 

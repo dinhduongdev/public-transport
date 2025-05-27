@@ -2,7 +2,6 @@ package com.publictransport.repositories.impl;
 
 import com.publictransport.models.User;
 import com.publictransport.repositories.UserRepository;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -10,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Repository
 @Transactional
@@ -24,15 +25,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User getUserByEmail(String email) {
+    public Optional<User> getUserByEmail(String email) {
         Session s = this.factory.getCurrentSession();
-        Query q = s.createQuery("FROM User u WHERE u.email = :email", User.class);
+        org.hibernate.query.Query<User> q = s.createQuery("FROM User u WHERE u.email = :email", User.class);
         q.setParameter("email", email);
-        try {
-            return (User) q.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
+        return Optional.ofNullable(q.getSingleResultOrNull());
     }
 
     @Override
@@ -44,7 +41,6 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-//<<<<<<< HEAD
     public User update(User user) {
         Session s = this.factory.getCurrentSession();
         // Kiểm tra xem user đã tồn tại chưa
@@ -57,8 +53,6 @@ public class UserRepositoryImpl implements UserRepository {
         return user;
     }
 
-//=======
-//>>>>>>> 316244e0d60b925879b815cfd5da02ddea00e6e6
     public boolean existsByEmail(String email) {
         Session s = this.factory.getCurrentSession();
         Query q = s.createQuery("SELECT COUNT(*) FROM User u WHERE u.email = :email", Long.class);
@@ -68,7 +62,10 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean authenticate(String email, String password) {
-        User u = this.getUserByEmail(email);
-        return this.passwordEncoder.matches(password, u.getPassword());
+        Optional<User> u = this.getUserByEmail(email);
+        if (u.isEmpty()) {
+            return false;
+        }
+        return this.passwordEncoder.matches(password, u.get().getPassword());
     }
 }

@@ -28,7 +28,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             ValidationException.class,
-            IOException.class
+            IOException.class,
+            IllegalArgumentException.class
     })
     public ResponseEntity<String> handleModelValidationExceptions(Exception ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);

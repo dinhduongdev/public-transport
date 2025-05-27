@@ -59,7 +59,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:if="${variants == null or variants.isEmpty}">
+            <tr th:if="${variants.isEmpty}">
                 <td colspan="4" class="text-center">Không có lộ trình nào.</td>
             </tr>
             <tr th:each="variant : ${variants}">

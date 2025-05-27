@@ -16,6 +16,4 @@ public class UserController {
             model.addAttribute("msg", "Bạn đã đăng xuất thành công!");
         return "login";
     }
-
-
 }

@@ -86,6 +86,7 @@ public class SpringSecurityConfigs {
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/", true)
+                        .usernameParameter("email")
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )

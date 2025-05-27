@@ -2,6 +2,7 @@
 package com.publictransport.controllers;
 
 import com.publictransport.dto.RouteVariantDTO;
+import com.publictransport.dto.params.RouteFilter;
 import com.publictransport.models.Route;
 import com.publictransport.models.RouteVariant;
 import com.publictransport.models.Station;
@@ -22,17 +23,22 @@ import java.util.*;
 @RequestMapping("/manage-route-variants")
 public class RouteVariantController {
 
-    @Autowired
-    private RouteVariantService routeVariantService;
+    private final RouteVariantService routeVariantService;
+    private final StopService stopService;
+    private final RouteService routeService;
+    private final StationService stationService;
 
     @Autowired
-    private StopService stopService;
-
-    @Autowired
-    private RouteService routeService;
-
-    @Autowired
-    private StationService stationService;
+    public RouteVariantController(
+            RouteVariantService routeVariantService,
+            StopService stopService,
+            RouteService routeService,
+            StationService stationService) {
+        this.routeVariantService = routeVariantService;
+        this.stopService = stopService;
+        this.routeService = routeService;
+        this.stationService = stationService;
+    }
 
     @GetMapping
     public String getAllRouteVariants(Model model,
@@ -94,8 +100,8 @@ public class RouteVariantController {
 
     @GetMapping("/add")
     public String showAddRouteVariantForm(Model model) {
-        List<Route> routes = routeService.findAllRoutes(1, Integer.MAX_VALUE);
-        List<Station> stations = stationService.findAllStations(1, Integer.MAX_VALUE);
+        List<Route> routes = routeService.getAllRoutes();
+        List<Station> stations = stationService.getAllStations();
         model.addAttribute("routes", routes);
         model.addAttribute("stations", stations);
         model.addAttribute("routeVariantDTO", new RouteVariantDTO());
@@ -105,13 +111,14 @@ public class RouteVariantController {
     @PostMapping("/add")
     public String addRouteVariant(RouteVariantDTO routeVariantDTO, RedirectAttributes redirectAttributes) {
         // Lấy Route dựa trên routeId từ DTO
-        Route route = routeService.findById(routeVariantDTO.getRouteId());
-        if (route == null) {
+        Optional<Route> optionalRoute = routeService.findById(routeVariantDTO.getRouteId());
+        if (optionalRoute.isEmpty()) {
             redirectAttributes.addFlashAttribute("msg", "Tuyến đường không tồn tại.");
             return "redirect:/manage-route-variants/add";
         }
 
         // Kiểm tra số lượng RouteVariant hiện có của Route
+        Route route = optionalRoute.get();
         List<RouteVariant> existingVariants = routeVariantService.findByRouteId(route.getId());
         if (!existingVariants.isEmpty()) {
             // Nếu tuyến đã có RouteVariant, không cho phép tạo thêm
@@ -135,8 +142,8 @@ public class RouteVariantController {
             if (stopDTO.getStationId() != null && stopDTO.getStopOrder() != null) {
                 Stop stop = new Stop();
                 stop.setRouteVariant(outboundRouteVariant);
-                Station station = stationService.findById(stopDTO.getStationId());
-                stop.setStation(station);
+                Optional<Station> station = stationService.findById(stopDTO.getStationId());
+                stop.setStation(station.get());
                 stop.setStopOrder(stopDTO.getStopOrder());
                 outboundStops.add(stop);
                 stopService.save(stop);
@@ -169,8 +176,8 @@ public class RouteVariantController {
             if (stopDTO.getStationId() != null && stopDTO.getStopOrder() != null) {
                 Stop stop = new Stop();
                 stop.setRouteVariant(inboundRouteVariant);
-                Station station = stationService.findById(stopDTO.getStationId());
-                stop.setStation(station);
+                Optional<Station> optStation = stationService.findById(stopDTO.getStationId());
+                stop.setStation(optStation.get());
                 stop.setStopOrder(stopDTO.getStopOrder());
                 inboundStops.add(stop);
                 stopService.save(stop);
@@ -249,8 +256,8 @@ public class RouteVariantController {
         routeVariantDTO.setInboundStops(inboundStopDTOs);
 
         // Dữ liệu cần thiết cho form
-        List<Route> routes = routeService.findAllRoutes(1, Integer.MAX_VALUE);
-        List<Station> stations = stationService.findAllStations(1, Integer.MAX_VALUE);
+        List<Route> routes = routeService.getAllRoutes();
+        List<Station> stations = stationService.getAllStations();
         model.addAttribute("routes", routes);
         model.addAttribute("stations", stations);
         model.addAttribute("routeVariantDTO", routeVariantDTO);
@@ -327,8 +334,8 @@ public class RouteVariantController {
         for (RouteVariantDTO.StopDTO stopDTO : outboundStopDTOs) {
             Stop stop = new Stop();
             stop.setRouteVariant(outboundRouteVariant);
-            Station station = stationService.findById(stopDTO.getStationId());
-            stop.setStation(station);
+            Optional<Station> station = stationService.findById(stopDTO.getStationId());
+            stop.setStation(station.get());
             stop.setStopOrder(stopDTO.getStopOrder());
             outboundStops.add(stop);
             stopService.save(stop);
@@ -360,8 +367,8 @@ public class RouteVariantController {
         for (RouteVariantDTO.StopDTO stopDTO : inboundStopDTOs) {
             Stop stop = new Stop();
             stop.setRouteVariant(inboundRouteVariant);
-            Station station = stationService.findById(stopDTO.getStationId());
-            stop.setStation(station);
+            Optional<Station> station = stationService.findById(stopDTO.getStationId());
+            stop.setStation(station.get());
             stop.setStopOrder(stopDTO.getStopOrder());
             inboundStops.add(stop);
             stopService.save(stop);

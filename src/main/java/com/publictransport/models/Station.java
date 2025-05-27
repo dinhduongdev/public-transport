@@ -25,6 +25,9 @@ public class Station {
     @Embedded
     private Location location;
 
+    @Transient
+    private double distance;
+
     public Station() {
         this.location = new Location();
         this.coordinates = new Coordinates();

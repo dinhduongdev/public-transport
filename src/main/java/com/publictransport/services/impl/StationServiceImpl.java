@@ -1,45 +1,33 @@
 package com.publictransport.services.impl;
 
+import com.publictransport.dto.params.StationFilter;
 import com.publictransport.models.Station;
+import com.publictransport.proxies.MapProxy;
 import com.publictransport.repositories.StationRepository;
 import com.publictransport.services.StationService;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 
 @Service
 @Transactional
 public class StationServiceImpl implements StationService {
+    private final StationRepository stationRepository;
+    private final MapProxy mapProxy;
+
     @Autowired
-    private StationRepository stationRepository;
-
-
-    @Override
-    public List<Station> findAllStations(int page, int size) {
-        return stationRepository.findAllStations(page, size);
+    public StationServiceImpl(StationRepository stationRepository, MapProxy mapProxy) {
+        this.stationRepository = stationRepository;
+        this.mapProxy = mapProxy;
     }
 
     @Override
-    public long countAllStations() {
-        return stationRepository.countAllStations();
-    }
-
-    @Override
-    public List<Station> searchStations(Map<String, String> params, int page, int size) {
-        return stationRepository.searchStations(params, page, size);
-    }
-
-    @Override
-    public long countStationsByParams(Map<String, String> params) {
-        return stationRepository.countStationsByParams(params);
-    }
-
-    @Override
-    public Station findById(Long id) {
+    public Optional<Station> findById(Long id) {
         return stationRepository.findById(id);
     }
 
@@ -56,5 +44,20 @@ public class StationServiceImpl implements StationService {
     @Override
     public void delete(Long id) {
         stationRepository.delete(id);
+    }
+
+    @Override
+    public List<Station> findStations(StationFilter filter) {
+        return stationRepository.findStations(filter);
+    }
+
+    @Override
+    public List<Station> getAllStations() {
+        return stationRepository.getAllStations();
+    }
+
+    @Override
+    public long countStations(StationFilter filter) {
+        return stationRepository.countStations(filter);
     }
 }

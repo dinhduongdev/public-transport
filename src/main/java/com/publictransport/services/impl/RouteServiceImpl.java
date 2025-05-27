@@ -1,49 +1,32 @@
 package com.publictransport.services.impl;
 
+import com.publictransport.dto.params.RouteFilter;
 import com.publictransport.models.Route;
-import com.publictransport.models.RouteVariant;
 import com.publictransport.repositories.RouteRepository;
 import com.publictransport.services.RouteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class RouteServiceImpl implements RouteService {
+    private final RouteRepository routeRepository;
+
     @Autowired
-    private RouteRepository routeRepository;
-
-
-    @Override
-    public List<Route> findAllRoutes(int page, int size) {
-        return routeRepository.findAllRoutes(page, size);
+    public RouteServiceImpl(RouteRepository routeRepository) {
+        this.routeRepository = routeRepository;
     }
 
     @Override
-    public long countAllRoutes() {
-        return routeRepository.countAllRoutes();
-    }
-
-    @Override
-    public List<Route> searchRoutes(Map<String, String> params, int page, int size) {
-        return routeRepository.searchRoutes(params, page, size);
-    }
-
-    @Override
-    public long countRoutesByParams(Map<String, String> params) {
-        return routeRepository.countRoutesByParams(params);
-    }
-
-    @Override
-    public List<RouteVariant> findRouteVariantsByRouteId(Long routeId) {
-        return routeRepository.findRouteVariantsByRouteId(routeId);
-    }
-
-    @Override
-    public Route findById(Long id) {
+    public Optional<Route> findById(Long id) {
         return routeRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Route> findById(Long id, boolean fetchRouteVariants) {
+        return routeRepository.findById(id, fetchRouteVariants);
     }
 
     @Override
@@ -59,5 +42,25 @@ public class RouteServiceImpl implements RouteService {
     @Override
     public void delete(Long id) {
         routeRepository.delete(id);
+    }
+
+    @Override
+    public List<Route> findRoutes(RouteFilter optionalRouteFilter) {
+        return routeRepository.findRoutes(optionalRouteFilter);
+    }
+
+    @Override
+    public List<Route> findRoutes(RouteFilter optionalRouteFilter, boolean fetchRouteVariants) {
+        return routeRepository.findRoutes(optionalRouteFilter, fetchRouteVariants);
+    }
+
+    @Override
+    public List<Route> getAllRoutes() {
+        return routeRepository.getAllRoutes();
+    }
+
+    @Override
+    public Long countRoutes(RouteFilter filter) {
+        return routeRepository.countRoutes(filter);
     }
 }

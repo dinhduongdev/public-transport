@@ -1,6 +1,6 @@
 package com.publictransport.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -26,11 +26,11 @@ public class Route {
     @Column(name = "name", length = 100)
     private String name;
 
-    @Lob
+    @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private String type;
+    private RouteType type;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "route", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private Set<RouteVariant> routeVariants;
 }

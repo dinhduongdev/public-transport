@@ -2,14 +2,16 @@ package com.publictransport.repositories;
 
 import com.publictransport.models.User;
 
+import java.util.Optional;
+
 public interface UserRepository {
-    User getUserByEmail(String email);
-//<<<<<<< HEAD
-//    User register(User user);
+    Optional<User> getUserByEmail(String email);
+
     User update(User user);
-//=======
+
     User createUser(User user);
-//>>>>>>> 316244e0d60b925879b815cfd5da02ddea00e6e6
+
     boolean existsByEmail(String email);
+
     boolean authenticate(String email, String password);
 }

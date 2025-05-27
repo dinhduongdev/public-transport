@@ -6,12 +6,14 @@ import jakarta.validation.ValidationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public interface UserService extends UserDetailsService {
-    User getUserByEmail(String email);
+    Optional<User> getUserByEmail(String email);
 
     User register(UserRegisterDTO userRegisterDTO) throws ValidationException, IOException;
 
     boolean authenticate(String username, String password);
+
     User update(User user);
 }

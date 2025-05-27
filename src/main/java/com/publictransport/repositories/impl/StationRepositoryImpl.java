@@ -1,11 +1,12 @@
 package com.publictransport.repositories.impl;
 
+import com.publictransport.dto.params.StationFilter;
+import com.publictransport.models.Coordinates;
 import com.publictransport.models.Station;
+import com.publictransport.models.Station_;
 import com.publictransport.repositories.StationRepository;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import com.publictransport.utils.PaginationUtils;
+import jakarta.persistence.criteria.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -13,15 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @Transactional
 public class StationRepositoryImpl implements StationRepository {
-
-    private static final int PAGE_SIZE = 10;
 
     private final SessionFactory factory;
 
@@ -35,67 +33,9 @@ public class StationRepositoryImpl implements StationRepository {
     }
 
     @Override
-    public List<Station> findAllStations(int page, int size) {
-        return getStations(null, page, size);
-    }
-
-    @Override
-    public long countAllStations() {
+    public Optional<Station> findById(Long id) {
         Session session = getCurrentSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<Station> root = cq.from(Station.class);
-
-        cq.select(cb.count(root));
-
-        return session.createQuery(cq).getSingleResult();
-    }
-
-    @Override
-    public List<Station> searchStations(Map<String, String> params, int page, int size) {
-        return getStations(params, page, size);
-    }
-
-    @Override
-    public long countStationsByParams(Map<String, String> params) {
-        Session session = getCurrentSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<Station> root = cq.from(Station.class);
-
-        List<Predicate> predicates = new ArrayList<>();
-        if (params != null) {
-            if (params.containsKey("name")) {
-                String namePattern = "%" + params.get("name").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("name")), namePattern));
-            }
-            if (params.containsKey("address")) {
-                String addressPattern = "%" + params.get("address").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("address")), addressPattern));
-            }
-            if (params.containsKey("street")) {
-                String streetPattern = "%" + params.get("street").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("street")), streetPattern));
-            }
-            if (params.containsKey("ward")) {
-                String wardPattern = "%" + params.get("ward").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("ward")), wardPattern));
-            }
-            if (params.containsKey("zone")) {
-                String zonePattern = "%" + params.get("zone").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("zone")), zonePattern));
-            }
-        }
-
-        cq.select(cb.count(root)).where(predicates.toArray(new Predicate[0]));
-
-        return session.createQuery(cq).getSingleResult();
-    }
-
-    @Override
-    public Station findById(Long id) {
-        Session session = getCurrentSession();
-        return session.get(Station.class, id);
+        return Optional.ofNullable(session.get(Station.class, id));
     }
 
     @Override
@@ -112,53 +52,52 @@ public class StationRepositoryImpl implements StationRepository {
 
     @Override
     public void delete(Long id) {
-        Session session = getCurrentSession();
-        Station station = findById(id);
-        if (station != null) {
-            session.remove(station);
-        }
+        Session session = factory.getCurrentSession();
+        Optional<Station> station = findById(id);
+        station.ifPresent(session::remove);
     }
 
-    private List<Station> getStations(Map<String, String> params, int page, int size) {
+    @Override
+    public List<Station> findStations(StationFilter filter) {
         Session session = getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Station> cq = cb.createQuery(Station.class);
         Root<Station> root = cq.from(Station.class);
         cq.select(root);
 
-        if (params != null) {
-            List<Predicate> predicates = new ArrayList<>();
-            if (params.containsKey("name")) {
-                String namePattern = "%" + params.get("name").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("name")), namePattern));
-            }
-            if (params.containsKey("address")) {
-                String addressPattern = "%" + params.get("address").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("address")), addressPattern));
-            }
-            if (params.containsKey("street")) {
-                String streetPattern = "%" + params.get("street").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("street")), streetPattern));
-            }
-            if (params.containsKey("ward")) {
-                String wardPattern = "%" + params.get("ward").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("ward")), wardPattern));
-            }
-            if (params.containsKey("zone")) {
-                String zonePattern = "%" + params.get("zone").toLowerCase() + "%";
-                predicates.add(cb.like(cb.lower(root.get("zone")), zonePattern));
-            }
-            cq.where(predicates.toArray(new Predicate[0]));
-        }
+        List<Predicate> predicates = filter.toPredicateList(cb, root);
 
+        if (!predicates.isEmpty()) {
+            cq.where(cb.and(predicates.toArray(new Predicate[0])));
+        }
         Query<Station> query = session.createQuery(cq);
 
-        if (page > 0 && size > 0) {
-            int start = (page - 1) * size;
-            query.setMaxResults(size);
-            query.setFirstResult(start);
-        }
-
+        // Phân trang
+        PaginationUtils.setQueryResultsRange(query, filter);
         return query.getResultList();
     }
+
+    @Override
+    public long countStations(StationFilter filter) {
+        Session session = getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Station> root = criteriaQuery.from(Station.class);
+        criteriaQuery.select(criteriaBuilder.count(root));
+
+        List<Predicate> predicates = filter.toPredicateList(criteriaBuilder, root);
+        if (!predicates.isEmpty())
+            criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
+
+        return session.createQuery(criteriaQuery).getSingleResult();
+    }
+
+    @Override
+    public List<Station> getAllStations() {
+        Session session = getCurrentSession();
+        return session.createQuery("FROM Station", Station.class).getResultList();
+    }
 }
+
+
+

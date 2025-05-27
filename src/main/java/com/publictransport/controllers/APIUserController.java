@@ -8,6 +8,7 @@ import com.publictransport.services.EmailService;
 import com.publictransport.services.EmailVerificationService;
 import com.publictransport.services.UserService;
 import com.publictransport.utils.JwtUtils;
+import com.publictransport.utils.StringUtils;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,6 @@ import java.util.*;
 @RequestMapping("/api")
 @CrossOrigin
 public class APIUserController {
-
     private final UserService userService;
     private final JwtUtils jwtUtils;
     private final EmailService emailService;
@@ -87,18 +87,23 @@ public class APIUserController {
     @PostMapping("/google-login")
     public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginRequest request) throws Exception {
         String email = request.getEmail();
-        // Tìm người dùng theo email
-        User user = userService.getUserByEmail(email);
-        UserRegisterDTO dto = new UserRegisterDTO();
-        dto.setFirstName(request.getName() != null ? request.getName().split(" ")[0] : "");
-        dto.setLastName(request.getName() != null && request.getName().split(" ").length > 1 ? request.getName().split(" ")[1] : "");
-        dto.setEmail(email);
-        dto.setPassword(UUID.randomUUID().toString());
+        Optional<User> userOpt = userService.getUserByEmail(email);
+        User user;
 
-        if (user == null) {
-            // Nếu không tồn tại, đăng ký người dùng mới
+        // Kiểm tra xem người dùng đã tồn tại trong hệ thống chưa
+        if (userOpt.isEmpty()) {
+            UserRegisterDTO dto = new UserRegisterDTO();
+            String rawName = request.getName();
+            String fullName = StringUtils.isNotEmpty(rawName) ? StringUtils.normalizeName(rawName) : "";
+            String[] nameParts = fullName.split(" ", 1);
+            dto.setFirstName(nameParts[0]);
+            dto.setLastName(nameParts.length > 1 ? nameParts[1] : "");
+            dto.setEmail(email);
+            dto.setPassword(UUID.randomUUID().toString());
             dto.setRole("USER");
             user = userService.register(dto);
+        } else {
+            user = userOpt.get();
         }
         // Cập nhật avatar từ Google
         user.setAvatar(request.getAvatar());
@@ -116,7 +121,12 @@ public class APIUserController {
     @RequestMapping("/secure/profile")
     @ResponseBody
     public ResponseEntity<User> getProfile(Principal principal) {
-        return new ResponseEntity<>(this.userService.getUserByEmail(principal.getName()), HttpStatus.OK);
+        String userEmail = principal.getName();
+        Optional<User> userOpt = this.userService.getUserByEmail(userEmail);
+        if (userOpt.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userOpt.get(), HttpStatus.OK);
     }
 
 }

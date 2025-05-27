@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Transactional
@@ -49,20 +50,18 @@ public class StopRepositoryImpl implements StopRepository {
     }
 
     @Override
-    public Stop findById(Long id) {
+    public Optional<Stop> findById(Long id) {
         Session session = getCurrentSession();
-        return session.get(Stop.class, id);
+        return Optional.ofNullable(session.get(Stop.class, id));
     }
 
     @Override
     public void deleteByRouteVariantId(Long routeVariantId) {
         Session session = getCurrentSession();
-        List<Stop> stops = findStopsByRouteVariantId(routeVariantId);
-        for (Stop stop : stops) {
-            Stop stopToDelete = findById(stop.getId());
-            if (stopToDelete != null) {
-                session.remove(stopToDelete);
-            }
-        }
+        String hql = "delete from Stop s where s.routeVariant.id = :routeVariantId";
+        session.createQuery(hql, Stop.class)
+                .setParameter("routeVariantId", routeVariantId)
+                .executeUpdate();
     }
 }
+

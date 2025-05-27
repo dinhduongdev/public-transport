@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -39,32 +40,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByEmail(String email) {
+    public Optional<User> getUserByEmail(String email) {
         return this.userRepository.getUserByEmail(email);
     }
 
-//    @Override
-//<<<<<<< HEAD
-//    public User register(Map<String, String> params, MultipartFile avatar) {
-//        User u = new User();
-//        u.setFirstname(params.get("firstName"));
-//        u.setLastname(params.get("lastName"));
-//        u.setEmail(params.get("email"));
-//        u.setPassword(this.passwordEncoder.encode(params.get("password")));
-//        u.setRole("USER");
-//
-//        if (avatar != null && !avatar.isEmpty()) {
-//            try {
-//                Map res = cloudinary.uploader().upload(avatar.getBytes(), ObjectUtils.asMap("resource_type", "auto"));
-//                u.setAvatar(res.get("secure_url").toString());
-//            } catch (IOException ex) {
-//            }
-//=======
     @Override
     public User register(UserRegisterDTO dto) throws ValidationException, IOException {
         if (this.userRepository.existsByEmail(dto.getEmail())) {
             throw new ValidationException("Email already exists");
-//>>>>>>> 316244e0d60b925879b815cfd5da02ddea00e6e6
         }
 
         User user = new User();
@@ -117,16 +100,17 @@ public class UserServiceImpl implements UserService {
         }
 
         // Tìm người dùng để đảm bảo tồn tại
-        User existingUser = getUserByEmail(user.getEmail());
-        if (existingUser == null) {
+        Optional<User> userOpt = getUserByEmail(user.getEmail());
+        if (userOpt.isEmpty()) {
             throw new UsernameNotFoundException("Không tìm thấy người dùng với email: " + user.getEmail());
         }
+        User existingUser = userOpt.get();
 
         // Cập nhật thông tin người dùng
         existingUser.setFirstname(user.getFirstname());
         existingUser.setLastname(user.getLastname());
         existingUser.setAvatar(user.getAvatar());
-        if (user.getPassword() != null) {
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             existingUser.setPassword(this.passwordEncoder.encode(user.getPassword()));
         }
         existingUser.setRole(user.getRole());
@@ -138,15 +122,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User u = this.getUserByEmail(username);
-        if (u == null) {
+        Optional<User> userOpt = this.getUserByEmail(username);
+        if (userOpt.isEmpty()) {
             throw new UsernameNotFoundException("Invalid username.");
         }
+        User user = userOpt.get();
         Set<GrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new SimpleGrantedAuthority(u.getRole()));
+        authorities.add(new SimpleGrantedAuthority(user.getRole()));
 
         return new org.springframework.security.core.userdetails.User(
-                u.getEmail(), u.getPassword(), authorities);
+                user.getEmail(), user.getPassword(), authorities);
     }
 
     public OidcUser loadUserByOAuth2(OidcUserRequest userRequest) {
@@ -155,13 +140,13 @@ public class UserServiceImpl implements UserService {
         OidcUser oidcUser = delegate.loadUser(userRequest);
 
         System.out.println("Processing OAuth2 user: " + oidcUser.getEmail());
-        User user = this.getUserByEmail(oidcUser.getEmail());
+        Optional<User> userOpt = this.getUserByEmail(oidcUser.getEmail());
 
-        if (user == null) {
+        if (userOpt.isEmpty()) {
             System.out.println("User not found, registering new Google user: " + oidcUser.getEmail());
             registerFromGoogle(oidcUser);
         } else {
-            System.out.println("User already exists: " + user.getEmail());
+            System.out.println("User already exists: " + userOpt.get().getEmail());
         }
 
         return oidcUser;
