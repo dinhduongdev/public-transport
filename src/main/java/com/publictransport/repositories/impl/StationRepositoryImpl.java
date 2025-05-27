@@ -1,12 +1,13 @@
 package com.publictransport.repositories.impl;
 
 import com.publictransport.dto.params.StationFilter;
-import com.publictransport.models.Coordinates;
 import com.publictransport.models.Station;
-import com.publictransport.models.Station_;
 import com.publictransport.repositories.StationRepository;
 import com.publictransport.utils.PaginationUtils;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
