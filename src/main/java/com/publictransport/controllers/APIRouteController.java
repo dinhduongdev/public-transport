@@ -168,6 +168,7 @@ package com.publictransport.controllers;
 import com.publictransport.dto.params.RouteFilter;
 import com.publictransport.models.Route;
 import com.publictransport.services.*;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -206,7 +207,7 @@ public class APIRouteController {
     }
 
     @GetMapping("/routes")
-    public ResponseEntity<Map<String, Object>> list(RouteFilter params) {
+    public ResponseEntity<Map<String, Object>> list(@Valid RouteFilter params) {
         long totalRoutes = routeService.countRoutes(params);
         int totalPages = (int) Math.ceil((double) totalRoutes / params.getSize());
 

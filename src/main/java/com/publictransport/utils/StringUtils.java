@@ -19,6 +19,25 @@ public class StringUtils {
         return !isEmpty(str);
     }
 
+    public static boolean allOrNoneNotEmpty(String... strs) {
+        // nếu tất cả đều không rỗng: true
+        // nếu tất cả đều rỗng: true
+        // Tham khảo: Xnor
+        boolean anyNotEmpty = false;
+        boolean anyEmpty = false;
+        for (String str : strs) {
+            if (isEmpty(str)) {
+                anyEmpty = true;
+            } else {
+                anyNotEmpty = true;
+            }
+            if (anyNotEmpty && anyEmpty) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static String normalizeName(String str) {
         String[] words = str.trim().split("\\s+");
         StringBuilder res = new StringBuilder();

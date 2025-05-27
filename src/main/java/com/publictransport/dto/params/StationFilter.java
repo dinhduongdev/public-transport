@@ -41,7 +41,7 @@ public class StationFilter extends BaseFilter {
     // Địa chỉ đã được định dạng, được gán nếu tìm bằng keyword
     private String formattedAddress;
 
-    public boolean isCoordinateSet() {
+    public boolean areCoordinatesSet() {
         return lng != null && lat != null;
     }
 
@@ -77,7 +77,7 @@ public class StationFilter extends BaseFilter {
         predicates.addAll(PredicateUtils.buildIContainsPredicates(locationParams, cb, locationJoin));
 
         // Nếu tọa độ đã được thiết lập, thêm điều kiện khoảng cách
-        if (isCoordinateSet()) {
+        if (areCoordinatesSet()) {
             Expression<Double> distanceExpr = cb.function(
                 "haversine_km",
                 Double.class,

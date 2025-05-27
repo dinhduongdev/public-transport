@@ -5,6 +5,7 @@ import com.publictransport.models.Route;
 import com.publictransport.models.RouteVariant;
 import com.publictransport.services.RouteService;
 import com.publictransport.services.RouteVariantService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,16 +33,16 @@ public class RouteController {
     @GetMapping("/manage-routes")
     public String getAllRoutes(
             Model model,
-            RouteFilter params,
+            @Valid RouteFilter params,
             RedirectAttributes redirectAttributes
     ) {
         long totalRoutes = routeService.countRoutes(params);
         int totalPages = (int) Math.ceil((double) totalRoutes / params.getSize());
 
-        // Nếu trang yêu cầu lớn hơn tổng số trang, lấy trang cuối cùng
+        // Nếu trang yêu cầu lớn hơn tổng số trang hoặc không tìm thấy tuyến đường nào
         if (params.getPage() > totalPages) {
             redirectAttributes.addFlashAttribute("errorMsg", "Trang không tồn tại.");
-            params.setPage(totalPages);
+            return "redirect:/manage-routes";
         }
 
         List<Route> routes = routeService.findRoutes(params, true);

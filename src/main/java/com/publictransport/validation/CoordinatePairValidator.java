@@ -13,7 +13,7 @@ public class CoordinatePairValidator implements
         }
         boolean lngProvided = value.getLng() != null;
         boolean latProvided = value.getLat() != null;
-        // Valid if both are null or both are non-null
+        // cần phải cung cấp cả 2 hoặc không cung cấp cái nào
         return lngProvided == latProvided;
     }
 }
