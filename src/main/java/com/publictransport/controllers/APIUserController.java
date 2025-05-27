@@ -81,10 +81,10 @@ public class APIUserController {
     public ResponseEntity<?> login(@RequestBody User u) throws Exception {
         if (!this.userService.authenticate(u.getEmail(), u.getPassword()))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai thông tin đăng nhập");
-        User user = userService.getUserByEmail(u.getEmail());
-        String token = jwtUtils.generateToken(user.getEmail(), user.getRole());
+        String token = jwtUtils.generateToken(u.getEmail(), u.getRole() );
         return ResponseEntity.ok().body(Collections.singletonMap("token", token));
     }
+
 
     @PostMapping("/google-login")
     public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginRequest request) throws Exception {
