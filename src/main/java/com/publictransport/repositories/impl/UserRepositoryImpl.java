@@ -3,6 +3,9 @@ package com.publictransport.repositories.impl;
 import com.publictransport.models.User;
 import com.publictransport.repositories.UserRepository;
 import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,5 +70,19 @@ public class UserRepositoryImpl implements UserRepository {
             return false;
         }
         return this.passwordEncoder.matches(password, u.get().getPassword());
+    }
+
+    @Override
+    public User findById(Long id) {
+        Session s = this.factory.getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<User> q = b.createQuery(User.class);
+        Root<User> root = q.from(User.class);
+        q.select(root);
+
+        q.where(b.equal(root.get("id").as(Long.class), id));
+
+        Query query = s.createQuery(q);
+        return (User) query.getSingleResult();
     }
 }

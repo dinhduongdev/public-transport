@@ -6,10 +6,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JwtFilter implements Filter {
@@ -26,34 +29,42 @@ public class JwtFilter implements Filter {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String requestURI = httpRequest.getRequestURI();
+        String authorizationHeader = httpRequest.getHeader("Authorization");
 
-        // Check if the request is for a secure API
-        if (requestURI.startsWith(String.format("%s/api/secure", httpRequest.getContextPath()))) {
-            String authorizationHeader = httpRequest.getHeader("Authorization");
+        // Các API yêu cầu chứng thực
+        if (requestURI.startsWith(httpRequest.getContextPath() + "/api/admin-only") ||
+                requestURI.startsWith(httpRequest.getContextPath() + "/api/secure") ||
+                requestURI.startsWith(httpRequest.getContextPath() + "/api/favorites") ||
+                requestURI.startsWith(httpRequest.getContextPath() + "/api/notifications") ) {
 
-            // Validate the Authorization header
             if (isInvalidAuthorizationHeader(authorizationHeader)) {
                 sendUnauthorizedError(response, "Missing or invalid Authorization header.");
                 return;
             }
-
-            String token = authorizationHeader.substring(7); // Extract token
+            String token = authorizationHeader.substring(7);
             try {
                 String email = jwtUtils.validateTokenAndGetEmail(token);
-                if (email != null) {
-                    setAuthentication(email);
-                    chain.doFilter(request, response); // Proceed with the request
+                String role = jwtUtils.getRoleFromToken(token);
+
+                if (email != null && role != null) {
+                    // Nếu là admin-only thì kiểm tra thêm role
+                    if (requestURI.startsWith(httpRequest.getContextPath() + "/api/admin-only")
+                            && !"ADMIN".equals(role)) {
+                        sendUnauthorizedError(response, "Admin access only.");
+                        return;
+                    }
+                    setAuthentication(email, role);
+                    chain.doFilter(request, response);
                     return;
                 }
             } catch (Exception e) {
-                // Log the error (optional)
+                // log optional
             }
-
             sendUnauthorizedError(response, "Invalid or expired token.");
             return;
         }
-
-        chain.doFilter(request, response); // Proceed for non-secure requests
+        // Không yêu cầu chứng thực
+        chain.doFilter(request, response);
     }
 
     private boolean isInvalidAuthorizationHeader(String header) {
@@ -64,9 +75,10 @@ public class JwtFilter implements Filter {
         ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
     }
 
-    private void setAuthentication(String email) {
+    private void setAuthentication(String email, String role) {
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
         UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(email, null, null);
+                new UsernamePasswordAuthenticationToken(email, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }

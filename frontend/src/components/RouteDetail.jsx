@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 import { clearSelectedRoute } from "../features/routes/routeSlice";
 import {
   fetchRatingData,
   clearRatingData,
 } from "../features/ratings/ratingSlice";
+import { addFavorite } from "../features/favorites/favoritesSlice";
 import RouteReview from "./RouteReview";
 
 function RouteDetail() {
@@ -20,6 +22,7 @@ function RouteDetail() {
     scheduleTripsMap,
   } = useSelector((state) => state.busRoutes);
   const { ratingData, loading, error } = useSelector((state) => state.ratings);
+  const user = useSelector((state) => state.user);
 
   // Fetch rating data khi selectedRoute thay đổi
   useEffect(() => {
@@ -32,8 +35,49 @@ function RouteDetail() {
 
   const handleReviewSubmitted = () => {
     if (selectedRoute?.id) {
-      dispatch(fetchRatingData(selectedRoute.id)); // refesh
+      dispatch(fetchRatingData(selectedRoute.id)); // refresh
     }
+  };
+
+  const handleAddFavoriteRoute = () => {
+    if (!user?.id || !selectedRoute?.id) {
+      toast.error("Please log in to add a favorite route");
+      return;
+    }
+    dispatch(
+      addFavorite({
+        userId: user.id,
+        targetId: selectedRoute.id,
+        targetType: "ROUTE",
+      })
+    ).then((result) => {
+      if (addFavorite.fulfilled.match(result)) {
+        toast.success("Route added to favorites");
+      } else {
+        toast.error(result.payload || "Failed to add favorite route");
+      }
+    });
+  };
+
+  const handleAddFavoriteSchedule = () => {
+    if (!user?.id || !schedules.length) {
+      toast.error("Please log in or select a schedule to add to favorites");
+      return;
+    }
+    dispatch(
+      addFavorite({
+        userId: user.id,
+        targetId: schedules[0].id,
+        targetType: "SCHEDULE",
+      })
+    ).then((result) => {
+      if (addFavorite.fulfilled.match(result)) {
+        console.log(addFavorite.fulfilled.match(result));
+        toast.success("Schedule added to favorites");
+      } else {
+        toast.error(result.payload || "Failed to add favorite schedule");
+      }
+    });
   };
 
   const selectedVariant = selectedVariants.find((variant) =>
@@ -60,15 +104,28 @@ function RouteDetail() {
         Go Back
       </button>
 
-      <h2 className="text-xl font-semibold mb-4">Route Details</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Route Details</h2>
+        <button
+          onClick={handleAddFavoriteRoute}
+          disabled={!selectedRoute || !user?.id}
+          className={`px-4 py-2 text-sm font-medium rounded transition ${
+            selectedRoute && user?.id
+              ? "bg-green-500 text-white hover:bg-green-600"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+        >
+          Add to Favorite Routes
+        </button>
+      </div>
 
       <div className="border rounded-lg p-3 shadow">
         <h3 className="text-blue-600 font-semibold">
-          Route {selectedRoute.code}
+          Route {selectedRoute?.code}
         </h3>
-        <p className="mb-2">{selectedRoute.name}</p>
+        <p className="mb-2">{selectedRoute?.name}</p>
         <p className="text-sm text-gray-600 mb-2">
-          <strong>Type:</strong> {selectedRoute.type}
+          <strong>Type:</strong> {selectedRoute?.type}
         </p>
 
         {/* Toggle outbound/inbound */}
@@ -125,6 +182,17 @@ function RouteDetail() {
               <strong>Distance:</strong>{" "}
               {(selectedVariant.distance / 1000).toFixed(2)} km
             </p>
+            <button
+              onClick={handleAddFavoriteSchedule}
+              disabled={!schedules.length || !user?.id}
+              className={`px-4 py-2 text-sm font-medium rounded transition ${
+                schedules.length && user?.id
+                  ? "bg-green-500 text-white hover:bg-green-600"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              Add to Favorite Schedules
+            </button>
 
             {tab === "schedule" && (
               <>
@@ -210,7 +278,9 @@ function RouteDetail() {
                     onReviewSubmitted={handleReviewSubmitted}
                   />
                 ) : (
-                  <p className="text-sm text-gray-600">There are no reviews yet.</p>
+                  <p className="text-sm text-gray-600">
+                    There are no reviews yet.
+                  </p>
                 )}
               </div>
             )}

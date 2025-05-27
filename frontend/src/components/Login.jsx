@@ -54,8 +54,9 @@ const Login = () => {
       if (res.data.token) {
         cookie.save("token", res.data.token);
       }
-
+      
       const u = await authApis().get(endpoints["current-user"]);
+      console.log(u.data.role);
       if (u.data.role !== "USER") {
         throw new Error("Chỉ người dùng client mới được phép đăng nhập ở đây.");
       }

@@ -1,7 +1,78 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">-->
+<!--<head>-->
+<!--    <title th:replace="~{base :: title}">Chi tiết tuyến đường</title>-->
+<!--    <th:block th:fragment="extraStyles">-->
+<!--        <style>-->
+<!--            .detail-container {-->
+<!--                max-width: 800px;-->
+<!--                margin: 0 auto;-->
+<!--                padding: 20px;-->
+<!--                background-color: #fff;-->
+<!--                border-radius: 5px;-->
+<!--                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);-->
+<!--            }-->
+<!--            h1, h2 {-->
+<!--                color: #333;-->
+<!--            }-->
+<!--            .detail-info p {-->
+<!--                margin: 5px 0;-->
+<!--            }-->
+<!--            .detail-info strong {-->
+<!--                display: inline-block;-->
+<!--                width: 120px;-->
+<!--            }-->
+<!--            .back-btn {-->
+<!--                display: inline-block;-->
+<!--                padding: 10px 20px;-->
+<!--                background-color: #007bff;-->
+<!--                color: white;-->
+<!--                text-decoration: none;-->
+<!--                border-radius: 3px;-->
+<!--                margin-top: 20px;-->
+<!--            }-->
+<!--            .back-btn:hover {-->
+<!--                background-color: #0056b3;-->
+<!--            }-->
+<!--        </style>-->
+<!--    </th:block>-->
+<!--</head>-->
+<!--<body>-->
+<!--<th:block th:fragment="content">-->
+<!--    <div class="detail-container">-->
+<!--        <h1>Chi tiết tuyến đường</h1>-->
+<!--        <div class="detail-info">-->
+<!--            <p><strong>ID:</strong> <span th:text="${route.id}"></span></p>-->
+<!--            <p><strong>Mã tuyến:</strong> <span th:text="${route.code}"></span></p>-->
+<!--            <p><strong>Tên tuyến:</strong> <span th:text="${route.name}"></span></p>-->
+<!--            <p><strong>Loại:</strong> <span th:text="${route.type}"></span></p>-->
+<!--        </div>-->
+
+<!--        <h2 class="mt-4">Các lộ trình</h2>-->
+<!--        <table class="table table-bordered table-hover">-->
+<!--            <thead class="table-dark">-->
+<!--            <tr>-->
+<!--                <th>ID</th>-->
+<!--                <th>Hướng</th>-->
+<!--                <th>Trạm đi</th>-->
+<!--                <th>Trạm tới</th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+<!--        </table>-->
+<!--        <a th:href="@{/manage-routes}" class="back-btn">Quay lại</a>-->
+<!--    </div>-->
+<!--</th:block>-->
+
+<!--&lt;!&ndash; Fragment extraScripts (rỗng vì trang này không cần JavaScript bổ sung) &ndash;&gt;-->
+<!--<th:block th:fragment="extraScripts">-->
+<!--    &lt;!&ndash; Không cần JavaScript bổ sung &ndash;&gt;-->
+<!--</th:block>-->
+<!--</body>-->
+<!--</html>-->
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
 <head>
-    <title th:replace="~{base :: title}">Chi tiết tuyến đường</title>
+    <title th:replace="~{base :: title}">Chỉnh sửa tuyến đường</title>
     <th:block th:fragment="extraStyles">
         <style>
             .detail-container {
@@ -22,17 +93,46 @@
                 display: inline-block;
                 width: 120px;
             }
-            .back-btn {
+            .back-btn, .submit-btn, .cancel-btn {
                 display: inline-block;
                 padding: 10px 20px;
-                background-color: #007bff;
                 color: white;
                 text-decoration: none;
                 border-radius: 3px;
                 margin-top: 20px;
+                margin-right: 10px;
+            }
+            .back-btn {
+                background-color: #6c757d;
             }
             .back-btn:hover {
-                background-color: #0056b3;
+                background-color: #5a6268;
+            }
+            .submit-btn {
+                background-color: #28a745;
+            }
+            .submit-btn:hover {
+                background-color: #218838;
+            }
+            .cancel-btn {
+                background-color: #dc3545;
+            }
+            .cancel-btn:hover {
+                background-color: #c82333;
+            }
+            .form-group {
+                margin-bottom: 15px;
+            }
+            .form-group label {
+                display: inline-block;
+                width: 120px;
+                font-weight: bold;
+            }
+            .form-group input, .form-group select {
+                width: calc(100% - 130px);
+                padding: 5px;
+                border: 1px solid #ddd;
+                border-radius: 3px;
             }
         </style>
     </th:block>
@@ -40,41 +140,36 @@
 <body>
 <th:block th:fragment="content">
     <div class="detail-container">
-        <h1>Chi tiết tuyến đường</h1>
-        <div class="detail-info">
-            <p><strong>ID:</strong> <span th:text="${route.id}"></span></p>
-            <p><strong>Mã tuyến:</strong> <span th:text="${route.code}"></span></p>
-            <p><strong>Tên tuyến:</strong> <span th:text="${route.name}"></span></p>
-            <p><strong>Loại:</strong> <span th:text="${route.type != null} ? ${route.type} : 'N/A'"></span></p>
-        </div>
+        <h1>Chỉnh sửa tuyến đường</h1>
+        <form th:action="@{/manage-routes/edit/{id}(id=${route.id})}" th:object="${route}" method="post">
+            <div class="form-group">
+                <label for="id">ID:</label>
+                <input disabled type="text" id="id" th:field="*{id}" readonly />
+            </div>
+            <div class="form-group">
+                <label for="code">Mã tuyến:</label>
+                <input type="text" id="code" th:field="*{code}" required />
+            </div>
+            <div class="form-group">
+                <label for="name">Tên tuyến:</label>
+                <input type="text" id="name" th:field="*{name}" required />
+            </div>
+            <div class="form-group">
+                <label for="type">Loại:</label>
+                <select id="type" th:field="*{type}" required>
+                    <option value="">Chọn loại tuyến</option>
+                    <option value="BUS">BUS</option>
+                    <option value="ELECTRIC">ELECTRIC</option>
+                </select>
+            </div>
 
-        <h2 class="mt-4">Các lộ trình</h2>
-        <table class="table table-bordered table-hover">
-            <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Hướng</th>
-                <th>Trạm đi</th>
-                <th>Trạm tới</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:if="${variants.isEmpty}">
-                <td colspan="4" class="text-center">Không có lộ trình nào.</td>
-            </tr>
-            <tr th:each="variant : ${variants}">
-                <td th:text="${variant.id}"></td>
-                <td th:text="${variant.isOutbound != null and variant.isOutbound} ? 'Tuyến đi' : 'Tuyến về'"></td>
-                <td th:text="${variant.startStop != null} ? ${variant.startStop} : 'N/A'"></td>
-                <td th:text="${variant.endStop != null} ? ${variant.endStop} : 'N/A'"></td>
-            </tr>
-            </tbody>
-        </table>
-        <a th:href="@{/manage-routes}" class="back-btn">Quay lại</a>
+            <button type="submit" class="submit-btn">Lưu thay đổi</button>
+            <a th:href="@{/manage-routes}" class="cancel-btn">Hủy</a>
+            <a th:href="@{/manage-routes}" class="back-btn">Quay lại</a>
+        </form>
     </div>
 </th:block>
 
-<!-- Fragment extraScripts (rỗng vì trang này không cần JavaScript bổ sung) -->
 <th:block th:fragment="extraScripts">
     <!-- Không cần JavaScript bổ sung -->
 </th:block>

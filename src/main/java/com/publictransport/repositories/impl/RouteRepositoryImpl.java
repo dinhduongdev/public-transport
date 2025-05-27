@@ -11,6 +11,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,9 @@ public class RouteRepositoryImpl implements RouteRepository {
     public RouteRepositoryImpl(SessionFactory factory) {
         this.factory = factory;
     }
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
 
     @Override
     public Optional<Route> findById(Long id) {

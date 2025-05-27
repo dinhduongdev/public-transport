@@ -1,7 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./features/user/userSlice";
-import busRoutesReducer from './features/routes/routeSlice';
-import ratingReducer from './features/ratings/ratingSlice';
+import busRoutesReducer from "./features/routes/routeSlice";
+import ratingReducer from "./features/ratings/ratingSlice";
+import favoritesReducer from "./features/favorites/favoritesSlice";
+import notificationReducer from './features/notifications/notificationSlice';
 
 
 export const store = configureStore({
@@ -9,5 +11,7 @@ export const store = configureStore({
     user: userReducer,
     busRoutes: busRoutesReducer,
     ratings: ratingReducer,
+    favorites: favoritesReducer,
+    notification: notificationReducer,
   },
 });

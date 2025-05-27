@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 @Service("userDetailsService")
@@ -127,7 +124,11 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException("Invalid username.");
         }
         User user = userOpt.get();
-        Set<GrantedAuthority> authorities = new HashSet<>();
+//        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + u.getRole()));
+//        authorities.add(new SimpleGrantedAuthority(u.getRole()));
+        List<GrantedAuthority> authorities = new ArrayList<>(
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+        );
         authorities.add(new SimpleGrantedAuthority(user.getRole()));
 
         return new org.springframework.security.core.userdetails.User(

@@ -1,8 +1,12 @@
 package com.publictransport.controllers;
 
+import com.publictransport.models.Favorite;
 import com.publictransport.dto.params.RouteFilter;
+import com.publictransport.models.Favorite;
 import com.publictransport.models.Route;
 import com.publictransport.models.RouteVariant;
+import com.publictransport.services.FavoriteService;
+import com.publictransport.services.NotificationService;
 import com.publictransport.services.RouteService;
 import com.publictransport.services.RouteVariantService;
 import jakarta.validation.Valid;
@@ -23,11 +27,19 @@ public class RouteController {
 
     private final RouteService routeService;
     private final RouteVariantService routeVariantService;
+    private final FavoriteService favoriteService;
+    private final NotificationService notificationService;
 
     @Autowired
-    public RouteController(RouteService routeService, RouteVariantService routeVariantService) {
+    public RouteController(
+            RouteService routeService,
+            RouteVariantService routeVariantService,
+            FavoriteService favoriteService,
+            NotificationService notificationService) {
         this.routeService = routeService;
         this.routeVariantService = routeVariantService;
+        this.favoriteService = favoriteService;
+        this.notificationService = notificationService;
     }
 
     @GetMapping("/manage-routes")
@@ -122,6 +134,19 @@ public class RouteController {
 
         route.setId(id);
         routeService.update(route);
+
+        // thông báo =====================================
+        // Tìm các Favorite có isObserved = true
+        List<Favorite> favorites = favoriteService.findObservedFavoritesByTarget(id, "ROUTE");
+        // Tạo thông báo
+        for (Favorite favorite : favorites) {
+            notificationService.createNotification(
+                    favorite.getUser().getId(),
+                    "Cập nhật tuyến đường",
+                    "Tuyến đường " + route.getName() + " đã được cập nhật."
+            );
+        }
+
         redirectAttributes.addFlashAttribute("successMsg", "Cập nhật tuyến đường thành công.");
         return "redirect:/manage-routes";
     }

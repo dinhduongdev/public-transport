@@ -30,17 +30,16 @@ public class JwtUtils {
         this.HEADER = new JWSHeader(ALGORITHM);
     }
 
-    public String generateToken(String username) throws Exception {
+    public String generateToken(String username, String role) throws Exception {
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(username)
+                .claim("role", role)
                 .expirationTime(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .issueTime(new Date())
                 .build();
 
         SignedJWT signedJWT = new SignedJWT(this.HEADER, claimsSet);
-
         signedJWT.sign(this.SIGNER);
-
         return signedJWT.serialize();
     }
 
@@ -58,4 +57,13 @@ public class JwtUtils {
 
         return signedJWT.getJWTClaimsSet().getSubject();
     }
+
+    public String getRoleFromToken(String token) throws Exception {
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        if (!signedJWT.verify(this.VERIFIER))
+            return null;
+
+        return signedJWT.getJWTClaimsSet().getStringClaim("role");
+    }
+
 }

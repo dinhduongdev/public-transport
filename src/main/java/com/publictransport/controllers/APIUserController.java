@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -80,7 +81,8 @@ public class APIUserController {
     public ResponseEntity<?> login(@RequestBody User u) throws Exception {
         if (!this.userService.authenticate(u.getEmail(), u.getPassword()))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai thông tin đăng nhập");
-        String token = jwtUtils.generateToken(u.getEmail());
+        User user = userService.getUserByEmail(u.getEmail());
+        String token = jwtUtils.generateToken(user.getEmail(), user.getRole());
         return ResponseEntity.ok().body(Collections.singletonMap("token", token));
     }
 
@@ -109,11 +111,12 @@ public class APIUserController {
         user.setAvatar(request.getAvatar());
         user = userService.update(user);
         // Tạo token JWT
-        String token = jwtUtils.generateToken(user.getEmail());
-
+        String token = jwtUtils.generateToken(user.getEmail(), user.getRole());
+        System.out.println(token);
         // Đặt thông tin xác thực vào SecurityContext để tạo phiên (session)
-        Authentication auth = new UsernamePasswordAuthenticationToken(user.getEmail(), null, userService.loadUserByUsername(user.getEmail()).getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(auth);
+//        Authentication auth = new UsernamePasswordAuthenticationToken(user.getEmail(), null, userService.loadUserByUsername(user.getEmail()).getAuthorities());
+//        SecurityContextHolder.getContext().setAuthentication(auth);
+        System.out.println("aaaaaaaaaaaa");
         // Trả về token cho frontend
         return ResponseEntity.ok().body(Collections.singletonMap("token", token));
     }
@@ -127,6 +130,15 @@ public class APIUserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(userOpt.get(), HttpStatus.OK);
+    }
+
+
+    @GetMapping("/admin-only")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> test(Authentication auth) {
+        System.out.println("Logged in as: " + auth.getName());
+        System.out.println("Authorities: " + auth.getAuthorities());
+        return ResponseEntity.ok("Admin only content");
     }
 
 }

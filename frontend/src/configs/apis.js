@@ -14,6 +14,15 @@ const endpoints = {
   ratingSummary: (routeId) =>
     `${BASE_URL}/api/ratings/summary?routeId=${routeId}`,
   submitRating: `${BASE_URL}/api/ratings`,
+  favoritesByUser: (userId, targetType) =>
+    `${BASE_URL}/api/favorites/user/${userId}?targetType=${targetType}`,
+  favoriteById: (favoriteId) => `${BASE_URL}/api/favorites/${favoriteId}`,
+  favorites: `${BASE_URL}/api/favorites`,
+  //notifications
+  notificationsByUser: (userId) =>
+    `${BASE_URL}/api/notifications/user/${userId}`, // Thêm endpoint
+  notificationById: (notificationId) =>
+    `${BASE_URL}/api/notifications/${notificationId}`,
 };
 
 const Apis = {
@@ -28,6 +37,14 @@ const authApis = () => ({
     }),
   post: (url, data) =>
     axios.post(url, data, {
+      headers: { Authorization: `Bearer ${cookie.load("token")}` },
+    }),
+  delete: (url) =>
+    axios.delete(url, {
+      headers: { Authorization: `Bearer ${cookie.load("token")}` },
+    }),
+  patch: (url, data) =>
+    axios.patch(url, data, {
       headers: { Authorization: `Bearer ${cookie.load("token")}` },
     }),
 });

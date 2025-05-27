@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchRoutes } from '../features/routes/routeSlice';
 import RouteDetail from './RouteDetail';
-import SearchTabs from './SearchTabs'; // 🔁 thêm dòng này
+import SearchTabs from './SearchTabs'; 
 
 export default function BusMapUI() {
   const dispatch = useDispatch();

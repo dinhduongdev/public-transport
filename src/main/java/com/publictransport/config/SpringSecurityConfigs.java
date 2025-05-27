@@ -1,11 +1,14 @@
 package com.publictransport.config;
 
+import com.publictransport.filters.JwtFilter;
 import com.publictransport.services.impl.UserServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,6 +24,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -33,6 +37,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableTransactionManagement
+@EnableMethodSecurity(prePostEnabled = true)
 @ComponentScan(basePackages = {
         "com.publictransport.config",
         "com.publictransport.controllers",
@@ -47,6 +52,8 @@ public class SpringSecurityConfigs {
     private UserServiceImpl userService;
     @Autowired
     private Environment env;
+    @Autowired
+    private JwtFilter jwtFilter;
 
     @Bean
     public BCryptPasswordEncoder getBCryptPasswordEncoder() {
@@ -60,31 +67,34 @@ public class SpringSecurityConfigs {
     }
 
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors
-                .configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(
-                                "/",
-                                "/manage-routes",
-                                "/manage-routes/**",
-                                "/manage-stations/**",
-                                "/manage-route-variants/**",
-                                "/manage-schedules/**"
-                        ).authenticated()
-                        .requestMatchers(
-                                "/api/**",
-                                "/login",
-                                "/oauth2/**").permitAll()
+//                                "/",
+//                                "/manage-routes/**",
+//                                "/manage-stations/**",
+//                                "/manage-route-variants/**",
+//                                "/manage-schedules/**",
+//                                "/api/admin-only"
+                                new AntPathRequestMatcher("/login")
+                        ).permitAll()
+//                        .requestMatchers("/api/favorites/**").hasRole("USER")
+//                        .requestMatchers("/api/notifications/**").hasRole("USER")
+                        .requestMatchers("/api/secure/profile/**").permitAll()
+                        .requestMatchers("/api/**", "/login", "/oauth2/**").permitAll()
                         .requestMatchers("/js/**", "/css/**").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().hasRole("ADMIN")
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
+                        .usernameParameter("email") //Cấu hình lại tên field
+                        .passwordParameter("password")
                         .defaultSuccessUrl("/", true)
                         .usernameParameter("email")
                         .failureUrl("/login?error=true")
@@ -99,8 +109,13 @@ public class SpringSecurityConfigs {
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login")
-                        .permitAll());
-
+                        .permitAll()
+                )
+//                .exceptionHandling(exception -> exception
+//                        .authenticationEntryPoint((request, response, authException) ->
+//                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
+//                );
+                .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -141,7 +156,7 @@ public class SpringSecurityConfigs {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:5173"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE","PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setExposedHeaders(List.of("Authorization"));
         config.setAllowCredentials(true);
