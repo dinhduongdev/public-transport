@@ -1,12 +1,9 @@
 package com.publictransport.dto.params;
 
-import com.publictransport.models.Route;
 import com.publictransport.models.RouteVariant;
 import com.publictransport.models.RouteVariant_;
 import com.publictransport.models.Route_;
 import com.publictransport.utils.PredicateUtils;
-import com.publictransport.utils.StringUtils;
-import com.publictransport.validation.StopKeywordPair;
 import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 import lombok.Data;
@@ -23,23 +20,12 @@ import static com.publictransport.utils.MapUtils.putIfNotEmpty;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-@StopKeywordPair
 public class RouteFilter extends BaseFilter {
     private String name;
     private String code;
     private String type;
     private String startStop;
     private String endStop;
-
-    // các trường có kw sẽ dùng proxy để tìm
-    // nếu được cung cấp sẽ không dùng đống ở trên
-    // đống ở trên là các trường trong model
-    private String startKw;
-    private String endKw;
-
-    public boolean areKeywordsSet() {
-        return StringUtils.allOrNoneNotEmpty(startKw, endKw);
-    }
 
     public Map<SingularAttribute, String> toMapOfRootStringFields() {
         Map<SingularAttribute, String> params = new HashMap<>();

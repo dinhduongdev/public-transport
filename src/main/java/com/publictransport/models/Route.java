@@ -33,4 +33,18 @@ public class Route {
     @OneToMany(mappedBy = "route", fetch = FetchType.LAZY)
     @JsonManagedReference
     private Set<RouteVariant> routeVariants;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Route that = (Route) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }
+

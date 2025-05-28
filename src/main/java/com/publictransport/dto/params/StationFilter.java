@@ -2,14 +2,13 @@ package com.publictransport.dto.params;
 
 import com.publictransport.models.*;
 import com.publictransport.utils.Constant;
+import com.publictransport.utils.MapUtils;
 import com.publictransport.utils.PredicateUtils;
 import com.publictransport.utils.StringUtils;
-import com.publictransport.validation.CoordinatePair;
-import jakarta.persistence.Transient;
+import com.publictransport.validation.ValidCoordinatesString;
 import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,15 +22,14 @@ import static com.publictransport.utils.MapUtils.putIfNotEmpty;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-@CoordinatePair
 public class StationFilter extends BaseFilter {
     private String name;
     private String address;
     private String street;
     private String ward;
     private String zone;
-    private Double lng;
-    private Double lat;
+    @ValidCoordinatesString
+    private String latLng;
     @DecimalMax("30")
     @NonNull
     @Positive
@@ -42,14 +40,9 @@ public class StationFilter extends BaseFilter {
     // Địa chỉ đã được định dạng từ proxy
     private String formattedAddress;
 
-    public boolean areCoordinatesSet() {
-        return lng != null && lat != null;
-    }
-
     public boolean isKeywordSet() {
         return StringUtils.isNotEmpty(keyword);
     }
-
 
     public Map<SingularAttribute, String> toMapOfRootStringFields() {
         Map<SingularAttribute, String> map = new HashMap<>();
@@ -79,14 +72,16 @@ public class StationFilter extends BaseFilter {
         predicates.addAll(PredicateUtils.buildIContainsPredicates(locationParams, cb, locationJoin));
 
         // Nếu tọa độ đã được thiết lập, thêm điều kiện khoảng cách
-        if (areCoordinatesSet()) {
+        Optional<Coordinates> optCoords = MapUtils.convertToCoordinates(latLng);
+        if (optCoords.isPresent()) {
+            Coordinates coords = optCoords.get();
             Expression<Double> distanceExpr = cb.function(
-                "haversine_km",
-                Double.class,
-                cb.literal(lat), cb.literal(lng),
-                coordinatesJoin.get(Coordinates_.lat), coordinatesJoin.get(Coordinates_.lng)
+                    "haversine_km",
+                    Double.class,
+                    cb.literal(coords.getLat()), cb.literal(coords.getLng()),
+                    coordinatesJoin.get(Coordinates_.lat), coordinatesJoin.get(Coordinates_.lng)
             );
-            predicates.add(cb.le(distanceExpr, (double) radiusKm));
+            predicates.add(cb.le(distanceExpr, radiusKm));
         }
 
         return predicates;

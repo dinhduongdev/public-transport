@@ -1,12 +1,5 @@
 package com.publictransport.utils;
 
-import org.apache.http.client.utils.URLEncodedUtils;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 public class StringUtils {
     private StringUtils() {
     }
@@ -17,6 +10,15 @@ public class StringUtils {
 
     public static boolean isNotEmpty(String str) {
         return !isEmpty(str);
+    }
+
+    public static boolean isNotEmpty(String... strs) {
+        for (String str : strs) {
+            if (isEmpty(str)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static boolean allOrNoneNotEmpty(String... strs) {

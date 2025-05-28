@@ -17,6 +17,8 @@ public interface StationRepository {
 
     List<Station> findStations(StationFilter filter);
 
+    List<Station> findStations(StationFilter filter, boolean fetchStops);
+
     List<Station> getAllStations();
 
     long countStations(StationFilter filter);

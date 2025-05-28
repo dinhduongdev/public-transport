@@ -1,5 +1,6 @@
 package com.publictransport.validation;
 
+import com.publictransport.validation.impl.CoordsOrKeywordPairRequiredImpl;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -10,17 +11,14 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-//https://www.baeldung.com/spring-mvc-custom-validator - 9
-
 @Documented
-@Constraint(validatedBy = CoordinatePairValidator.class)
+@Constraint(validatedBy = CoordsOrKeywordPairRequiredImpl.class)
 @Target({TYPE})
 @Retention(RUNTIME)
-public @interface CoordinatePair {
-    String message() default "Kinh độ (lng) & Vĩ độ (lat) phải được cung cấp cùng nhau.";
+public @interface CoordsOrKeywordPairRequired {
+    String message() default "Bạn phải cung cấp tọa độ (startCoords, endCoords) hoặc từ khóa (startKw, endKw).";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
 }
-

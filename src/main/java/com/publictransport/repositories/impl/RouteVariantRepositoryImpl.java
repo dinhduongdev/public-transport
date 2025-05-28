@@ -1,11 +1,8 @@
 package com.publictransport.repositories.impl;
 
-import com.publictransport.models.RouteVariant;
+import com.publictransport.models.*;
 import com.publictransport.repositories.RouteVariantRepository;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -149,5 +146,36 @@ public class RouteVariantRepositoryImpl implements RouteVariantRepository {
         }
 
         return query.getResultList();
+    }
+
+    @Override
+    public List<RouteVariant> findByStationId(Long stationId) {
+        Session session = factory.getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<RouteVariant> cq = cb.createQuery(RouteVariant.class);
+        Root<RouteVariant> root = cq.from(RouteVariant.class);
+        Join<RouteVariant, Stop> stopJoin = root.join(RouteVariant_.stops, JoinType.INNER);
+
+        Predicate stationIdPredicate = cb.equal(stopJoin.get(Stop_.station).get(Station_.id), stationId);
+        cq.select(root).where(stationIdPredicate);
+
+        return session.createQuery(cq).getResultList();
+    }
+
+    @Override
+    public Optional<Double> findMeanDistanceBetweenStops(Long routeVariantId) {
+        Session session = factory.getCurrentSession();
+        String hql = "SELECT rv.distance / (COUNT(s.id) - 1) " +
+                "FROM RouteVariant rv JOIN rv.stops s " +
+                "WHERE rv.id = :routeVariantId " +
+                "GROUP BY rv.distance " +
+                "HAVING COUNT(s.id) > 1";
+        Double meanDistance = (Double) session.createQuery(hql)
+                .setParameter("routeVariantId", routeVariantId)
+                .uniqueResult();
+        if (meanDistance == null || meanDistance.isNaN() || meanDistance.isInfinite()) {
+            return Optional.empty();
+        }
+        return Optional.of(meanDistance);
     }
 }

@@ -55,6 +55,11 @@ public class StationServiceImpl implements StationService {
     }
 
     @Override
+    public List<Station> findStations(StationFilter filter, boolean fetchStops) {
+        return stationRepository.findStations(filter, fetchStops);
+    }
+
+    @Override
     public Optional<StationFilter> buildNewFilterByKeyword(StationFilter oldFilter) {
         var newFilter = new StationFilter();
         newFilter.setRadiusKm(oldFilter.getRadiusKm());
@@ -67,16 +72,22 @@ public class StationServiceImpl implements StationService {
             return Optional.empty();
         }
         var addrAndCoords = optAddrAndCoords.get();
+        var coords = addrAndCoords.getRight();
+        String latLng = coords.getLat() + ";" + coords.getLng();
         newFilter.setFormattedAddress(addrAndCoords.getLeft());
-        newFilter.setLng(addrAndCoords.getRight().getLng());
-        newFilter.setLat(addrAndCoords.getRight().getLat());
-
+        newFilter.setLatLng(latLng);
         return Optional.of(newFilter);
     }
 
     @Override
     public List<Station> getAllStations() {
         return stationRepository.getAllStations();
+    }
+
+    public Optional<StationFilter> buildNewFilterByKeyword(String keyword) {
+        var oldFilter = new StationFilter();
+        oldFilter.setKeyword(keyword);
+        return buildNewFilterByKeyword(oldFilter);
     }
 
     @Override

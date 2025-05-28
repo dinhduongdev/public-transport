@@ -7,7 +7,10 @@ import java.util.Optional;
 
 public interface StopService {
     List<Stop> findStopsByRouteVariantId(Long routeVariantId);
+
     void save(Stop stop);
+
     Optional<Stop> findById(Long id);
+
     void deleteByRouteVariantId(Long routeVariantId);
 }

@@ -24,4 +24,8 @@ public interface RouteVariantRepository {
     void delete(Long id);
 
     List<RouteVariant> findByRouteId(Long routeId);
+
+    List<RouteVariant> findByStationId(Long stationId);
+
+    Optional<Double> findMeanDistanceBetweenStops(Long routeVariantId);
 }

@@ -2,6 +2,7 @@ package com.publictransport.repositories.impl;
 
 import com.publictransport.dto.params.StationFilter;
 import com.publictransport.models.Station;
+import com.publictransport.models.Station_;
 import com.publictransport.repositories.StationRepository;
 import com.publictransport.utils.PaginationUtils;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -76,6 +77,40 @@ public class StationRepositoryImpl implements StationRepository {
         // Phân trang
         PaginationUtils.setQueryResultsRange(query, filter);
         return query.getResultList();
+    }
+
+    @Override
+    public List<Station> findStations(StationFilter filter, boolean fetchStops) {
+        if (!fetchStops) {
+            return findStations(filter);
+        }
+        Session session = getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+
+        // lấy id của các trạm
+        CriteriaQuery<Long> idQuery = cb.createQuery(Long.class);
+        Root<Station> idRoot = idQuery.from(Station.class);
+        idQuery.select(idRoot.get(Station_.id)).distinct(true);
+        List<Predicate> predicates = filter.toPredicateList(cb, idRoot);
+        if (!predicates.isEmpty()) {
+            idQuery.where(cb.and(predicates.toArray(new Predicate[0])));
+        }
+
+        Query<Long> query = session.createQuery(idQuery);
+        // Phân trang
+        PaginationUtils.setQueryResultsRange(query, filter);
+        List<Long> stationIds = query.getResultList();
+
+        if (stationIds.isEmpty()) return List.of();
+
+        // lấy các trạm với id đã tìm được với join fetch stops
+        CriteriaQuery<Station> stationQuery = cb.createQuery(Station.class);
+        Root<Station> stationRoot = stationQuery.from(Station.class);
+        stationQuery.select(stationRoot);
+        stationQuery.where(stationRoot.get(Station_.id).in(stationIds));
+        stationRoot.fetch(Station_.stops);
+        Query<Station> stationHibernateQuery = session.createQuery(stationQuery);
+        return stationHibernateQuery.getResultList();
     }
 
     @Override

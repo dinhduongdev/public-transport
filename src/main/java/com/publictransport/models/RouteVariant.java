@@ -1,12 +1,15 @@
 package com.publictransport.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -32,7 +35,7 @@ public class RouteVariant {
     private String name;
 
     @Column(name = "distance")
-    private Float distance;
+    private Float distance; // meters
 
     @Size(max = 255)
     @Column(name = "start_stop")
@@ -42,7 +45,21 @@ public class RouteVariant {
     @Column(name = "end_stop")
     private String endStop;
 
-//    @OneToMany(mappedBy = "routeVariant", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OrderBy("stopOrder ASC")
-//    private List<Stop> stops;
+    @OneToMany(mappedBy = "routeVariant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("stopOrder ASC")
+    @JsonBackReference
+    private List<Stop> stops;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RouteVariant that = (RouteVariant) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }
