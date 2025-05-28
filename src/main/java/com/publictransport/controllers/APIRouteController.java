@@ -166,15 +166,13 @@
 package com.publictransport.controllers;
 
 import com.publictransport.dto.params.RouteFilter;
-import com.publictransport.models.Route;
+import com.publictransport.models.*;
 import com.publictransport.services.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -274,4 +272,5 @@ public class APIRouteController {
 //        response.put("scheduleTripsMap", scheduleTripsMap);
 //        return ResponseEntity.ok(response);
 //    }
+
 }

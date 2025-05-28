@@ -1,88 +1,273 @@
-import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchRouteDetails } from '../features/routes/routeSlice';
-import { ClipLoader } from 'react-spinners';
 
-function RouteSearch() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [visibleCount, setVisibleCount] = useState(4);
-  const [isLoading, setIsLoading] = useState(false);
+// export default RouteSearch;
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { fetchRoutes, setCurrentPage } from '../features/routes/routeSlice';
+
+const RouteSearch = () => {
   const dispatch = useDispatch();
-  const { busRoutes, routeVariantsMap } = useSelector((state) => state.busRoutes);
+  const navigate = useNavigate(); // Initialize useNavigate
 
-  const filteredRoutes = busRoutes.filter(
-    (route) =>
-      route.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      route.route.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const {
+    routes,
+    totalItems,
+    totalPages,
+    currentPage,
+    status,
+    error,
+  } = useSelector((state) => state.busRoutes);
 
-  const visibleRoutes = filteredRoutes.slice(0, visibleCount);
+  const [searchParams, setSearchParams] = useState({
+    name: '',
+    startStop: '',
+    endStop: '',
+    code: '',
+    type: '',
+  });
 
-  const handleRouteClick = (routeId) => {
-    dispatch(fetchRouteDetails(routeId));
+  useEffect(() => {
+    dispatch(fetchRoutes({ page: currentPage, size: 10, searchParams }));
+  }, [dispatch, currentPage, searchParams]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSearchParams((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleScroll = (e) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.target;
-    if (scrollTop + clientHeight >= scrollHeight - 10 && !isLoading) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setVisibleCount((prev) => prev + 4);
-        setIsLoading(false);
-      }, 1000);
+  const handleReset = () => {
+    const resetParams = { name: '', startStop: '', endStop: '', code: '', type: '' };
+    setSearchParams(resetParams);
+    dispatch(setCurrentPage(1));
+  };
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      dispatch(setCurrentPage(page));
     }
   };
 
+  const getTypeIcon = (type) => {
+    switch (type?.toUpperCase()) {
+      case 'BUS':
+        return '🚌';
+      case 'ELECTRIC':
+        return '🚆';
+      default:
+        return '❓';
+    }
+  };
+
+  // Handle route click to navigate to the route variants page
+  const handleRouteClick = (route) => {
+    navigate(`/route/${route.id}`, { state: { route } }); // Pass the route data via state
+  };
+
+  const renderPagination = () => {
+    const pages = [];
+    const maxPagesToShow = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+    if (endPage - startPage + 1 < maxPagesToShow) {
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+
+    if (startPage > 1) {
+      pages.push(
+        <button
+          key={1}
+          onClick={() => handlePageChange(1)}
+          className={`px-3 py-1 mx-1 rounded ${
+            currentPage === 1
+              ? 'bg-red-500 text-white'
+              : 'bg-gray-200 hover:bg-gray-300'
+          }`}
+        >
+          1
+        </button>
+      );
+      if (startPage > 2) {
+        pages.push(
+          <span key="start-ellipsis" className="px-3 py-1 mx-1">
+            ...
+          </span>
+        );
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`px-3 py-1 mx-1 rounded ${
+            currentPage === i
+              ? 'bg-red-500 text-white'
+              : 'bg-gray-200 hover:bg-gray-300'
+          }`}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pages.push(
+          <span key="end-ellipsis" className="px-3 py-1 mx-1">
+            ...
+          </span>
+        );
+      }
+      pages.push(
+        <button
+          key={totalPages}
+          onClick={() => handlePageChange(totalPages)}
+          className={`px-3 py-1 mx-1 rounded ${
+            currentPage === totalPages
+              ? 'bg-red-500 text-white'
+              : 'bg-gray-200 hover:bg-gray-300'
+          }`}
+        >
+          {totalPages}
+        </button>
+      );
+    }
+
+    return (
+      <div className="flex items-center justify-center mt-4">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-3 py-1 mx-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+        >
+          ←
+        </button>
+        {pages}
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="px-3 py-1 mx-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+        >
+          →
+        </button>
+      </div>
+    );
+  };
+
   return (
-    <div
-      className="col-span-1 bg-white border-r overflow-y-auto p-4"
-      style={{ maxHeight: '100vh' }}
-      onScroll={handleScroll}
-    >
-      <h2 className="text-xl font-semibold mb-4">Search Routes</h2>
-      <input
-        type="text"
-        placeholder="Search for a route"
-        className="w-full p-2 mb-4 border rounded"
-        value={searchTerm}
-        onChange={(e) => {
-          setSearchTerm(e.target.value);
-          setVisibleCount(4); 
-        }}
-      />
-      <div className="space-y-4">
-        {visibleRoutes.map((route) => {
-          const variants = routeVariantsMap[route.id] || [];
-          return (
-            <div
-              key={route.id}
-              onClick={() => handleRouteClick(route.id)}
-              className="border rounded-lg p-3 shadow hover:shadow-md transition cursor-pointer"
-            >
-              <h3 className="text-blue-600 font-semibold">Route {route.number}</h3>
-              <p>{route.route}</p>
-              {variants.map((variant) => (
-                <div key={variant.id} className="mt-2">
-                  <p className="text-sm text-gray-600">
-                    <strong>{variant.name}:</strong> {variant.startStop} → {variant.endStop}
-                  </p>
-                </div>
-              ))}
-              <div className="flex justify-between text-sm text-gray-600 mt-1">
-                <span>🕒 {route.time}</span>
-                <span>💰 {route.price}</span>
-              </div>
-            </div>
-          );
-        })}
-        {isLoading && (
-          <div className="flex justify-center py-4">
-            <ClipLoader size={35} color="#3B82F6" />
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Danh sách tuyến xe</h1>
+
+      {/* Form tìm kiếm */}
+      <div className="mb-6 p-4 border rounded-lg shadow bg-gray-50">
+        <h2 className="text-lg font-semibold mb-3">Tìm kiếm tuyến xe</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Tên tuyến</label>
+            <input
+              type="text"
+              name="name"
+              value={searchParams.name}
+              onChange={handleInputChange}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Nhập tên tuyến..."
+            />
           </div>
-        )}
+          <div>
+            <label className="block text-sm font-medium mb-1">Điểm đi</label>
+            <input
+              type="text"
+              name="startStop"
+              value={searchParams.startStop}
+              onChange={handleInputChange}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Nhập điểm đi..."
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Điểm đến</label>
+            <input
+              type="text"
+              name="endStop"
+              value={searchParams.endStop}
+              onChange={handleInputChange}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Nhập điểm đến..."
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Mã tuyến</label>
+            <input
+              type="text"
+              name="code"
+              value={searchParams.code}
+              onChange={handleInputChange}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Nhập mã tuyến..."
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Loại tuyến</label>
+            <select
+              name="type"
+              value={searchParams.type}
+              onChange={handleInputChange}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Chọn loại tuyến</option>
+              <option value="BUS">Bus</option>
+              <option value="ELECTRIC">Electric</option>
+            </select>
+          </div>
+        </div>
+        <div className="mt-4 flex justify-end gap-3">
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+          >
+            Đặt lại
+          </button>
+        </div>
+      </div>
+
+      {status === 'loading' && <p>Đang tải dữ liệu...</p>}
+      {status === 'failed' && <p className="text-red-500">Lỗi: {error}</p>}
+
+      {status === 'succeeded' && (
+        <>
+          <ul className="space-y-2">
+            {routes.length === 0 ? (
+              <p>Không có tuyến xe nào.</p>
+            ) : (
+              routes.map((route) => (
+                <li
+                  key={route.id}
+                  className="p-4 border rounded-lg shadow hover:bg-gray-100 transition cursor-pointer" // Added cursor-pointer for better UX
+                  onClick={() => handleRouteClick(route)} // Navigate on click
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{getTypeIcon(route.type)}</span>
+                    <div>
+                      <p><strong>Mã tuyến:</strong> {route.code}</p>
+                      <p><strong>Tên tuyến:</strong> {route.name}</p>
+                      <p><strong>Loại tuyến:</strong> {route.type}</p>
+                    </div>
+                  </div>
+                </li>
+              ))
+            )}
+          </ul>
+          {totalPages > 1 && renderPagination()}
+        </>
+      )}
+
+      <div className="mt-4 text-sm text-gray-500">
+        Tổng số: {totalItems} | Trang: {currentPage}/{totalPages}
       </div>
     </div>
   );
-}
+};
 
 export default RouteSearch;

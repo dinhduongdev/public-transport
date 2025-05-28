@@ -56,6 +56,7 @@ public class RatingServiceImpl implements RatingService {
         }
     }
 
+    @Transactional
     @Override
     public Map<String, Object> getRatingSummary(Long routeId) {
         Map<String, Object> summary = new HashMap<>();
