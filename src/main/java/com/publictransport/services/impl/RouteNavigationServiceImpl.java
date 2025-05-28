@@ -109,6 +109,10 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
             List<Stop> stops = routeVar.getStops();
 
             // Tìm trạm dừng gần nhất với điểm xuất phát của người dùng
+            // Giải thích:
+            // - Các trạm dừng của variants có thể khác nhau (ví dụ lượt đi đi qua đường 1 chiều thì lượt về sẽ đi qua đường khác)
+            // - vẫn có trường hợp dùng chung trạm, lúc đó thì thứ tự stops sẽ khác nhau
+            // - ví dụ: a -> b -> c (lượt đi) và c -> b -> a (lượt về)
             Coordinates startCoords = routeNavigation.getStartCoordinates();
             Coordinates endCoords = routeNavigation.getEndCoordinates();
             Optional<Stop> nearestStartStop = findNearestGivenStopsOfRouteVar(routeVar, startStops, startCoords);
