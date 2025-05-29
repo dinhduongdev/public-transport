@@ -32,8 +32,8 @@ public class JwtFilter implements Filter {
         String authorizationHeader = httpRequest.getHeader("Authorization");
 
         // Các API yêu cầu chứng thực
-        if (requestURI.startsWith(httpRequest.getContextPath() + "/api/admin-only") ||
-                requestURI.startsWith(httpRequest.getContextPath() + "/api/secure") ||
+        if (requestURI.startsWith(httpRequest.getContextPath() + "/api/secure/**") ||
+                requestURI.startsWith(httpRequest.getContextPath() + "/api/secure/profile") ||
                 requestURI.startsWith(httpRequest.getContextPath() + "/api/favorites") ||
                 requestURI.startsWith(httpRequest.getContextPath() + "/api/notifications") ) {
 
@@ -44,8 +44,9 @@ public class JwtFilter implements Filter {
             String token = authorizationHeader.substring(7);
             try {
                 String email = jwtUtils.validateTokenAndGetEmail(token);
+                System.out.println("Email: " + email);
                 String role = jwtUtils.getRoleFromToken(token);
-
+                System.out.println("Role: " + role);
                 if (email != null && role != null) {
                     // Nếu là admin-only thì kiểm tra thêm role
                     if (requestURI.startsWith(httpRequest.getContextPath() + "/api/admin-only")
@@ -58,7 +59,7 @@ public class JwtFilter implements Filter {
                     return;
                 }
             } catch (Exception e) {
-                // log optional
+                e.printStackTrace();
             }
             sendUnauthorizedError(response, "Invalid or expired token.");
             return;

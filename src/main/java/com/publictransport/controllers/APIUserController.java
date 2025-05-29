@@ -81,7 +81,10 @@ public class APIUserController {
     public ResponseEntity<?> login(@RequestBody User u) throws Exception {
         if (!this.userService.authenticate(u.getEmail(), u.getPassword()))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai thông tin đăng nhập");
-        String token = jwtUtils.generateToken(u.getEmail(), u.getRole() );
+        // Lấy user từ database
+        Optional<User> userOpt = this.userService.getUserByEmail(u.getEmail());
+        User userFromDb = userOpt.get();
+        String token = jwtUtils.generateToken(userFromDb.getEmail(), userFromDb.getRole());
         return ResponseEntity.ok().body(Collections.singletonMap("token", token));
     }
 
@@ -121,8 +124,7 @@ public class APIUserController {
         return ResponseEntity.ok().body(Collections.singletonMap("token", token));
     }
 
-    @RequestMapping("/secure/profile")
-    @ResponseBody
+    @GetMapping("/secure/profile")
     public ResponseEntity<User> getProfile(Principal principal) {
         String userEmail = principal.getName();
         Optional<User> userOpt = this.userService.getUserByEmail(userEmail);

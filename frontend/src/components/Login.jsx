@@ -25,10 +25,12 @@ const Login = () => {
       setLoading(true);
       const res = await Apis.post(endpoints["login"], { ...user });
       cookie.save("token", res.data.token);
+      console.log(res.data.token);
+      
       const u = await authApis().get(endpoints["current-user"]);
-      if (u.data.role !== "USER") {
-        throw new Error("Chỉ người dùng client mới được phép đăng nhập ở đây.");
-      }
+      // if (u.data.role !== "USER") {
+      //   throw new Error("Chỉ người dùng client mới được phép đăng nhập ở đây.");
+      // }
       dispatch(login(u.data));
       toast.success("Đăng nhập thành công!");
       navigate("/");
@@ -57,9 +59,9 @@ const Login = () => {
       
       const u = await authApis().get(endpoints["current-user"]);
       console.log(u.data.role);
-      if (u.data.role !== "USER") {
-        throw new Error("Chỉ người dùng client mới được phép đăng nhập ở đây.");
-      }
+      // if (u.data.role !== "USER") {
+      //   throw new Error("Chỉ người dùng client mới được phép đăng nhập ở đây.");
+      // }
 
       dispatch(login(u.data));
       toast.success("Đăng nhập thành công!");
