@@ -3,7 +3,6 @@ package com.publictransport.repositories.impl;
 import com.publictransport.dto.params.RouteFilter;
 import com.publictransport.models.Route;
 import com.publictransport.models.Route_;
-import com.publictransport.models._Route;
 import com.publictransport.repositories.RouteRepository;
 import com.publictransport.utils.PaginationUtils;
 import jakarta.persistence.criteria.*;
@@ -29,6 +28,7 @@ public class RouteRepositoryImpl implements RouteRepository {
     public RouteRepositoryImpl(SessionFactory factory) {
         this.factory = factory;
     }
+
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
@@ -105,7 +105,7 @@ public class RouteRepositoryImpl implements RouteRepository {
         Root<Route> idRoot = idQuery.from(Route.class);
         idQuery.select(idRoot.get(Route_.id)).distinct(true);
         List<Predicate> predicates = filter.toPredicateList(cb, idRoot);
-        if (!predicates.isEmpty()){
+        if (!predicates.isEmpty()) {
             idQuery.where(cb.and(predicates.toArray(new Predicate[0])));
         }
 
@@ -142,7 +142,7 @@ public class RouteRepositoryImpl implements RouteRepository {
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Route> root = criteriaQuery.from(Route.class);
 
-        criteriaQuery.select(criteriaBuilder.count(root));
+        criteriaQuery.select(criteriaBuilder.countDistinct(root));
 
         List<Predicate> predicates = filter.toPredicateList(criteriaBuilder, root);
         if (!predicates.isEmpty())
