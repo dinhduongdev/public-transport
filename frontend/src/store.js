@@ -4,7 +4,7 @@ import busRoutesReducer from "./features/routes/routeSlice";
 import ratingReducer from "./features/ratings/ratingSlice";
 import favoritesReducer from "./features/favorites/favoritesSlice";
 import notificationReducer from './features/notifications/notificationSlice';
-
+import routeVariantsReducer from './features/routevariants/routeVariantsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -13,5 +13,6 @@ export const store = configureStore({
     ratings: ratingReducer,
     favorites: favoritesReducer,
     notification: notificationReducer,
+    routeVariants: routeVariantsReducer,
   },
 });

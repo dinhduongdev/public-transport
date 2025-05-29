@@ -1,29 +1,9 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchRoutes } from '../features/routes/routeSlice';
-import RouteDetail from './RouteDetail';
 import SearchTabs from './SearchTabs'; 
 
 export default function BusMapUI() {
-  const dispatch = useDispatch();
-  const { selectedRoute, loading, error } = useSelector((state) => state.busRoutes);
-
-  useEffect(() => {
-    dispatch(fetchRoutes());
-  }, [dispatch]);
-
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="flex justify-center items-center h-screen text-red-500">Error: {error}</div>;
-  }
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 h-screen">
-      {selectedRoute ? <RouteDetail /> : <SearchTabs />} 
-
+      <SearchTabs />
       <div className="col-span-2 relative">
         <iframe
           title="Google Map"

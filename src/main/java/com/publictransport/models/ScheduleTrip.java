@@ -1,5 +1,6 @@
 package com.publictransport.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class ScheduleTrip {
     @ManyToOne(fetch = FetchType.EAGER)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "schedule_id")
+    @JsonIgnore
     private Schedule schedule;
     
     @Column(name = "start_time")

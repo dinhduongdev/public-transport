@@ -12,6 +12,8 @@ import { useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Favorite from "./components/Favorite";
+import RouteVariants from "./components/RouteVariants/RouteVariants";
+
 
 const App = () => {
   const dispatch = useDispatch();
@@ -23,6 +25,7 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/route/:routeId" element={<RouteVariants />} />
         <Route path="/favorites" element={<Favorite />} />
         <Route path="/report-traffic" element={<TrafficReport />} />
         <Route path="/login" element={<Login />} />

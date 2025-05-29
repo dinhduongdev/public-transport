@@ -13,6 +13,7 @@ const RouteReview = ({ summary, reviews, routeId, onReviewSubmitted }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const { error } = useSelector((state) => state.ratings);
+  console.log("user", user);
 
   useEffect(() => {
     if (!user || !user.id) {
@@ -44,7 +45,9 @@ const RouteReview = ({ summary, reviews, routeId, onReviewSubmitted }) => {
   const handleRatingSubmit = async (e) => {
     e.preventDefault();
     if (userRating < 1 || userRating > 5) {
-      dispatch(submitRating({ error: "Please select a rating from 1 to 5 stars." }));
+      dispatch(
+        submitRating({ error: "Please select a rating from 1 to 5 stars." })
+      );
       return;
     }
 
