@@ -23,6 +23,9 @@ const endpoints = {
     `${BASE_URL}/api/notifications/user/${userId}`, // Thêm endpoint
   notificationById: (notificationId) =>
     `${BASE_URL}/api/notifications/${notificationId}`,
+
+  //navigation route
+  navigationRoute: `${BASE_URL}/api/navigation`
 };
 
 const Apis = {

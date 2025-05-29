@@ -4,7 +4,7 @@ import {
   clearRatingData,
 } from "../../features/ratings/ratingSlice";
 import { useDispatch, useSelector } from "react-redux";
-import RouteReview from "../../components/RouteReview";
+import Review from "./Review";
 
 const RouteReviews = ({ routeId }) => {
   const dispatch = useDispatch();
@@ -38,7 +38,7 @@ const RouteReviews = ({ routeId }) => {
           </a>
         </div>
       ) : ratingData ? (
-        <RouteReview
+        <Review
           summary={{
             averageScore: ratingData.averageScore,
             totalRatings: ratingData.totalRatings,

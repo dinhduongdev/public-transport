@@ -5,3 +5,8 @@
 @theme {
   --font-roboto: "Roboto", sans-serif; 
 }
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+}

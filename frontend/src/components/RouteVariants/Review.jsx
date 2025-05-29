@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Star, User } from "lucide-react";
 import { format } from "date-fns";
 import { useSelector, useDispatch } from "react-redux";
-import { submitRating } from "../features/ratings/ratingSlice";
+import { submitRating } from "../../features/ratings/ratingSlice";
 import { toast } from "react-toastify";
 
-const RouteReview = ({ summary, reviews, routeId, onReviewSubmitted }) => {
+const Review = ({ summary, reviews, routeId, onReviewSubmitted }) => {
   const [userRating, setUserRating] = useState(0);
   const [userComment, setUserComment] = useState("");
   const [currentUserReview, setCurrentUserReview] = useState(null);
@@ -208,4 +208,4 @@ const RouteReview = ({ summary, reviews, routeId, onReviewSubmitted }) => {
   );
 };
 
-export default RouteReview;
+export default Review;
