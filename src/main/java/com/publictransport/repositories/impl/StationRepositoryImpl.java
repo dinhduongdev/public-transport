@@ -1,14 +1,10 @@
 package com.publictransport.repositories.impl;
 
 import com.publictransport.dto.params.StationFilter;
-import com.publictransport.models.Station;
-import com.publictransport.models.Station_;
+import com.publictransport.models.*;
 import com.publictransport.repositories.StationRepository;
 import com.publictransport.utils.PaginationUtils;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -108,7 +104,8 @@ public class StationRepositoryImpl implements StationRepository {
         Root<Station> stationRoot = stationQuery.from(Station.class);
         stationQuery.select(stationRoot);
         stationQuery.where(stationRoot.get(Station_.id).in(stationIds));
-        stationRoot.fetch(Station_.stops);
+        // fetch het cho oach
+        stationRoot.fetch(Station_.stops).fetch(Stop_.routeVariant).fetch(RouteVariant_.route);
         Query<Station> stationHibernateQuery = session.createQuery(stationQuery);
         return stationHibernateQuery.getResultList();
     }

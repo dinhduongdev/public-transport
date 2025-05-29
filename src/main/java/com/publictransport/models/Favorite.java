@@ -10,7 +10,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 @Entity
-@Table(name = "favorite")
+@Table(name = "Favorite")
 public class Favorite {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

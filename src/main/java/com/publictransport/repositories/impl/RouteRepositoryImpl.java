@@ -115,7 +115,6 @@ public class RouteRepositoryImpl implements RouteRepository {
         // Phân trang
         PaginationUtils.setQueryResultsRange(idHibernateQuery, filter);
         List<Long> routeIds = idHibernateQuery.getResultList();
-        System.out.println("Route IDs: " + Arrays.toString(routeIds.toArray())  );
 
         if (routeIds.isEmpty()) return new ArrayList<>();
 
@@ -147,7 +146,6 @@ public class RouteRepositoryImpl implements RouteRepository {
         criteriaQuery.select(criteriaBuilder.countDistinct(root));
 
         List<Predicate> predicates = filter.toPredicateList(criteriaBuilder, root);
-        System.out.println("Predicates: " + Arrays.toString(predicates.toArray())  );
         if (!predicates.isEmpty())
             criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
 

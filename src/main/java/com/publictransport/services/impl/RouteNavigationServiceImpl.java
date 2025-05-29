@@ -97,13 +97,13 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
         }
 
         // 5. Tìm trạm dừng của các routeVar chung
-        List<RouteNavigation> routeNavigations = new ArrayList<>();
+        List<RouteNavigation> navigations = new ArrayList<>();
         for (RouteVariant routeVar : commonRouteVars) {
-            RouteNavigation routeNavigation = new RouteNavigation();
+            RouteNavigation navigation = new RouteNavigation();
             Route route = routeVar.getRoute();
-            routeNavigation.setRoute(new RouteDTO(route.getId(), route.getCode(), route.getName(), route.getType()));
-            routeNavigation.setStartCoordinates(MapUtils.convertToCoordinates(filter.getStartCoords()).get());
-            routeNavigation.setEndCoordinates(MapUtils.convertToCoordinates(filter.getEndCoords()).get());
+            navigation.setRoute(new RouteDTO(route.getId(), route.getCode(), route.getName(), route.getType()));
+            navigation.setStartCoordinates(MapUtils.convertToCoordinates(filter.getStartCoords()).get());
+            navigation.setEndCoordinates(MapUtils.convertToCoordinates(filter.getEndCoords()).get());
 
             // Lấy danh sách các trạm dừng của route variant
             List<Stop> stops = routeVar.getStops();
@@ -113,8 +113,8 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
             // - Các trạm dừng của variants có thể khác nhau (ví dụ lượt đi đi qua đường 1 chiều thì lượt về sẽ đi qua đường khác)
             // - vẫn có trường hợp dùng chung trạm, lúc đó thì thứ tự stops sẽ khác nhau
             // - ví dụ: a -> b -> c (lượt đi) và c -> b -> a (lượt về)
-            Coordinates startCoords = routeNavigation.getStartCoordinates();
-            Coordinates endCoords = routeNavigation.getEndCoordinates();
+            Coordinates startCoords = navigation.getStartCoordinates();
+            Coordinates endCoords = navigation.getEndCoordinates();
             Optional<Stop> nearestStartStop = findNearestGivenStopsOfRouteVar(routeVar, startStops, startCoords);
             Optional<Stop> nearestEndStop = findNearestGivenStopsOfRouteVar(routeVar, endStops, endCoords);
 
@@ -132,16 +132,21 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
             double meanDistance = routeVar.getDistance() / stops.size();
             for (int i = startIndex; i <= endIndex; i++) {
                 Stop currentStop = stops.get(i);
-                routeNavigation.addHop(new Hop(order++, currentStop, i != endIndex ? meanDistance : 0.0));
+                navigation.addHop(new Hop(order++, currentStop, i != endIndex ? meanDistance : 0.0));
             }
 
-            routeNavigations.add(routeNavigation);
+            // Tính toán khoảng cách và thời gian
+            double totalDistanceInMeters = navigation.calculateTotalDistance();
+
+            navigation.setTotalDistanceInMeters(totalDistanceInMeters);
+
+            navigations.add(navigation);
         }
 
         // Sắp xếp kết quả theo khoảng cách
-        routeNavigations.sort(Comparator.comparing(RouteNavigation::calculateTotalDistance));
+        navigations.sort(Comparator.comparing(RouteNavigation::calculateTotalDistance));
 
-        return routeNavigations;
+        return navigations;
     }
 
     private Optional<Stop> findNearestGivenStopsOfRouteVar(RouteVariant routeVar, List<Stop> stops, Coordinates coords) {

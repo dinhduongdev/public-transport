@@ -124,6 +124,7 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException("Invalid username.");
         }
         User user = userOpt.get();
+        System.out.println("Loading user by username: " + user.getEmail());
 //        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + u.getRole()));
 //        authorities.add(new SimpleGrantedAuthority(u.getRole()));
         List<GrantedAuthority> authorities = new ArrayList<>(

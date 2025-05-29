@@ -93,10 +93,9 @@ public class SpringSecurityConfigs {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .usernameParameter("email") //Cấu hình lại tên field
+                        .usernameParameter("email")
                         .passwordParameter("password")
                         .defaultSuccessUrl("/", true)
-                        .usernameParameter("email")
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )

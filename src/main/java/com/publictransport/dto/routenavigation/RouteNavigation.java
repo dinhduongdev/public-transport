@@ -14,8 +14,9 @@ public class RouteNavigation {
     private Coordinates endCoordinates;
     // danh sách các "trạm dừng sẽ đi qua"
     private RouteDTO route;
-    private List<Hop> hops;
+    private double totalDistanceInMeters;
     private Duration duration;
+    private List<Hop> hops;
 
     public RouteNavigation() {
         hops = new ArrayList<>();
