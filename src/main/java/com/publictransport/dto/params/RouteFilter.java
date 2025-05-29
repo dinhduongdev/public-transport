@@ -45,7 +45,7 @@ public class RouteFilter extends BaseFilter {
     @Override
     public <Route> List<Predicate> toPredicateList(CriteriaBuilder cb, Root<Route> root) {
         Map<SingularAttribute, String> rootParams = this.toMapOfRootStringFields();
-        Join<Route, RouteVariant> joinRoot = root.join("routeVariants", JoinType.INNER);
+        Join<Route, RouteVariant> joinRoot = root.join("routeVariants", JoinType.LEFT);
         Map<SingularAttribute, String> routeVarParams = this.toMapOfJoinedStringFields();
 
         List<Predicate> preds = new ArrayList<>();
