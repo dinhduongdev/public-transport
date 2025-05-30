@@ -10,4 +10,5 @@ public class Hop {
     private int order;
     private Stop stop;
     private double distanceToNextStop;
+    private RouteDTO route;
 }

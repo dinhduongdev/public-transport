@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -69,28 +70,31 @@ public class GoongMapProxy implements MapProxy {
                 .toUri();
         // Log the URI for debugging purposes
         System.out.println("Requesting coordinates from URI: " + uri);
-        ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
-        if (response.getStatusCode().is4xxClientError()) {
-            System.err.println("Error fetching coordinates: " + kw);
+        ResponseEntity<String> response;
+
+        try{
+            response = restTemplate.getForEntity(uri, String.class);
+        } catch (RestClientException e) {
+            System.err.println("Exception while fetching coordinates: " + kw + " - " + e.getMessage());
             return Optional.empty();
         }
+
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode firstResult;
         try {
             firstResult = mapper.readTree(response.getBody()).get("results").get(0);
+            String formattedAddress = firstResult.get("formatted_address").asText();
+            JsonNode coordinates = firstResult.get("geometry").get("location");
+            System.out.println("Coordinates for " + formattedAddress + ": " + coordinates.get("lat") + ", " + coordinates.get("lng"));
+            Coordinates coords = new Coordinates(
+                    coordinates.get("lat").doubleValue(),
+                    coordinates.get("lng").doubleValue()
+            );
+            return Optional.of(new ImmutablePair<>(formattedAddress, coords));
         } catch (Exception e) {
             System.err.println("Error parsing response for coordinates: " + kw);
             return Optional.empty();
         }
-        String formattedAddress = firstResult.get("formatted_address").asText();
-        JsonNode coordinates = firstResult.get("geometry").get("location");
-        System.out.println("Coordinates for " + formattedAddress + ": " + coordinates.get("lat") + ", " + coordinates.get("lng"));
-        Coordinates coords = new Coordinates(
-                coordinates.get("lat").doubleValue(),
-                coordinates.get("lng").doubleValue()
-        );
-
-        return Optional.of(new ImmutablePair<>(formattedAddress, coords));
     }
 }

@@ -15,7 +15,6 @@ public class ValidCoordinatesStringImpl implements
         if (s == null) {
             return true;
         }
-        Optional<Coordinates> optCoords = MapUtils.convertToCoordinates(s);
-        return optCoords.isPresent();
+        return MapUtils.isValidCoordinates(s);
     }
 }

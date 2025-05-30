@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
@@ -16,6 +17,7 @@ import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS
 @ComponentScan(basePackages = {"com.publictransport"})
 @EnableWebMvc
 @EnableTransactionManagement
+@EnableAspectJAutoProxy // bật aop
 public class WebAppContextConfigs implements WebMvcConfigurer {
 
     @Override

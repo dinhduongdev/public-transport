@@ -1,6 +1,7 @@
 package com.publictransport.services;
 
 import com.publictransport.dto.params.StationFilter;
+import com.publictransport.models.Coordinates;
 import com.publictransport.models.Station;
 
 import java.util.List;

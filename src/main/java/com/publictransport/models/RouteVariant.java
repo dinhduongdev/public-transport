@@ -1,7 +1,6 @@
 package com.publictransport.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -49,6 +48,15 @@ public class RouteVariant {
     @OrderBy("stopOrder ASC")
     @JsonBackReference
     private List<Stop> stops;
+
+    @Override
+    public String toString() {
+        return "{id=" + id +
+                ", route=" + route.getCode() +
+                ", isOutbound=" + isOutbound +
+                ", name='" + name + '\'' +
+                '}';
+    }
 
     @Override
     public boolean equals(Object o) {

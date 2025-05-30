@@ -13,4 +13,6 @@ public interface StopService {
     Optional<Stop> findById(Long id);
 
     void deleteByRouteVariantId(Long routeVariantId);
+
+    List<Stop> findNearbyStops(String coordsString, double radiusKm, int limit);
 }

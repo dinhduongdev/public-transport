@@ -1,10 +1,12 @@
 package com.publictransport.services.impl;
 
 import com.publictransport.dto.params.StationFilter;
+import com.publictransport.models.Coordinates;
 import com.publictransport.models.Station;
 import com.publictransport.proxies.MapProxy;
 import com.publictransport.repositories.StationRepository;
 import com.publictransport.services.StationService;
+import com.publictransport.utils.MapUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;

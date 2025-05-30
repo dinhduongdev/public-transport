@@ -26,7 +26,13 @@ public class APIRouteNavigationController {
 
     @GetMapping
     public ResponseEntity<List<RouteNavigation>> routeNavigation(@Valid RouteNavigationFilter params) {
-        var res = routeNavigationService.findDirectRouteNavigations(params);
+        List<RouteNavigation> res;
+        if(params.getMaxNumOfTrip() == 1){
+            res = routeNavigationService.findDirectRouteNavigations(params);
+        }
+        else {
+            res = routeNavigationService.findRouteNavigations(params);
+        }
         return ResponseEntity.ok(res);
     }
 

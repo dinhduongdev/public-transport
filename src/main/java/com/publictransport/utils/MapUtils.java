@@ -46,6 +46,13 @@ public class MapUtils {
         return convertToCoordinates(coordinatesStr).isPresent();
     }
 
+    /**
+     * Tính khoảng cách giữa hai tọa độ sử dụng công thức haversine.
+     *
+     * @param c1 Tọa độ đầu tiên
+     * @param c2 Tọa độ thứ hai
+     * @return Khoảng cách giữa hai tọa độ (đơn vị: km)
+     */
     public static double haversineDistance(Coordinates c1, Coordinates c2) {
         final int R = 6371; // Bán kính Trái Đất (km)
         double latDistance = Math.toRadians(c2.getLat() - c1.getLat());
@@ -55,5 +62,14 @@ public class MapUtils {
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c; // km
+    }
+
+    public static double haversineDistance(String coords1, String coords2) {
+        Optional<Coordinates> c1 = convertToCoordinates(coords1);
+        Optional<Coordinates> c2 = convertToCoordinates(coords2);
+        if (c1.isPresent() && c2.isPresent()) {
+            return haversineDistance(c1.get(), c2.get());
+        }
+        throw new IllegalArgumentException("Invalid coordinates format: " + coords1 + " or " + coords2);
     }
 }

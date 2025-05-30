@@ -12,8 +12,6 @@ public class RouteNavigation {
     // hai trường này để xác định điểm bắt đầu và kết thúc của hành trình
     private Coordinates startCoordinates;
     private Coordinates endCoordinates;
-    // danh sách các "trạm dừng sẽ đi qua"
-    private RouteDTO route;
     private double totalDistanceInMeters;
     private Duration duration;
     private List<Hop> hops;
