@@ -92,7 +92,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-blue-700 p-4 shadow-lg">
-      <div className="container mx-auto flex justify-between items-center">
+      <div className="mx-auto flex justify-between items-center">
         <Link
           to="/"
           className="flex items-center space-x-2 text-white text-2xl font-bold"
@@ -130,10 +130,10 @@ const Navbar = () => {
                 <span>BÁO CÁO GIAO THÔNG</span>
               </Link>
               {/* Dropdown thông báo */}
-              <div className="relative" ref={dropdownRef}>
+              <div className="relative flex" ref={dropdownRef}>
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center space-x-1 text-white hover:text-yellow-300 transition relative"
+                  className="flex items-center space-x-1 text-white hover:text-yellow-300 transition relative cursor-pointer"
                 >
                   <FaBell />
                   {unreadCount > 0 && (
@@ -143,7 +143,7 @@ const Navbar = () => {
                   )}
                 </button>
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
+                  <div className="absolute right-0 mt-6 w-80 bg-white rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
                     <div className="p-4">
                       <h3 className="text-lg font-semibold mb-2">
                         THÔNG BÁO
@@ -212,7 +212,7 @@ const Navbar = () => {
               </Link>
               <button
                 onClick={handleLogout}
-                className="flex items-center space-x-1 text-white hover:text-yellow-300 transition"
+                className="flex items-center space-x-1 text-white hover:text-yellow-300 transition cursor-pointer"
               >
                 <FaSignOutAlt />
                 <span>Đăng xuất</span>

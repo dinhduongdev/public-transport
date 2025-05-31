@@ -97,4 +97,34 @@ public class GoongMapProxy implements MapProxy {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<String> getAddress(Coordinates coordinates) {
+        URI uri = UriComponentsBuilder
+                .fromHttpUrl(REST_API_BASE_URL)
+                .path(GEOCODE_ENDPOINT)
+                .queryParam("latlng", coordinates.getLat() + "," + coordinates.getLng())
+                .queryParam("api_key", REST_API_KEY)
+                .build()
+                .toUri();
+        // Log the URI for debugging purposes
+        System.out.println("Requesting address from URI: " + uri);
+
+        ResponseEntity<String> response;
+        try {
+            response = restTemplate.getForEntity(uri, String.class);
+        } catch (RestClientException e) {
+            System.err.println("Exception while fetching address: " + e.getMessage());
+            return Optional.empty();
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode firstResult = mapper.readTree(response.getBody()).get("results").get(0);
+            return Optional.of(firstResult.get("formatted_address").asText());
+        } catch (Exception e) {
+            System.err.println("Error parsing response for address: " + e.getMessage());
+            return Optional.empty();
+        }
+    }
 }

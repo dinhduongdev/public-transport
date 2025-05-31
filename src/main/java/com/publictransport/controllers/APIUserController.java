@@ -107,11 +107,11 @@ public class APIUserController {
             dto.setPassword(UUID.randomUUID().toString());
             dto.setRole("USER");
             user = userService.register(dto);
+            // Cập nhật avatar từ Google
+            user.setAvatar(request.getAvatar());
         } else {
             user = userOpt.get();
         }
-        // Cập nhật avatar từ Google
-        user.setAvatar(request.getAvatar());
         user = userService.update(user);
         // Tạo token JWT
         String token = jwtUtils.generateToken(user.getEmail(), user.getRole());

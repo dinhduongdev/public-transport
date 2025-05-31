@@ -13,4 +13,6 @@ public interface MapProxy {
 
     // Trả về: địa chỉ đề xuất, tọa độ tương ứng
     Optional<Pair<String, Coordinates>> getCoordinates(String kw);
+
+    Optional<String> getAddress(Coordinates coordinates);
 }

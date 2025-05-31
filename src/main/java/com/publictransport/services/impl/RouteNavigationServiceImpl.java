@@ -8,6 +8,7 @@ import com.publictransport.dto.routenavigation.RouteNavigation;
 import com.publictransport.models.Coordinates;
 import com.publictransport.models.RouteVariant;
 import com.publictransport.models.Stop;
+import com.publictransport.proxies.MapProxy;
 import com.publictransport.services.RouteNavigationService;
 import com.publictransport.services.RouteVariantService;
 import com.publictransport.services.StationService;
@@ -32,17 +33,20 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
 
     private final StationService stationService;
     private final StopService stopService;
+    private final MapProxy mapProxy;
     private final RouteVariantService routeVariantService;
 
     @Autowired
     public RouteNavigationServiceImpl(
             StationService stationService,
             RouteVariantService routeVariantService,
-            StopService stopService
+            StopService stopService,
+            MapProxy mapProxy
     ) {
         this.stationService = stationService;
         this.stopService = stopService;
         this.routeVariantService = routeVariantService;
+        this.mapProxy = mapProxy;
     }
 
     private Optional<Stop> findNearestGivenStopsOfRouteVar(RouteVariant routeVar, List<Stop> stops, Coordinates coords) {
@@ -92,10 +96,14 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
 
         // 3. Tìm trạm dừng của các routeVar chung
         List<RouteNavigation> navigations = new ArrayList<>();
+        Coordinates startCoords = MapUtils.convertToCoordinates(filter.getStartCoords()).orElseThrow();
+        Coordinates endCoords = MapUtils.convertToCoordinates(filter.getEndCoords()).orElseThrow();
+        String formattedStartAddress = mapProxy.getAddress(startCoords).orElse("");
+        String formattedEndAddress = mapProxy.getAddress(endCoords).orElse("");
         for (RouteVariant routeVar : commonRouteVars) {
             RouteNavigation navigation = new RouteNavigation();
-            navigation.setStartCoordinates(MapUtils.convertToCoordinates(filter.getStartCoords()).get());
-            navigation.setEndCoordinates(MapUtils.convertToCoordinates(filter.getEndCoords()).get());
+            navigation.setStartCoordinates(startCoords);
+            navigation.setEndCoordinates(endCoords);
 
             // Lấy danh sách các trạm dừng của route variant
             List<Stop> stops = routeVar.getStops();
@@ -105,8 +113,6 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
             // - Các trạm dừng của variants có thể khác nhau (ví dụ lượt đi đi qua đường 1 chiều thì lượt về sẽ đi qua đường khác)
             // - vẫn có trường hợp dùng chung trạm, lúc đó thì thứ tự stops sẽ khác nhau
             // - ví dụ: a -> b -> c (lượt đi) và c -> b -> a (lượt về)
-            Coordinates startCoords = navigation.getStartCoordinates();
-            Coordinates endCoords = navigation.getEndCoordinates();
             Optional<Stop> nearestStartStop = findNearestGivenStopsOfRouteVar(routeVar, startStops, startCoords);
             Optional<Stop> nearestEndStop = findNearestGivenStopsOfRouteVar(routeVar, endStops, endCoords);
 
@@ -142,6 +148,8 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
                     endCoords, nearestEndStop.get().getStation().getCoordinates()) * 1000; // Chuyển đổi sang mét
             double totalDistanceInMeters = navigation.calculateTotalDistance() + distanceToStartStop + distanceToEndStop;
             navigation.setTotalDistanceInMeters(totalDistanceInMeters);
+            navigation.setFormattedStartAddress(formattedStartAddress);
+            navigation.setFormattedEndAddress(formattedEndAddress);
             navigations.add(navigation);
         }
 
@@ -285,6 +293,8 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
 
 
         // bắt đầu build kết quả
+        String formattedStartAddress = mapProxy.getAddress(startCoords).orElse("");
+        String formattedEndAddress = mapProxy.getAddress(endCoords).orElse("");
         List<RouteNavigation> navigations = new ArrayList<>();
         for (Stop endStopCandidate : endStops) {
             Long endStopId = endStopCandidate.getId();
@@ -325,6 +335,8 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
                 navigation.addHop(new Hop(hopOrder++, stopForHop, distanceToNextHop, new RouteDTO(stopForHop.getRouteVariant().getRoute())));
             }
             navigation.setTotalDistanceInMeters(cost.get(endStopId) * 1000);
+            navigation.setFormattedStartAddress(formattedStartAddress);
+            navigation.setFormattedEndAddress(formattedEndAddress);
             navigations.add(navigation);
         }
 

@@ -36,7 +36,7 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<UserProfile />} />
       </Routes>
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+      <ToastContainer className={"mt-8"} position="top-right" autoClose={3000} hideProgressBar />
     </BrowserRouter>
   );
 };
