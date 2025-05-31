@@ -30,7 +30,18 @@ public class APINotificationController {
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<List<NotificationDTO>> getNotificationsByUserId(@PathVariable("userId") Long userId) {
+    public ResponseEntity<?> getNotificationsByUserId(
+            @PathVariable("userId") Long userId,
+            HttpServletRequest request) {
+        Long userIdFromToken = getUserIdFromRequest(request);
+        if (userIdFromToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Vui lòng đăng nhập để sử dụng tính năng này"));
+        }
+        if (!userId.equals(userIdFromToken)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Bạn không có quyền truy cập thông báo của người dùng khác"));
+        }
         List<NotificationDTO> notifications = notificationService.getNotificationsByUserId(userId);
         return ResponseEntity.ok(notifications);
     }
@@ -56,10 +67,7 @@ public class APINotificationController {
             errorResponse.put("error", "Không thể thể đánh dấu thông báo");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
-
-
     }
-
 
 
     private Long getUserIdFromRequest(HttpServletRequest request) {
