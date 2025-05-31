@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS TrafficReport;
 -- Bật lại kiểm tra khóa ngoại
 SET FOREIGN_KEY_CHECKS = 1;
 
--- === TẠO CÁC BẢNG ===
+-- ==================== TẠO CÁC BẢNG ====================
 
 -- Role
 CREATE TABLE Role
@@ -34,6 +34,7 @@ CREATE TABLE Role
 INSERT INTO Role (name)
 VALUES ('ADMIN'),
        ('USER');
+
 
 -- User
 CREATE TABLE User
@@ -48,54 +49,39 @@ CREATE TABLE User
     CONSTRAINT uk_user_email UNIQUE (email),
     FOREIGN KEY (role) REFERENCES Role (name)
 );
--- Report
-CREATE TABLE TrafficReport (
-       id BIGINT NOT NULL AUTO_INCREMENT,
-       user_id BIGINT,
-       location VARCHAR(255) NOT NULL,
-       latitude DOUBLE,
-       longitude DOUBLE,
-       description TEXT NOT NULL,
-       status ENUM('CLEAR', 'MODERATE', 'HEAVY', 'STUCK') NOT NULL,
-       approval_status ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
-       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-       image_url VARCHAR(500),
-       PRIMARY KEY (id),
-       FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE SET NULL
-);
 
-CREATE TABLE StatusReport
-(
-    name VARCHAR(20) PRIMARY KEY
-);
-INSERT INTO StatusReport (name)
-VALUES ('PENDING'),
-       ('VERIFIED');
 
 -- Report
-CREATE TABLE Report
+CREATE TABLE TrafficReport
 (
-    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
-    latitude    DOUBLE NOT NULL,
-    longitude   DOUBLE NOT NULL,
-    description TEXT,
-    image       VARCHAR(255),
-    status      VARCHAR(20),
-    user_id     BIGINT,
-    FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE,
-    FOREIGN KEY (status) REFERENCES StatusReport (name) ON DELETE CASCADE
+    id              BIGINT                                       NOT NULL AUTO_INCREMENT,
+    user_id         BIGINT,
+    location        VARCHAR(255)                                 NOT NULL,
+    latitude        DOUBLE,
+    longitude       DOUBLE,
+    description     TEXT                                         NOT NULL,
+    status          ENUM ('CLEAR', 'MODERATE', 'HEAVY', 'STUCK') NOT NULL,
+    approval_status ENUM ('PENDING', 'APPROVED', 'REJECTED')     NOT NULL DEFAULT 'PENDING',
+    created_at      DATETIME                                     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    image_url       VARCHAR(500),
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE SET NULL
 );
+
 
 -- Notification
-CREATE TABLE Notification (
-      id BIGINT PRIMARY KEY AUTO_INCREMENT,
-      title VARCHAR(255),
-      message TEXT NOT NULL,
-      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      is_read BOOLEAN DEFAULT FALSE,
-      user_id BIGINT NOT NULL,
-      FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE
+CREATE TABLE Notification
+(
+    id         BIGINT PRIMARY KEY AUTO_INCREMENT,
+    title      VARCHAR(255),
+    message    TEXT     NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_read    BOOLEAN           DEFAULT FALSE,
+    user_id    BIGINT   NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE
 );
+
+
 -- Route
 CREATE TABLE Route
 (
@@ -104,6 +90,7 @@ CREATE TABLE Route
     name VARCHAR(100),
     type ENUM ('BUS', 'ELECTRIC_TRAIN') NOT NULL
 );
+
 
 -- RouteVariant
 CREATE TABLE RouteVariant
@@ -117,7 +104,8 @@ CREATE TABLE RouteVariant
     end_stop    nvarchar(255),
     FOREIGN KEY (route_id) REFERENCES Route (id)
 );
--- INSERT INTO routevariant (route_id, is_outbound, name, distance, start_stop, end_stop)
+
+
 -- Schedule
 CREATE TABLE Schedule
 (
@@ -128,7 +116,8 @@ CREATE TABLE Schedule
     priority         INT,
     FOREIGN KEY (route_variant_id) REFERENCES RouteVariant (id)
 );
--- INSERT INTO schedule (routevariant_id, start_date, end_date, priority)
+
+
 -- Schedule_DayOfWeek
 CREATE TABLE ScheduleDay
 (
@@ -137,20 +126,20 @@ CREATE TABLE ScheduleDay
     PRIMARY KEY (schedule_id, day),
     FOREIGN KEY (schedule_id) REFERENCES Schedule (id)
 );
--- INSERT INTO schedule_day (schedule_id, day)
+
 
 -- ScheduleTrip
 CREATE TABLE ScheduleTrip
 (
-    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
-    schedule_id BIGINT,
-    start_time  TIME,
-    end_time    TIME,
-    trip_order  INT,
+    id            BIGINT PRIMARY KEY AUTO_INCREMENT,
+    schedule_id   BIGINT,
+    start_time    TIME,
+    end_time      TIME,
+    trip_order    INT,
     license_plate VARCHAR(20),
     FOREIGN KEY (schedule_id) REFERENCES Schedule (id)
 );
--- INSERT INTO scheduletrip (schedule_id, start_time, end_time) VALUES
+
 
 -- Station
 CREATE TABLE Station
@@ -165,6 +154,7 @@ CREATE TABLE Station
     zone    VARCHAR(100)
 );
 
+
 -- Stop
 CREATE TABLE Stop
 (
@@ -175,7 +165,7 @@ CREATE TABLE Stop
     FOREIGN KEY (station_id) REFERENCES Station (id),
     FOREIGN KEY (route_variant_id) REFERENCES RouteVariant (id)
 );
--- INSERT INTO stop (route_variant_id, station_id, stop_order)
+
 
 CREATE TABLE Favorite
 (
@@ -187,15 +177,17 @@ CREATE TABLE Favorite
     FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE
 );
 
-CREATE TABLE Rating (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL,
-    route_id BIGINT NOT NULL,
-    score INT NOT NULL CHECK (score >= 1 AND score <= 5),
-    comment TEXT,
+
+CREATE TABLE Rating
+(
+    id         BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id    BIGINT   NOT NULL,
+    route_id   BIGINT   NOT NULL,
+    score      INT      NOT NULL CHECK (score >= 1 AND score <= 5),
+    comment    TEXT,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_rating_user FOREIGN KEY (user_id) REFERENCES User(id),
-    CONSTRAINT fk_rating_route FOREIGN KEY (route_id) REFERENCES Route(id),
+    CONSTRAINT fk_rating_user FOREIGN KEY (user_id) REFERENCES User (id),
+    CONSTRAINT fk_rating_route FOREIGN KEY (route_id) REFERENCES Route (id),
     CONSTRAINT uk_rating_user_route UNIQUE (user_id, route_id)
 );
