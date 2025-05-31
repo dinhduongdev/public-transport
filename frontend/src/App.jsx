@@ -13,6 +13,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Favorite from "./components/Favorite";
 import RouteVariants from "./components/RouteVariants/RouteVariants";
+import UserTrafficReports from "./pages/user/UserTrafficReports";
+import CreateTrafficReport from "./pages/user/CreateTrafficReport";
 
 
 const App = () => {
@@ -27,6 +29,8 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/route/:routeId" element={<RouteVariants />} />
         <Route path="/favorites" element={<Favorite />} />
+        <Route path="/reports" element={<UserTrafficReports />} />
+        <Route path="/create-report" element={<CreateTrafficReport />} />
         <Route path="/report-traffic" element={<TrafficReport />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

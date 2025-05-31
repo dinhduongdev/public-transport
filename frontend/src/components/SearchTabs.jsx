@@ -20,7 +20,7 @@ export default function SearchTabs() {
           } hover:text-teal-500`}
           onClick={() => setActiveTab('search')}
         >
-          🔍 SEARCH
+          🔍 TRA CỨU
         </button>
         <button
           role="tab"
@@ -34,7 +34,7 @@ export default function SearchTabs() {
           } hover:text-teal-500`}
           onClick={() => setActiveTab('find-route')}
         >
-          🗺️ FIND ROUTE
+          🗺️ TÌM ĐƯỜNG
         </button>
       </div>
 

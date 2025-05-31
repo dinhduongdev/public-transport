@@ -35,6 +35,7 @@ public class JwtFilter implements Filter {
         if (requestURI.startsWith(httpRequest.getContextPath() + "/api/secure/**") ||
                 requestURI.startsWith(httpRequest.getContextPath() + "/api/secure/profile") ||
                 requestURI.startsWith(httpRequest.getContextPath() + "/api/favorites") ||
+                requestURI.startsWith(httpRequest.getContextPath() + "/api/traffic-reports") ||
                 requestURI.startsWith(httpRequest.getContextPath() + "/api/notifications") ) {
 
             if (isInvalidAuthorizationHeader(authorizationHeader)) {

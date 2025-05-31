@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
+<head>
+    <title th:replace="~{base :: title}">Đánh giá tuyến đường</title>
+    <th:block th:fragment="extraStyles">
+        <style>
+            .chart-container {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <div class="container">
+        <h2>Thống kê đánh giá tuyến đường</h2>
+
+        <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>
+        <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+
+        <div class="card">
+            <div class="card-body">
+                <h4>Tổng quan</h4>
+                <p><strong>Điểm trung bình:</strong> <span th:text="${summary.averageScore}"></span> / 5</p>
+                <p><strong>Tổng số đánh giá:</strong> <span th:text="${summary.totalRatings}"></span></p>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h4>Phân bố điểm số</h4>
+                <div class="chart-container">
+                    <canvas id="ratingChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h4>Danh sách đánh giá</h4>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Người dùng</th>
+                        <th>Điểm</th>
+                        <th>Bình luận</th>
+                        <th>Ngày tạo</th>
+                        <th>Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="rating : ${summary.ratings}">
+                        <td th:text="${rating.user.firstname} + ' ' + ${rating.user.lastname} ">Người dùng</td>
+                        <td th:text="${rating.score}">Điểm</td>
+                        <td th:text="${rating.comment} ? ${rating.comment} : 'Không có'">Bình luận</td>
+                        <td th:text="${#temporals.format(rating.createdAt, 'dd/MM/yyyy HH:mm')}">Ngày tạo</td>
+                        <td>
+                            <a th:href="@{/manage-ratings/detail/{id}(id=${rating.id}, routeId=${routeId})}" class="btn btn-info btn-sm">Chi tiết</a>
+                            <a th:href="@{/manage-ratings/delete/{id}(id=${rating.id}, routeId=${routeId})}" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa đánh giá này?')">Xóa</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <a th:href="@{/manage-routes}" class="btn btn-secondary mt-3">Quay lại</a>
+    </div>
+</th:block>
+<th:block th:fragment="extraScripts">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctx = document.getElementById('ratingChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['1 Sao', '2 Sao', '3 Sao', '4 Sao', '5 Sao'],
+                    datasets: [{
+                        label: 'Số lượng đánh giá',
+                        data: [
+                            [[${summary.ratingDistribution.get(1)}]],
+                            [[${summary.ratingDistribution.get(2)}]],
+                            [[${summary.ratingDistribution.get(3)}]],
+                            [[${summary.ratingDistribution.get(4)}]],
+                            [[${summary.ratingDistribution.get(5)}]]
+                        ],
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+                        borderColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Số lượng' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Điểm số' }
+                        }
+                    },
+                    plugins: {
+                        title: { display: true, text: 'Phân bố điểm số đánh giá' }
+                    }
+                }
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

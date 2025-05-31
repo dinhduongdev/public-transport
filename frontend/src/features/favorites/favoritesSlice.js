@@ -55,6 +55,7 @@ export const addFavorite = createAsyncThunk(
         targetId,
         isObserved: true,
       };
+      
       const res = await api.post(endpoints.favorites, favorite);
       return res.data;
     } catch (error) {

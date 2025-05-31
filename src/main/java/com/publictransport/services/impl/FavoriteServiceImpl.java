@@ -10,6 +10,7 @@ import com.publictransport.repositories.ScheduleRepository;
 import com.publictransport.repositories.UserRepository;
 import com.publictransport.services.FavoriteService;
 import com.publictransport.utils.SecurityUtils;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -74,10 +75,21 @@ public class FavoriteServiceImpl implements FavoriteService {
         return dto;
     }
 
+//    @Override
+//    public Object resolveTarget(Favorite favorite) {
+//        if ("ROUTE".equalsIgnoreCase(favorite.getTargetType())) {
+//            return routeRepository.findById(favorite.getTargetId());
+//        } else if ("SCHEDULE".equalsIgnoreCase(favorite.getTargetType())) {
+//            return scheduleRepository.findById(favorite.getTargetId());
+//        } else {
+//            throw new IllegalArgumentException("Unknown targetType: " + favorite.getTargetType());
+//        }
+//    }
     @Override
     public Object resolveTarget(Favorite favorite) {
         if ("ROUTE".equalsIgnoreCase(favorite.getTargetType())) {
-            return routeRepository.findById(favorite.getTargetId());
+            return routeRepository.findByIdWithRouteVariants(favorite.getTargetId())
+                    .orElse(null);
         } else if ("SCHEDULE".equalsIgnoreCase(favorite.getTargetType())) {
             return scheduleRepository.findById(favorite.getTargetId());
         } else {
@@ -106,7 +118,6 @@ public class FavoriteServiceImpl implements FavoriteService {
         } else {
             favorites = favoriteRepository.findByUserId(userId);
         }
-
         return favorites.stream()
                 .map(this::mapToResolvedDTO)
                 .toList();

@@ -25,7 +25,10 @@ const endpoints = {
     `${BASE_URL}/api/notifications/${notificationId}`,
 
   //navigation route
-  navigationRoute: `${BASE_URL}/api/navigation`
+  navigationRoute: `${BASE_URL}/api/navigation`,
+
+  //report
+  reports: `${BASE_URL}/api/traffic-reports`
 };
 
 const Apis = {

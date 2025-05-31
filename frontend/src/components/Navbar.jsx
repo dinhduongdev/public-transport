@@ -15,6 +15,7 @@ import {
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useState, useEffect, useRef } from "react";
+import { formatCreatedAt } from "../utils/formatCreatedAt";
 
 const Navbar = () => {
   const user = useSelector((state) => state.user);
@@ -104,7 +105,7 @@ const Navbar = () => {
             to="/"
             className="flex items-center text-white hover:text-yellow-300 transition"
           >
-            <span>Home</span>
+            <span>TRANG CHỦ</span>
           </Link>
           {user ? (
             <>
@@ -120,7 +121,13 @@ const Navbar = () => {
                 to="/favorites"
                 className="flex items-center space-x-1 text-white hover:text-yellow-300 transition"
               >
-                <span>Favorite</span>
+                <span>YÊU THÍCH</span>
+              </Link>
+              <Link
+                to="/reports"
+                className="flex items-center space-x-1 text-white hover:text-yellow-300 transition"
+              >
+                <span>BÁO CÁO GIAO THÔNG</span>
               </Link>
               {/* Dropdown thông báo */}
               <div className="relative" ref={dropdownRef}>
@@ -138,13 +145,20 @@ const Navbar = () => {
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold mb-2">Notifications</h3>
+                      <h3 className="text-lg font-semibold mb-2">
+                        THÔNG BÁO
+                      </h3>
                       {loading ? (
                         <p className="text-gray-500">Loading...</p>
                       ) : notifications.length === 0 ? (
-                        <p className="text-gray-500">No notifications available.</p>
+                        <p className="text-gray-500">
+                          Không có thông báo nào
+                        </p>
                       ) : (
-                        notifications.map((notification) => (
+                        notifications
+                        .slice()
+                        .reverse()
+                        .map((notification) => (
                           <div
                             key={notification.id}
                             className={`p-3 rounded-md mb-2 ${
@@ -155,21 +169,31 @@ const Navbar = () => {
                           >
                             <h4
                               className={`text-sm font-medium ${
-                                notification.isRead ? "text-gray-600" : "text-gray-900"
+                                notification.isRead
+                                  ? "text-gray-600"
+                                  : "text-gray-900"
                               }`}
                             >
                               {notification.title}
                             </h4>
-                            <p className="text-sm text-gray-500">{notification.message}</p>
+                            <p className="text-sm text-gray-500">
+                              {notification.message}
+                            </p>
                             <p className="text-xs text-gray-400">
-                              {new Date(notification.createdAt).toLocaleString()}
+                              {formatCreatedAt(
+                                notification.createdAt
+                              )} 
                             </p>
                             {!notification.isRead && (
                               <button
-                                onClick={() => dispatch(markNotificationAsRead(notification.id))}
+                                onClick={() =>
+                                  dispatch(
+                                    markNotificationAsRead(notification.id)
+                                  )
+                                }
                                 className="text-xs text-blue-600 hover:text-blue-800 mt-1"
                               >
-                                Mark as Read
+                                Đánh dấu đã đọc
                               </button>
                             )}
                           </div>
@@ -184,14 +208,14 @@ const Navbar = () => {
                 className="flex items-center space-x-1 text-white hover:text-yellow-300 transition"
               >
                 <FaUserCircle />
-                <span>Hello, {user.lastname}</span>
+                <span>Chào, {user.lastname}</span>
               </Link>
               <button
                 onClick={handleLogout}
                 className="flex items-center space-x-1 text-white hover:text-yellow-300 transition"
               >
                 <FaSignOutAlt />
-                <span>Logout</span>
+                <span>Đăng xuất</span>
               </button>
             </>
           ) : (

@@ -143,6 +143,7 @@ public class RouteVariantController {
                 Stop stop = new Stop();
                 stop.setRouteVariant(outboundRouteVariant);
                 Optional<Station> station = stationService.findById(stopDTO.getStationId());
+                System.out.println("station luot di : " + station.get().getName());
                 stop.setStation(station.get());
                 stop.setStopOrder(stopDTO.getStopOrder());
                 outboundStops.add(stop);
@@ -155,8 +156,11 @@ public class RouteVariantController {
             outboundStops.sort(Comparator.comparing(Stop::getStopOrder));
             Station firstStation = outboundStops.get(0).getStation();
             Station lastStation = outboundStops.get(outboundStops.size() - 1).getStation();
+            System.out.println(firstStation.getName() + "============" + lastStation.getName());
             outboundRouteVariant.setStartStop(firstStation.getName());
             outboundRouteVariant.setEndStop(lastStation.getName());
+            outboundRouteVariant.setStops(outboundStops);
+            System.out.println("===========SAVE===========");
             routeVariantService.update(outboundRouteVariant);
         }
 
@@ -191,6 +195,7 @@ public class RouteVariantController {
             Station lastStation = inboundStops.get(inboundStops.size() - 1).getStation();
             inboundRouteVariant.setStartStop(firstStation.getName());
             inboundRouteVariant.setEndStop(lastStation.getName());
+            inboundRouteVariant.setStops(inboundStops);
             routeVariantService.update(inboundRouteVariant);
         }
 

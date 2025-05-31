@@ -41,6 +41,21 @@ public class RouteRepositoryImpl implements RouteRepository {
     }
 
     @Override
+    public Optional<Route> findByIdWithRouteVariants(Long id) {
+        Session session = factory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Route> query = builder.createQuery(Route.class);
+        Root<Route> root = query.from(Route.class);
+
+        // Fetch routeVariants với LEFT JOIN để lấy cả khi không có routeVariants
+        root.fetch("routeVariants", JoinType.LEFT);
+        query.select(root).where(builder.equal(root.get("id"), id));
+
+        Route route = session.createQuery(query).uniqueResult();
+        return Optional.ofNullable(route);
+    }
+
+    @Override
     public Optional<Route> findById(Long id, boolean fetchRouteVariants) {
         if (!fetchRouteVariants) {
             return findById(id);

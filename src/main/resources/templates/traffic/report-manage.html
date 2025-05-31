@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
+<head>
+    <title th:replace="~{base :: title}">Quản lý báo cáo giao thông</title>
+    <!-- Định nghĩa các style bổ sung -->
+    <th:block th:fragment="extraStyles">
+        <style>
+            body { padding: 20px; }
+            .table th, .table td { vertical-align: middle; }
+            .action-btn { margin-right: 5px; }
+        </style>
+    </th:block>
+</head>
+<body>
+<!-- Nội dung chính của trang -->
+<th:block th:fragment="content">
+    <h1 class="mb-4">Quản lý báo cáo giao thông</h1>
+
+    <!-- Hiển thị thông báo thành công/lỗi -->
+    <div th:if="${successMsg}" class="alert alert-success" role="alert">
+        <span th:text="${successMsg}"></span>
+    </div>
+    <div th:if="${errorMsg}" class="alert alert-danger" role="alert">
+        <span th:text="${errorMsg}"></span>
+    </div>
+
+    <!-- Bảng danh sách báo cáo -->
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Người báo cáo</th>
+            <th>Vị trí</th>
+            <th>Mô tả</th>
+            <th>Trạng thái</th>
+            <th>Hình ảnh</th>
+            <th>Thời gian tạo</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="report : ${reports}">
+            <td th:text="${report.id}"></td>
+            <td th:text="${report.user.firstname + ' ' + report.user.lastname}"></td>
+            <td th:text="${report.location}"></td>
+            <td th:text="${report.description}"></td>
+            <td th:text="${report.status}"></td>
+            <td>
+                <a th:if="${report.imageUrl}" th:href="${report.imageUrl}" target="_blank">
+                    <img th:src="${report.imageUrl}" alt="Hình ảnh" style="max-width: 100px;"/>
+                </a>
+                <span th:unless="${report.imageUrl}">Không có</span>
+            </td>
+            <td th:text="${report.createdAt}"></td>
+            <td>
+                <a th:href="@{/manage-traffic-reports/approve/{id}(id=${report.id})}"
+                   class="btn btn-success btn-sm action-btn">Duyệt</a>
+                <a th:href="@{/manage-traffic-reports/reject/{id}(id=${report.id})}"
+                   class="btn btn-warning btn-sm action-btn">Từ chối</a>
+                <a th:href="@{/manage-traffic-reports/delete/{id}(id=${report.id})}"
+                   class="btn btn-danger btn-sm action-btn"
+                   onclick="return confirm('Bạn có chắc muốn xóa báo cáo này?');">Xóa</a>
+            </td>
+        </tr>
+        <tr th:if="${reports.isEmpty}">
+            <td colspan="8" class="text-center">Không có báo cáo nào đang chờ duyệt.</td>
+        </tr>
+        </tbody>
+    </table>
+    <a th:href="@{/manage-schedules}" class="btn btn-danger">Quay lại</a>
+
+</th:block>
+
+<!-- Script bổ sung (nếu cần) -->
+<th:block th:fragment="extraScripts">
+    <!-- Bootstrap JS đã được nhúng trong base.html, không cần thêm lại -->
+</th:block>
+</body>
+</html>

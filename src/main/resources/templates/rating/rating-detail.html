@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"  th:replace="~{base :: html}">
+<head>
+    <th:block th:fragment="extraStyles">
+        <style>
+            .card-body p {
+                margin-bottom: 0.5rem;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <div class="container">
+        <h2>Chi tiết đánh giá</h2>
+
+        <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>
+        <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+
+        <div class="card">
+            <div class="card-body">
+                <p><strong>Người dùng:</strong> <span th:text="${rating.user.firstname} + ' ' + ${rating.user.lastname}"></span></p>
+                <p><strong>Điểm số:</strong> <span th:text="${rating.score}"></span> / 5</p>
+                <p><strong>Bình luận:</strong> <span th:text="${rating.comment} ? ${rating.comment} : 'Không có'"></span></p>
+                <p><strong>Ngày tạo:</strong> <span th:text="${#temporals.format(rating.createdAt, 'dd/MM/yyyy HH:mm')}"></span></p>
+                <p><strong>Ngày cập nhật:</strong> <span th:text="${#temporals.format(rating.updatedAt, 'dd/MM/yyyy HH:mm')}"></span></p>
+            </div>
+        </div>
+
+        <a th:href="@{/manage-ratings(routeId=${routeId})}" class="btn btn-secondary mt-3">Quay lại</a>
+    </div>
+</th:block>
+
+<th:block th:fragment="extraScripts">
+    <!-- Không cần JS bổ sung -->
+</th:block>
+</body>
+</html>
