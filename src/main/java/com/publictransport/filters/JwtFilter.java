@@ -42,6 +42,8 @@ public class JwtFilter implements Filter {
         // Các API yêu cầu chứng thực
         if (requestURI.startsWith(httpRequest.getContextPath() + "/api/secure/**") ||
                 requestURI.startsWith(httpRequest.getContextPath() + "/api/secure/profile") ||
+                (requestURI.startsWith(httpRequest.getContextPath() + "/api/ratings") &&
+                        !requestURI.equals(httpRequest.getContextPath() + "/api/ratings/summary")) ||
                 requestURI.startsWith(httpRequest.getContextPath() + "/api/favorites") ||
                 requestURI.startsWith(httpRequest.getContextPath() + "/api/traffic-reports") ||
                 requestURI.startsWith(httpRequest.getContextPath() + "/api/notifications") ) {

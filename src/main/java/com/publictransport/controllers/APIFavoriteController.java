@@ -53,9 +53,19 @@ public class APIFavoriteController {
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<List<FavoriteResolvedDTO>> getResolvedFavorites(
+    public ResponseEntity<?> getResolvedFavorites(
             @PathVariable("userId") Long userId,
-            @RequestParam(value = "targetType", required = false) String targetType) {
+            @RequestParam(value = "targetType", required = false) String targetType,
+            HttpServletRequest request) {
+        Long userIdFromToken = getUserIdFromRequest(request);
+        if (userIdFromToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Vui lòng đăng nhập để sử dụng tính năng này"));
+        }
+        if (!userIdFromToken.equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Bạn không có quyền truy cập dữ liệu này"));
+        }
         List<FavoriteResolvedDTO> favorites = favoriteService.getResolvedFavoritesByUserId(userId, targetType);
         return ResponseEntity.ok(favorites);
     }
@@ -63,19 +73,21 @@ public class APIFavoriteController {
     @DeleteMapping("/{favoriteId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> deleteFavorite(@PathVariable("favoriteId") Long favoriteId) {
-
-
         favoriteService.deleteFavorite(favoriteId);
         return ResponseEntity.noContent().build();
     }
     @PatchMapping("/{favoriteId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> updateObservedStatus(@PathVariable("favoriteId") Long favoriteId,
-                                                     @RequestParam("observed") boolean observed) {
+                                                     @RequestParam("observed") boolean observed,
+                                                     HttpServletRequest request) {
+        Long userId = getUserIdFromRequest(request);
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         favoriteService.updateObservedStatus(favoriteId, observed);
         return ResponseEntity.noContent().build();
     }
-
 
     private Long getUserIdFromRequest(HttpServletRequest request) {
         try {
