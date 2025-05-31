@@ -52,23 +52,23 @@ CREATE TABLE User
 
 
 -- Report
-CREATE TABLE TrafficReport (
-       id BIGINT NOT NULL AUTO_INCREMENT,
-       user_id BIGINT,
-       location VARCHAR(255) NOT NULL,
-       latitude DOUBLE,
-       longitude DOUBLE,
-       description TEXT NOT NULL,
-       status ENUM('CLEAR', 'MODERATE', 'HEAVY') NOT NULL,
-       approval_status ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
-       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-       image_url VARCHAR(500),
-       start_time DATETIME NOT NULL,
-       end_time DATETIME NOT NULL,
-       PRIMARY KEY (id),
-       FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE SET NULL
+CREATE TABLE TrafficReport
+(
+    id              BIGINT                                   NOT NULL AUTO_INCREMENT,
+    user_id         BIGINT,
+    location        VARCHAR(255)                             NOT NULL,
+    latitude        DOUBLE,
+    longitude       DOUBLE,
+    description     TEXT                                     NOT NULL,
+    status          ENUM ('CLEAR', 'MODERATE', 'HEAVY')      NOT NULL,
+    approval_status ENUM ('PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
+    created_at      DATETIME                                 NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    image_url       VARCHAR(500),
+    start_time      DATETIME                                 NOT NULL,
+    end_time        DATETIME                                 NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE SET NULL
 );
-
 
 
 -- Route
@@ -90,7 +90,7 @@ CREATE TABLE RouteVariant
     distance    FLOAT,
     start_stop  nvarchar(255),
     end_stop    nvarchar(255),
-    FOREIGN KEY (route_id) REFERENCES Route (id)  ON DELETE CASCADE
+    FOREIGN KEY (route_id) REFERENCES Route (id) ON DELETE CASCADE
 );
 
 -- Schedule
@@ -101,7 +101,7 @@ CREATE TABLE Schedule
     start_date       DATETIME,
     end_date         DATETIME,
     priority         INT,
-    FOREIGN KEY (route_variant_id) REFERENCES RouteVariant (id)  ON DELETE CASCADE
+    FOREIGN KEY (route_variant_id) REFERENCES RouteVariant (id) ON DELETE CASCADE
 );
 
 
@@ -124,7 +124,7 @@ CREATE TABLE ScheduleTrip
     end_time      TIME,
     trip_order    INT,
     license_plate VARCHAR(20),
-    FOREIGN KEY (schedule_id) REFERENCES Schedule (id)  ON DELETE CASCADE
+    FOREIGN KEY (schedule_id) REFERENCES Schedule (id) ON DELETE CASCADE
 );
 
 
@@ -150,7 +150,7 @@ CREATE TABLE Stop
     station_id       BIGINT,
     stop_order       INT,
     FOREIGN KEY (station_id) REFERENCES Station (id),
-    FOREIGN KEY (route_variant_id) REFERENCES RouteVariant (id)  ON DELETE CASCADE
+    FOREIGN KEY (route_variant_id) REFERENCES RouteVariant (id) ON DELETE CASCADE
 );
 
 
@@ -179,14 +179,14 @@ CREATE TABLE Rating
     CONSTRAINT uk_rating_user_route UNIQUE (user_id, route_id)
 );
 
-CREATE TABLE notification (
-      id BIGINT AUTO_INCREMENT PRIMARY KEY,
-      title VARCHAR(255),
-      message TEXT NOT NULL,
-      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      is_read BOOLEAN DEFAULT FALSE,
-      user_id BIGINT NOT NULL,
-      CONSTRAINT fk_notification_user FOREIGN KEY (user_id)
-          REFERENCES user(id) ON DELETE CASCADE
+CREATE TABLE Notification
+(
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title      VARCHAR(255),
+    message    TEXT      NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_read    BOOLEAN            DEFAULT FALSE,
+    user_id    BIGINT    NOT NULL,
+    CONSTRAINT fk_notification_user FOREIGN KEY (user_id)
+        REFERENCES User (id) ON DELETE CASCADE
 );
-
