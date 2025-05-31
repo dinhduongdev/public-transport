@@ -10,7 +10,7 @@ public interface StationRepository {
     Optional<Station> findById(Long id);
 
     void save(Station station);
-
+    Optional<Station> findDuplicate(Station station);
     void update(Station station);
 
     void delete(Long id);

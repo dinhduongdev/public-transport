@@ -63,6 +63,8 @@ public class APIFavoriteController {
     @DeleteMapping("/{favoriteId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> deleteFavorite(@PathVariable("favoriteId") Long favoriteId) {
+
+
         favoriteService.deleteFavorite(favoriteId);
         return ResponseEntity.noContent().build();
     }

@@ -78,7 +78,7 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
         <h1 className="text-2xl font-semibold text-center mb-4">
-          Đăng nhập Client
+          ĐĂNG NHẬP
         </h1>
 
         {msg && (

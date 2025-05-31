@@ -38,6 +38,10 @@ public class StationServiceImpl implements StationService {
 
     @Override
     public void save(Station station) {
+        Optional<Station> existing = stationRepository.findDuplicate(station);
+        if (existing.isPresent()) {
+            throw new IllegalArgumentException("Trạm đã tồn tại với thông tin trùng khớp");
+        }
         stationRepository.save(station);
     }
 

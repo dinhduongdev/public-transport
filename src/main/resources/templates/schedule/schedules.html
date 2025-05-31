@@ -79,6 +79,8 @@
                 <a th:href="@{/manage-schedules/edit/{id}(id=${schedule.id})}" class="edit-btn">Sửa</a>
                 <a th:href="@{/manage-schedules/delete/{id}(id=${schedule.id})}" class="delete-btn"
                    onclick="return confirm('Bạn có chắc chắn muốn xóa lịch trình này?')">Xóa</a>
+                <a th:href="@{/manage-favorites(targetId=${schedule.id},targetType='SCHEDULE')}"
+                   class="btn btn-warning btn-sm">Xem yêu thích</a>
             </td>
         </tr>
         </tbody>

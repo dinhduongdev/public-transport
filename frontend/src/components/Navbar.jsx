@@ -225,14 +225,14 @@ const Navbar = () => {
                 className="flex items-center space-x-1 text-white hover:text-yellow-300 transition"
               >
                 <FaSignInAlt />
-                <span>Login</span>
+                <span>Đăng nhập</span>
               </Link>
               <Link
                 to="/register"
                 className="flex items-center space-x-1 text-white hover:text-yellow-300 transition"
               >
                 <FaUserPlus />
-                <span>Register</span>
+                <span>Đăng ký</span>
               </Link>
             </>
           )}

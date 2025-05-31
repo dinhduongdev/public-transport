@@ -31,6 +31,14 @@
             .back-btn:hover {
                 background-color: #5a6268;
             }
+            .error-message {
+                color: #dc3545;
+                margin-bottom: 15px;
+            }
+            .field-error {
+                color: #dc3545;
+                font-size: 0.9em;
+            }
         </style>
     </th:block>
 </head>
@@ -38,6 +46,9 @@
 <th:block th:fragment="content">
     <div class="station-form">
         <h2>Thêm trạm mới</h2>
+        <!-- Hiển thị thông báo lỗi chung từ RedirectAttributes -->
+        <div th:if="${errorMsg}" class="error-message" th:text="${errorMsg}"></div>
+
         <form th:action="@{/manage-stations/add}" th:object="${station}" method="post">
             <div class="form-group">
                 <label for="name">Tên trạm:</label>

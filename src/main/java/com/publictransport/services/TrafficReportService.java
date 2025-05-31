@@ -17,4 +17,6 @@ public interface TrafficReportService {
     void approveReport(Long reportId);
     void rejectReport(Long reportId);
     void deleteReport(Long reportId);
+
+    List<TrafficReport> getReportsByStatus(String status);
 }

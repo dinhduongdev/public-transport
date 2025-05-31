@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: html}">
+<head>
+    <title th:replace="~{base :: title}">Tóm tắt yêu thích</title>
+
+    <th:block th:fragment="extraStyles">
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+        <style>
+            .container { margin-top: 20px; }
+            .alert { margin-bottom: 20px; }
+            .table th, .table td { vertical-align: middle; }
+        </style>
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <div class="container">
+        <h1>Tóm tắt yêu thích</h1>
+
+        <!-- Hiển thị thông báo lỗi hoặc thành công -->
+        <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>
+        <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+
+        <!-- Tóm tắt yêu thích -->
+        <div class="card mb-4">
+            <div class="card-header">Thông tin tóm tắt</div>
+            <div class="card-body">
+                <p><strong>ID mục:</strong> <span th:text="${targetId}"></span></p>
+                <p><strong>Loại mục:</strong> <span th:text="${targetType}"></span></p>
+                <p><strong>Tổng số yêu thích:</strong> <span th:text="${summary.totalFavorites}"></span></p>
+                <p><strong>Yêu thích được bật thông báo:</strong> <span th:text="${summary.observedFavorites}"></span></p>
+            </div>
+        </div>
+
+        <!-- Nút quay lại -->
+        <a th:href="@{/manage-routes}" class="btn btn-secondary mt-3">Quay lại</a>
+    </div>
+</th:block>
+
+<th:block th:fragment="extraScripts">
+    <!-- Không cần JavaScript bổ sung -->
+</th:block>
+</body>
+</html>

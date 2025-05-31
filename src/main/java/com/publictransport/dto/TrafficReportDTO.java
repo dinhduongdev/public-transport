@@ -17,6 +17,8 @@ public class TrafficReportDTO {
     private Double latitude;
     private Double longitude;
     private String description;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private TrafficStatus status;
     private ApprovalStatus approvalStatus;
     private LocalDateTime createdAt;

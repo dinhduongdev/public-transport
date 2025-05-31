@@ -5,8 +5,6 @@ import polyline from "@mapbox/polyline";
 import "leaflet/dist/leaflet.css";
 import { fetchTrafficReports } from "../../features/trafficreport/trafficReportsSlice";
 
-
-
 // Fix for Leaflet default marker icons
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -41,6 +39,39 @@ const RouteMap = ({ stops }) => {
         '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);
 
+    // Định nghĩa màu sắc dựa trên trạng thái
+    const getStatusColor = (status) => {
+      switch (status) {
+        case "CLEAR":
+          return { color: "green", fillColor: "green", fillOpacity: 0.5 };
+        case "MODERATE":
+          return { color: "yellow", fillColor: "yellow", fillOpacity: 0.5 };
+        case "HEAVY":
+          return { color: "orange", fillColor: "orange", fillOpacity: 0.5 };
+        case "STUCK":
+          return { color: "red", fillColor: "red", fillOpacity: 0.5 };
+        default:
+          return { color: "gray", fillColor: "gray", fillOpacity: 0.5 };
+      }
+    };
+
+  const parseTimeArray = (timeArray) => {
+      if (!timeArray || !Array.isArray(timeArray) || timeArray.length < 5) {
+        return null;
+      }
+      const [year, month, day, hour, minute] = timeArray;
+      // JavaScript months are 0-based, so subtract 1 from month
+      return new Date(year, month - 1, day, hour, minute);
+    };
+
+  // Kiểm tra báo cáo có trong khoảng thời gian hiện tại không
+  const isReportActive = (report) => {
+    const startTime = parseTimeArray(report.startTime);
+    const endTime = parseTimeArray(report.endTime);
+    if (!startTime || !endTime) return false;
+    const now = new Date();
+    return now >= startTime && now <= endTime;
+  };
     // Fetch route from OSRM
     const fetchRoute = async () => {
       try {
@@ -96,12 +127,16 @@ const RouteMap = ({ stops }) => {
     });
 
     // Add red circles for traffic reports
-    reports.forEach((report) => {
+    reports
+      .filter((report) => isReportActive(report) && report.latitude && report.longitude)
+      .forEach((report) => {
       if (report.latitude && report.longitude) {
+        console.log(new Date());
+        console.log(report.startTime);
+        
+        
         L.circle([report.latitude, report.longitude], {
-          color: "red",
-          fillColor: "red",
-          fillOpacity: 0.5,
+          ...getStatusColor(report.status),
           radius: 100, // Bán kính 100 mét
         })
           .addTo(map)

@@ -58,6 +58,13 @@ public class TrafficReport {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @NotNull
+    @Column(name = "start_time", nullable = false)
+    private LocalDateTime startTime;
+
+    @NotNull
+    @Column(name = "end_time", nullable = false)
+    private LocalDateTime endTime;
 
     @PrePersist
     protected void onCreate() {

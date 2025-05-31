@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -15,11 +16,11 @@ import { fetchTrafficReports } from "../../features/trafficreport/trafficReports
 
 export default function MapView() {
   const dispatch = useDispatch();
-  const { routes, selectedStopCoordinates } = useSelector(
+  const { routes, selectedStopCoordinates, selectedRouteIndex } = useSelector(
     (state) => state.navigation
   );
-  const { reports } = useSelector((state) => state.trafficReports); // Lấy báo cáo từ Redux
-  const [routePaths, setRoutePaths] = useState([]);
+  const { reports } = useSelector((state) => state.trafficReports);
+  const [routePath, setRoutePath] = useState([]); // Chỉ lưu đường đi của tuyến được chọn
 
   // Lấy danh sách báo cáo của người dùng
   useEffect(() => {
@@ -49,22 +50,75 @@ export default function MapView() {
     }
   };
 
-  // Cập nhật đường đi khi routes thay đổi
+  // Cập nhật đường đi khi tuyến được chọn thay đổi
   useEffect(() => {
-    const updatePaths = async () => {
-      const paths = await Promise.all(
-        routes.map(async (route) => {
-          const coordinates = route.hops.map((hop) => ({
-            lat: hop.stop.station.coordinates.lat,
-            lng: hop.stop.station.coordinates.lng,
-          }));
-          return await fetchRoutePath(coordinates);
-        })
-      );
-      setRoutePaths(paths);
+    const updatePath = async () => {
+      if (routes[selectedRouteIndex]) {
+        const coordinates = routes[selectedRouteIndex].hops.map((hop) => ({
+          lat: hop.stop.station.coordinates.lat,
+          lng: hop.stop.station.coordinates.lng,
+        }));
+        const path = await fetchRoutePath(coordinates);
+        setRoutePath(path);
+      } else {
+        setRoutePath([]);
+      }
     };
-    updatePaths();
-  }, [routes]);
+    updatePath();
+  }, [routes, selectedRouteIndex]);
+
+  // Nếu không có tuyến được chọn, không hiển thị gì
+  if (!routes[selectedRouteIndex]) {
+    return (
+      <MapContainer
+        center={[10.371, 106.745]}
+        zoom={13}
+        style={{ height: "100%", width: "100%" }}
+        className="z-0"
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+      </MapContainer>
+    );
+  }
+
+  // Chuyển đổi mảng thời gian thành đối tượng Date
+    const parseTimeArray = (timeArray) => {
+      if (!timeArray || !Array.isArray(timeArray) || timeArray.length < 5) {
+        return null;
+      }
+      const [year, month, day, hour, minute] = timeArray;
+      // JavaScript months are 0-based, so subtract 1 from month
+      return new Date(year, month - 1, day, hour, minute);
+    };
+
+  // Kiểm tra báo cáo có trong khoảng thời gian hiện tại không
+  const isReportActive = (report) => {
+    const startTime = parseTimeArray(report.startTime);
+    const endTime = parseTimeArray(report.endTime);
+    if (!startTime || !endTime) return false;
+    const now = new Date();
+    return now >= startTime && now <= endTime;
+  };
+
+  // Định nghĩa màu sắc dựa trên trạng thái
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "CLEAR":
+        return { color: "green", fillColor: "green", fillOpacity: 0.5 };
+      case "MODERATE":
+        return { color: "yellow", fillColor: "yellow", fillOpacity: 0.5 };
+      case "HEAVY":
+        return { color: "orange", fillColor: "orange", fillOpacity: 0.5 };
+      case "STUCK":
+        return { color: "red", fillColor: "red", fillOpacity: 0.5 };
+      default:
+        return { color: "gray", fillColor: "gray", fillOpacity: 0.5 };
+    }
+  };
+  const selectedRoute = routes[selectedRouteIndex];
 
   return (
     <MapContainer
@@ -78,95 +132,78 @@ export default function MapView() {
         attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
       <FitBounds
-        routes={routes}
+        routes={[selectedRoute]} // Chỉ truyền tuyến được chọn
         selectedStopCoordinates={selectedStopCoordinates}
-        reports={reports} // Truyền reports vào FitBounds
+        reports={reports}
       />
-      {routes.map((route, routeIndex) => (
-        <React.Fragment key={routeIndex}>
-          {/* Marker cho điểm bắt đầu */}
-          <Marker
-            position={[route.startCoordinates.lat, route.startCoordinates.lng]}
-            icon={startIcon}
-          >
-            <Popup>
-              <div className="text-sm font-medium text-gray-800">
-                <strong>Điểm bắt đầu</strong>
-                <br />
-                Tọa độ: ({route.startCoordinates.lat},{" "}
-                {route.startCoordinates.lng})
-              </div>
-            </Popup>
-          </Marker>
+      {/* Marker cho điểm bắt đầu */}
+      <Marker
+        position={[selectedRoute.startCoordinates.lat, selectedRoute.startCoordinates.lng]}
+        icon={startIcon}
+      >
+        <Popup>
+          <div className="text-sm font-medium text-gray-800">
+            <strong>Điểm bắt đầu</strong>
+            <br />
+            Tọa độ: ({selectedRoute.startCoordinates.lat}, {selectedRoute.startCoordinates.lng})
+          </div>
+        </Popup>
+      </Marker>
 
-          {/* Marker cho điểm kết thúc */}
-          <Marker
-            position={[route.endCoordinates.lat, route.endCoordinates.lng]}
-            icon={endIcon}
-          >
-            <Popup>
-              <div className="text-sm font-medium text-gray-800">
-                <strong>Điểm kết thúc</strong>
-                <br />
-                Tọa độ: ({route.endCoordinates.lat}, {route.endCoordinates.lng})
-              </div>
-            </Popup>
-          </Marker>
+      {/* Marker cho điểm kết thúc */}
+      <Marker
+        position={[selectedRoute.endCoordinates.lat, selectedRoute.endCoordinates.lng]}
+        icon={endIcon}
+      >
+        <Popup>
+          <div className="text-sm font-medium text-gray-800">
+            <strong>Điểm kết thúc</strong>
+            <br />
+            Tọa độ: ({selectedRoute.endCoordinates.lat}, {selectedRoute.endCoordinates.lng})
+          </div>
+        </Popup>
+      </Marker>
 
-          {/* Marker cho các điểm dừng */}
-          {route.hops.map((hop) => (
-            <Marker
-              key={hop.stop.id}
-              position={[
-                hop.stop.station.coordinates.lat,
-                hop.stop.station.coordinates.lng,
-              ]}
-            >
-              <Popup>
-                <div className="text-sm">
-                  <strong>{hop.stop.station.name}</strong>
-                  <br />
-                  {hop.stop.station.name}, {hop.stop.street}
-                  <br />
-                  {hop.stop.station.location.ward || "N/A"},{" "}
-                  {hop.stop.station.location.zone}
-                </div>
-              </Popup>
-            </Marker>
-          ))}
-
-          {/* Đường lối */}
-          {routePaths[routeIndex] && routePaths[routeIndex]?.length > 0 && (
-            <Polyline
-              positions={routePaths[routeIndex]}
-              color={
-                routeIndex === 0
-                  ? "#14B8A6"
-                  : routeIndex === 1
-                  ? "#F43F5E"
-                  : "#3B82F6"
-              }
-              weight={4}
-              opacity={0.7}
-            />
-          )}
-        </React.Fragment>
+      {/* Marker cho các điểm dừng */}
+      {selectedRoute.hops.map((hop) => (
+        <Marker
+          key={hop.stop.id}
+          position={[hop.stop.station.coordinates.lat, hop.stop.station.coordinates.lng]}
+        >
+          <Popup>
+            <div className="text-sm">
+              <strong>{hop.stop.station.name}</strong>
+              <br />
+              {hop.stop.station.name}, {hop.stop.street}
+              <br />
+              {hop.stop.station.location.ward || "N/A"}, {hop.stop.station.location.zone}
+            </div>
+          </Popup>
+        </Marker>
       ))}
 
+      {/* Đường lối */}
+      {routePath.length > 0 && (
+        <Polyline
+          positions={routePath}
+          color="#14B8A6"
+          weight={4}
+          opacity={0.7}
+        />
+      )}
+
       {/* Vẽ hình tròn đỏ cho các điểm báo cáo */}
-      {reports.map(
+      {reports
+      .filter((report) => isReportActive(report) && report.latitude && report.longitude)
+      .map(
         (report) =>
           report.latitude &&
           report.longitude && (
             <Circle
               key={report.id}
               center={[report.latitude, report.longitude]}
-              radius={100} // Bán kính 100 mét
-              pathOptions={{
-                color: "red",
-                fillColor: "red",
-                fillOpacity: 0.5,
-              }}
+              radius={100}
+              pathOptions={getStatusColor(report.status)}
             >
               <Popup>
                 <div className="text-sm">
@@ -188,7 +225,6 @@ export default function MapView() {
   );
 }
 
-// Hàm định dạng createdAt (tái sử dụng từ UserTrafficReports)
 const formatCreatedAt = (createdAt) => {
   if (!createdAt || !Array.isArray(createdAt) || createdAt.length < 6) {
     return "Không xác định";

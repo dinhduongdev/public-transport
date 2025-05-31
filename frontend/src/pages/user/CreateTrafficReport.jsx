@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { submitTrafficReport, reverseGeocode } from '../../features/trafficreport/trafficReportsSlice';
 import { toast, ToastContainer } from "react-toastify";
 
-
-
 const CreateTrafficReport = () => {
   const [formData, setFormData] = useState({
     location: '',
@@ -12,6 +10,8 @@ const CreateTrafficReport = () => {
     longitude: '',
     description: '',
     status: 'CLEAR',
+    startTime: '',
+    endTime: '',   
   });
   const [image, setImage] = useState(null);
   const mapContainer = useRef(null);
@@ -25,7 +25,6 @@ const CreateTrafficReport = () => {
   );
   const user = useSelector((state) => state.user);
   console.log("user", user);
-  
 
   // Tải Goong Maps
   useEffect(() => {
@@ -56,8 +55,8 @@ const CreateTrafficReport = () => {
       map.current = new window.goongjs.Map({
         container: mapContainer.current,
         style: 'https://tiles.goong.io/assets/goong_map_web.json',
-        center: [105.83991, 21.02800],
-        zoom: 9,
+        center: [106.660172, 10.762622],
+        zoom: 12,
       });
 
       map.current.on('click', (e) => {
@@ -133,18 +132,20 @@ const CreateTrafficReport = () => {
     data.append('longitude', formData.longitude);
     data.append('description', formData.description);
     data.append('status', formData.status);
+    data.append('startTime', formData.startTime); // Add startTime to FormData
+    data.append('endTime', formData.endTime);     // Add endTime to FormData
     if (image) {
       data.append('imageUrl', image);
     }
-    data.append('userId', user.id); // Thay bằng userId từ auth
-
+    data.append('userId', user.id);
 
     console.log("location", formData.location);
     console.log("latitude", formData.latitude);
     console.log("longitude", formData.longitude);
     console.log("description", formData.description);
     console.log("status", formData.status);
-    
+    console.log("startTime", formData.startTime);
+    console.log("endTime", formData.endTime);
 
     try {
       await dispatch(submitTrafficReport(data)).unwrap();
@@ -154,12 +155,14 @@ const CreateTrafficReport = () => {
         longitude: '',
         description: '',
         status: 'CLEAR',
+        startTime: '',
+        endTime: '',
       });
       setImage(null);
       toast.success("Gửi báo cáo thành công");
     } catch (error) {
       console.error('Lỗi khi gửi báo cáo:', error);
-      toast.success("Gửi báo cáo thất bại");
+      toast.error("Gửi báo cáo thất bại");
     }
   };
 
@@ -288,6 +291,37 @@ const CreateTrafficReport = () => {
           </select>
         </div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
+              Thời gian bắt đầu
+            </label>
+            <input
+              type="datetime-local"
+              id="startTime"
+              name="startTime"
+              value={formData.startTime}
+              onChange={handleInputChange}
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">
+              Thời gian kết thúc
+            </label>
+            <input
+              type="datetime-local"
+              id="endTime"
+              name="endTime"
+              value={formData.endTime}
+              onChange={handleInputChange}
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+
         <div>
           <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">
             Hình ảnh (tùy chọn)
@@ -311,6 +345,7 @@ const CreateTrafficReport = () => {
           Gửi báo cáo
         </button>
       </form>
+      <ToastContainer />
     </div>
   );
 };

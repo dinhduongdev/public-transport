@@ -52,22 +52,44 @@ CREATE TABLE User
 
 
 -- Report
-CREATE TABLE TrafficReport
-(
-    id              BIGINT                                       NOT NULL AUTO_INCREMENT,
-    user_id         BIGINT,
-    location        VARCHAR(255)                                 NOT NULL,
-    latitude        DOUBLE,
-    longitude       DOUBLE,
-    description     TEXT                                         NOT NULL,
-    status          ENUM ('CLEAR', 'MODERATE', 'HEAVY', 'STUCK') NOT NULL,
-    approval_status ENUM ('PENDING', 'APPROVED', 'REJECTED')     NOT NULL DEFAULT 'PENDING',
-    created_at      DATETIME                                     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    image_url       VARCHAR(500),
-    PRIMARY KEY (id),
-    FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE SET NULL
+CREATE TABLE TrafficReport (
+       id BIGINT NOT NULL AUTO_INCREMENT,
+       user_id BIGINT,
+       location VARCHAR(255) NOT NULL,
+       latitude DOUBLE,
+       longitude DOUBLE,
+       description TEXT NOT NULL,
+       status ENUM('CLEAR', 'MODERATE', 'HEAVY') NOT NULL,
+       approval_status ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
+       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+       image_url VARCHAR(500),
+       start_time DATETIME NOT NULL,
+       end_time DATETIME NOT NULL,
+       PRIMARY KEY (id),
+       FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE SET NULL
 );
 
+CREATE TABLE StatusReport
+(
+    name VARCHAR(20) PRIMARY KEY
+);
+INSERT INTO StatusReport (name)
+VALUES ('PENDING'),
+       ('VERIFIED');
+
+-- Report
+CREATE TABLE Report
+(
+    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
+    latitude    DOUBLE NOT NULL,
+    longitude   DOUBLE NOT NULL,
+    description TEXT,
+    image       VARCHAR(255),
+    status      VARCHAR(20),
+    user_id     BIGINT,
+    FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE,
+    FOREIGN KEY (status) REFERENCES StatusReport (name) ON DELETE CASCADE
+);
 
 -- Notification
 CREATE TABLE Notification
@@ -90,7 +112,6 @@ CREATE TABLE Route
     name VARCHAR(100),
     type ENUM ('BUS', 'ELECTRIC_TRAIN') NOT NULL
 );
-
 
 -- RouteVariant
 CREATE TABLE RouteVariant

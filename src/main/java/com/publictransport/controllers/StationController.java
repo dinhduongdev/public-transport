@@ -63,8 +63,13 @@ public class StationController {
     }
 
     @PostMapping("/manage-stations/add")
-    public String addStation(Station station) {
-        stationService.save(station);
+    public String addStation(Station station, RedirectAttributes redirectAttributes) {
+        try {
+            stationService.save(station);
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
+            return "redirect:/manage-stations/add";
+        }
         return "redirect:/manage-stations";
     }
 

@@ -1,29 +1,22 @@
-
 // export default RouteSearch;
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { fetchRoutes, setCurrentPage } from '../features/routes/routeSlice';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { fetchRoutes, setCurrentPage } from "../features/routes/routeSlice";
 
 const RouteSearch = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Initialize useNavigate
 
-  const {
-    routes,
-    totalItems,
-    totalPages,
-    currentPage,
-    status,
-    error,
-  } = useSelector((state) => state.busRoutes);
+  const { routes, totalItems, totalPages, currentPage, status, error } =
+    useSelector((state) => state.busRoutes);
 
   const [searchParams, setSearchParams] = useState({
-    name: '',
-    startStop: '',
-    endStop: '',
-    code: '',
-    type: '',
+    name: "",
+    startStop: "",
+    endStop: "",
+    code: "",
+    type: "",
   });
 
   useEffect(() => {
@@ -36,7 +29,13 @@ const RouteSearch = () => {
   };
 
   const handleReset = () => {
-    const resetParams = { name: '', startStop: '', endStop: '', code: '', type: '' };
+    const resetParams = {
+      name: "",
+      startStop: "",
+      endStop: "",
+      code: "",
+      type: "",
+    };
     setSearchParams(resetParams);
     dispatch(setCurrentPage(1));
   };
@@ -49,12 +48,12 @@ const RouteSearch = () => {
 
   const getTypeIcon = (type) => {
     switch (type?.toUpperCase()) {
-      case 'BUS':
-        return '🚌';
-      case 'ELECTRIC':
-        return '🚆';
+      case "BUS":
+        return "🚌";
+      case "ELECTRIC":
+        return "🚆";
       default:
-        return '❓';
+        return "❓";
     }
   };
 
@@ -80,8 +79,8 @@ const RouteSearch = () => {
           onClick={() => handlePageChange(1)}
           className={`px-3 py-1 mx-1 rounded ${
             currentPage === 1
-              ? 'bg-red-500 text-white'
-              : 'bg-gray-200 hover:bg-gray-300'
+              ? "bg-red-500 text-white"
+              : "bg-gray-200 hover:bg-gray-300"
           }`}
         >
           1
@@ -103,8 +102,8 @@ const RouteSearch = () => {
           onClick={() => handlePageChange(i)}
           className={`px-3 py-1 mx-1 rounded ${
             currentPage === i
-              ? 'bg-red-500 text-white'
-              : 'bg-gray-200 hover:bg-gray-300'
+              ? "bg-red-500 text-white"
+              : "bg-gray-200 hover:bg-gray-300"
           }`}
         >
           {i}
@@ -126,8 +125,8 @@ const RouteSearch = () => {
           onClick={() => handlePageChange(totalPages)}
           className={`px-3 py-1 mx-1 rounded ${
             currentPage === totalPages
-              ? 'bg-red-500 text-white'
-              : 'bg-gray-200 hover:bg-gray-300'
+              ? "bg-red-500 text-white"
+              : "bg-gray-200 hover:bg-gray-300"
           }`}
         >
           {totalPages}
@@ -232,33 +231,42 @@ const RouteSearch = () => {
         </div>
       </div>
 
-      {status === 'loading' && <p>Đang tải dữ liệu...</p>}
-      {status === 'failed' && <p className="text-red-500">Lỗi: {error}</p>}
-
-      {status === 'succeeded' && (
+      {status === "loading" && <p>Đang tải dữ liệu...</p>}
+      {status === "failed" && <p className="text-red-500">Lỗi: {error}</p>}
+      {status === "succeeded" && (
         <>
-          <ul className="space-y-2">
-            {routes.length === 0 ? (
-              <p>Không có tuyến xe nào.</p>
-            ) : (
-              routes.map((route) => (
-                <li
-                  key={route.id}
-                  className="p-4 border rounded-lg shadow hover:bg-gray-100 transition cursor-pointer" // Added cursor-pointer for better UX
-                  onClick={() => handleRouteClick(route)} // Navigate on click
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{getTypeIcon(route.type)}</span>
-                    <div>
-                      <p><strong>Mã tuyến:</strong> {route.code}</p>
-                      <p><strong>Tên tuyến:</strong> {route.name}</p>
-                      <p><strong>Loại tuyến:</strong> {route.type}</p>
+          <div className="max-h-[500px] overflow-y-auto space-y-2">
+            <ul>
+              {routes.length === 0 ? (
+                <p>Không có tuyến xe nào.</p>
+              ) : (
+                routes.map((route) => (
+                  <li
+                    key={route.id}
+                    className="p-4 border rounded-lg shadow hover:bg-gray-100 transition cursor-pointer"
+                    onClick={() => handleRouteClick(route)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">
+                        {getTypeIcon(route.type)}
+                      </span>
+                      <div>
+                        <p>
+                          <strong>Mã tuyến:</strong> {route.code}
+                        </p>
+                        <p>
+                          <strong>Tên tuyến:</strong> {route.name}
+                        </p>
+                        <p>
+                          <strong>Loại tuyến:</strong> {route.type}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </li>
-              ))
-            )}
-          </ul>
+                  </li>
+                ))
+              )}
+            </ul>
+          </div>
           {totalPages > 1 && renderPagination()}
         </>
       )}

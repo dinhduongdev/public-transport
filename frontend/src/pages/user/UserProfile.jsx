@@ -14,7 +14,7 @@ const UserProfile = () => {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
       <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Profile</h2>
+          <h2 className="text-xl font-semibold">HỒ SƠ</h2>
         </div>
 
         <div className="flex items-center gap-4 mb-6">
@@ -25,14 +25,14 @@ const UserProfile = () => {
           />
           <div>
             <p className="font-medium">{`${user.firstname} ${user.lastname}`}</p>
-            <p className="text-sm text-gray-500">Workspace user</p>
+            <p className="text-sm text-gray-500">Tên</p>
           </div>
         </div>
 
 
         <div className="space-y-4 mb-8">
           <div>
-            <label className="block text-sm font-medium mb-1">Full name</label>
+            <label className="block text-sm font-medium mb-1">Họ và tên</label>
             <input
               type="text"
               value={`${user.firstname} ${user.lastname}`}
@@ -41,7 +41,7 @@ const UserProfile = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Email address</label>
+            <label className="block text-sm font-medium mb-1">Địa chỉ gmail</label>
             <input
               type="email"
               value={user.email}
@@ -50,7 +50,7 @@ const UserProfile = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Role</label>
+            <label className="block text-sm font-medium mb-1">Vai trò</label>
             <select
               disabled
               value={user.role || 'User'}

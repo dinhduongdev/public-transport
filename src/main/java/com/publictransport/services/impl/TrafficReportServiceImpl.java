@@ -51,6 +51,8 @@ public class TrafficReportServiceImpl  implements TrafficReportService {
         report.setLongitude(trafficReportDTO.getLongitude());
         report.setDescription(trafficReportDTO.getDescription());
         report.setStatus(trafficReportDTO.getStatus());
+        report.setStartTime(trafficReportDTO.getStartTime());
+        report.setEndTime(trafficReportDTO.getEndTime());
         report.setApprovalStatus(trafficReportDTO.getApprovalStatus() != null
                 ? trafficReportDTO.getApprovalStatus()
                 : ApprovalStatus.PENDING);
@@ -106,6 +108,8 @@ public class TrafficReportServiceImpl  implements TrafficReportService {
             dto.setDescription(report.getDescription());
             dto.setStatus(report.getStatus().name());
             dto.setApprovalStatus(report.getApprovalStatus());
+            dto.setStartTime(report.getStartTime());
+            dto.setEndTime(report.getEndTime());
             dto.setImageUrl(report.getImageUrl());
             dto.setCreatedAt(report.getCreatedAt());
             return dto;
@@ -171,6 +175,15 @@ public class TrafficReportServiceImpl  implements TrafficReportService {
 //        }
         trafficReportRepository.delete(report);
     }
+
+    @Override
+    public List<TrafficReport> getReportsByStatus(String status) {
+        if (status.equals("PENDING")){
+            return trafficReportRepository.findByApprovalStatus(ApprovalStatus.PENDING);
+        }
+        return trafficReportRepository.findByApprovalStatus(ApprovalStatus.APPROVED);
+    }
+
     private String extractPublicId(String imageUrl) {
         String[] parts = imageUrl.split("/");
         String fileName = parts[parts.length - 1];

@@ -43,6 +43,37 @@ public class StationRepositoryImpl implements StationRepository {
     }
 
     @Override
+    public Optional<Station> findDuplicate(Station station) {
+        Session session = getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Station> cq = cb.createQuery(Station.class);
+        Root<Station> root = cq.from(Station.class);
+        cq.select(root);
+
+        // Truy cập các trường trong @Embedded
+        Path<Double> latitudePath = root.get("coordinates").get("lat");
+        Path<Double> longitudePath = root.get("coordinates").get("lng");
+
+        Path<String> addressPath = root.get("location").get("address");
+        Path<String> streetPath = root.get("location").get("street");
+        Path<String> wardPath = root.get("location").get("ward");
+        Path<String> zonePath = root.get("location").get("zone");
+
+        Predicate nameMatch = cb.equal(root.get("name"), station.getName());
+        Predicate latMatch = cb.equal(latitudePath, station.getCoordinates().getLat());
+        Predicate lngMatch = cb.equal(longitudePath, station.getCoordinates().getLng());
+        Predicate addressMatch = cb.equal(addressPath, station.getLocation().getAddress());
+        Predicate streetMatch = cb.equal(streetPath, station.getLocation().getStreet());
+        Predicate wardMatch = cb.equal(wardPath, station.getLocation().getWard());
+        Predicate zoneMatch = cb.equal(zonePath, station.getLocation().getZone());
+
+        cq.where(cb.and(nameMatch, latMatch, lngMatch, addressMatch, streetMatch, wardMatch, zoneMatch));
+
+        return session.createQuery(cq).uniqueResultOptional();
+    }
+
+
+    @Override
     public void update(Station station) {
         Session session = getCurrentSession();
         session.merge(station);

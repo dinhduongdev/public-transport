@@ -9,12 +9,23 @@ const UserTrafficReports = () => {
   const { reports, loading, error } = useSelector(
     (state) => state.trafficReports
   );
-
+  console.log('====================================');
+  console.log(reports);
+  console.log('====================================');
   // Lấy danh sách báo cáo của người dùng
   useEffect(() => {
     dispatch(fetchTrafficReports());
   }, [dispatch]);
 
+    // Chuyển đổi mảng thời gian thành đối tượng Date
+    const parseTimeArray = (timeArray) => {
+      if (!timeArray || !Array.isArray(timeArray) || timeArray.length < 5) {
+        return null;
+      }
+      const [year, month, day, hour, minute] = timeArray;
+      // JavaScript months are 0-based, so subtract 1 from month
+      return new Date(year, month - 1, day, hour, minute);
+    };
   return (
     <div className="container mx-auto mt-8 px-4">
       {/* Nút Quay lại */}
@@ -64,13 +75,17 @@ const UserTrafficReports = () => {
                 Hình ảnh
               </th>
               <th className="py-3 px-4 text-left text-sm font-medium">
-                Thời gian tạo
+                Thời gian bắt đầu
+              </th>
+              <th className="py-3 px-4 text-left text-sm font-medium">
+                Thời gian kết thúc
               </th>
             </tr>
           </thead>
           <tbody>
             {reports.length > 0 ? (
               reports.map((report) => (
+                
                 <tr key={report.id} className="border-b hover:bg-gray-50">
                   <td className="py-3 px-4 text-sm">{report.id}</td>
                   <td className="py-3 px-4 text-sm">{report.location}</td>
@@ -94,7 +109,10 @@ const UserTrafficReports = () => {
                     )}
                   </td>
                   <td className="py-3 px-4 text-sm">
-                    {formatCreatedAt(report.createdAt)}
+                    {parseTimeArray(report.startTime).toString()}
+                  </td>
+                  <td className="py-3 px-4 text-sm">
+                    {parseTimeArray(report.endTime).toString()}
                   </td>
                 </tr>
               ))

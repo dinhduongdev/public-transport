@@ -81,7 +81,7 @@ const Register = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
-        <h1 className="text-2xl font-semibold text-center mb-4">Sign Up</h1>
+        <h1 className="text-2xl font-semibold text-center mb-4">ĐĂNG KÝ</h1>
 
         {msg && (
           <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-center text-sm">
@@ -94,7 +94,7 @@ const Register = () => {
             type="text"
             value={user.firstName}
             onChange={(e) => setState(e.target.value, "firstName")}
-            placeholder="First Name"
+            placeholder="Họ"
             required
             className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
           />
@@ -102,7 +102,7 @@ const Register = () => {
             type="text"
             value={user.lastName}
             onChange={(e) => setState(e.target.value, "lastName")}
-            placeholder="Last Name"
+            placeholder="Tên lót"
             required
             className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
           />
@@ -120,14 +120,14 @@ const Register = () => {
               onClick={sendVerificationCode}
               className="bg-blue-600 text-white px-2 rounded hover:bg-blue-700 transition"
             >
-              Send Code
+              Gửi mã
             </button>
           </div>
           <input
             type="text"
             value={verificationCode}
             onChange={(e) => setVerificationCode(e.target.value)}
-            placeholder="Verification Code"
+            placeholder="Mã xác nhận"
             required
             className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
           />
@@ -135,7 +135,7 @@ const Register = () => {
             type="password"
             value={user.password}
             onChange={(e) => setState(e.target.value, "password")}
-            placeholder="Password"
+            placeholder="Mật khẩu"
             required
             className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
           />
@@ -143,7 +143,7 @@ const Register = () => {
             type="password"
             value={user.confirm}
             onChange={(e) => setState(e.target.value, "confirm")}
-            placeholder="Confirm Password"
+            placeholder="Xác nhận mật khẩu"
             required
             className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
           />
@@ -181,15 +181,15 @@ const Register = () => {
               type="submit"
               className="w-full bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition"
             >
-              Sign Up
+              Đăng ký
             </button>
           )}
         </form>
 
         <p className="mt-4 text-center text-sm text-gray-600">
-          Already have an account?{" "}
+          Bạn đã có tài khoản?{" "}
           <a href="/login" className="text-blue-500 hover:underline">
-            Sign in
+            Đăng ký
           </a>
         </p>
       </div>
