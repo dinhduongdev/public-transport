@@ -27,7 +27,7 @@ public class StationController {
 
         if (params.getPage() > totalPages) {
             redirectAttributes.addFlashAttribute("errorMsg", "Trang không tồn tại.");
-            params.setPage(totalPages);
+            return "redirect:/manage-stations";
         }
 
         List<Station> stations = stationService.findStations(params);
