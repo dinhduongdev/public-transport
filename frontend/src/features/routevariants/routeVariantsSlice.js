@@ -1,11 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { endpoints  } from '../../configs/apis'; 
+
 
 // Thunk để lấy dữ liệu lịch trình từ API
 export const fetchRouteVariantSchedule = createAsyncThunk(
   'routeVariants/fetchRouteVariantSchedule',
   async (variantId, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://localhost:8080/PublicTransport/api/route-variants/${variantId}`);
+      const response = await fetch(endpoints.routeVariantSchedule(variantId));
       if (!response.ok) {
         throw new Error('Không thể tải dữ liệu lịch trình.');
       }

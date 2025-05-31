@@ -28,7 +28,11 @@ const endpoints = {
   navigationRoute: `${BASE_URL}/api/navigation`,
 
   //report
-  reports: `${BASE_URL}/api/traffic-reports`
+  reports: `${BASE_URL}/api/traffic-reports`,
+
+  
+  // Route Variants
+  routeVariantSchedule: (variantId) => `${BASE_URL}/api/route-variants/${variantId}`,
 };
 
 const Apis = {
