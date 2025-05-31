@@ -27,7 +27,7 @@
                     <option value="">Chọn tuyến đường</option>
                     <option th:each="rv : ${routeVariants}"
                             th:value="${rv.id}"
-                            th:text="${rv.startStop} + ' - ' + ${rv.endStop}">
+                            th:text="${rv.route.name} + ' (' + (${rv.isOutbound} ? 'lượt đi' : 'lượt về') + ') : ' + ${rv.startStop} + ' → ' + ${rv.endStop}">
                     </option>
                 </select>
             </div>

@@ -6,13 +6,17 @@ import RouteSubTabs from './RouteSubTabs';
 import RouteContent from './RouteContent';
 import RouteMap from './RouteMap';
 import useRouteSchedule from './useRouteSchedule';
+import { useSelector } from 'react-redux';
 
 const RouteVariants = () => {
   const { state: { route } = {} } = useLocation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('outbound');
   const [activeSubTab, setActiveSubTab] = useState('stops');
-
+  const user = useSelector((state) => state.user);
+  console.log(user);
+  
+  
   const { scheduleData, loading, error } = useRouteSchedule(route, activeTab);
 
   if (!route || !route.routeVariants) {
@@ -21,7 +25,7 @@ const RouteVariants = () => {
 
   return (
     <div className="p-4 h-screen flex flex-col">
-      <RouteHeader route={route} onBack={() => navigate('/')} />
+      <RouteHeader route={route} onBack={() => navigate('/')}   userId={user?.id}/>
       <div className="flex flex-row flex-grow gap-4 overflow-hidden">
         <div className="w-3/10 flex flex-col overflow-y-auto pr-2">
           <RouteTabs routeVariants={route.routeVariants} activeTab={activeTab} setActiveTab={setActiveTab} />

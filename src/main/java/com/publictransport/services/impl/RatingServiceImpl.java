@@ -75,4 +75,19 @@ public class RatingServiceImpl implements RatingService {
 
         return summary;
     }
+
+    @Override
+    public Rating findById(Long id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        return s.get(Rating.class, id);
+    }
+
+    @Override
+    public void delete(Long id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        Rating rating = s.get(Rating.class, id);
+        if (rating != null) {
+            s.delete(rating);
+        }
+    }
 }

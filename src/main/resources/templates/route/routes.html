@@ -205,6 +205,7 @@
                 <a th:href="@{/manage-routes/edit/{id}(id=${route.id})}" class="edit-btn">Sửa</a>
                 <a th:href="@{/manage-routes/delete/{id}(id=${route.id})}" class="delete-btn"
                    onclick="return confirm('Bạn có chắc chắn muốn xóa tuyến đường này?')">Xóa</a>
+                <a th:href="@{/manage-ratings(routeId=${route.id})}" class="btn btn-info btn-sm">Xem đánh giá</a>
             </td>
         </tr>
         </tbody>

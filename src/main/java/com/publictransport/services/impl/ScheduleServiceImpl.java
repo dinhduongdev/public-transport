@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -79,11 +80,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setStartDate(scheduleDTO.getStartDate());
         schedule.setEndDate(scheduleDTO.getEndDate());
         schedule.setPriority(scheduleDTO.getPriority());
-        scheduleRepository.save(schedule);
+//        scheduleRepository.save(schedule);
 
         List<String> startTimes = scheduleDTO.getStartTimes();
         List<String> endTimes = scheduleDTO.getEndTimes();
         List<String> licenses = scheduleDTO.getLicenses();
+        List<ScheduleTrip> trips = new ArrayList<>();
         if (startTimes != null && endTimes != null && licenses != null
                 && startTimes.size() == endTimes.size() && startTimes.size() == licenses.size()) {
             for (int i = 0; i < startTimes.size(); i++) {
@@ -101,9 +103,15 @@ public class ScheduleServiceImpl implements ScheduleService {
                 trip.setStartTime(LocalTime.parse(startTimeStr));
                 trip.setEndTime(LocalTime.parse(endTimeStr));
                 trip.setLicense(license);
-                scheduleTripService.save(trip);
+//                scheduleTripService.save(trip);
+                trips.add(trip);
             }
         }
+        // Gán danh sách trip vào schedule
+        schedule.setScheduleTrips(trips);
+        // Lưu cả schedule và trips nhờ cascade
+        scheduleRepository.save(schedule);
+
     }
 
     @Override

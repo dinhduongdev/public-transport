@@ -100,7 +100,9 @@
     <div class="schedule-info">
         <h2>Chi tiết lịch trình</h2>
         <dl>
-            <dt>ID:</dt>
+            <dt>Tuyến:</dt>
+            <dd th:text="${schedule.routeVariant.route.name} + ' (' + (${schedule.routeVariant.isOutbound} ? 'lượt đi' : 'lượt về') "></dd>
+            <dt>ID Lịch trình :</dt>
             <dd th:text="${schedule.id}"></dd>
             <dt>ID Biến thể tuyến:</dt>
             <dd th:text="${schedule.routeVariant != null} ? ${schedule.routeVariant.id} : 'N/A'"></dd>

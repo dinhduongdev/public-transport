@@ -3,11 +3,10 @@ import userReducer from "./features/user/userSlice";
 import busRoutesReducer from "./features/routes/routeSlice";
 import ratingReducer from "./features/ratings/ratingSlice";
 import favoritesReducer from "./features/favorites/favoritesSlice";
-import notificationReducer from './features/notifications/notificationSlice';
-import routeVariantsReducer from './features/routevariants/routeVariantsSlice';
-import navigationReducer from './features/routes/navigationSlice';
-
-
+import notificationReducer from "./features/notifications/notificationSlice";
+import routeVariantsReducer from "./features/routevariants/routeVariantsSlice";
+import navigationReducer from "./features/routes/navigationSlice";
+import trafficReportsReducer from "./features/trafficreport/trafficReportsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -18,5 +17,6 @@ export const store = configureStore({
     notification: notificationReducer,
     routeVariants: routeVariantsReducer,
     navigation: navigationReducer,
+    trafficReports: trafficReportsReducer,
   },
 });
