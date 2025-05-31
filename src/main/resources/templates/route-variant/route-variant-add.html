@@ -49,7 +49,7 @@
                                 <label class="form-label">Chọn trạm</label>
                                 <select th:field="*{outboundStops[__${iter.index}__].stationId}" class="form-select outbound-station" required>
                                     <option value="">Chọn trạm</option>
-                                    <option th:each="station : ${stations}" th:value="${station.id}" th:text="${station.name}"></option>
+                                    <option th:each="station : ${stations}" th:value="${station.id}" th:text="${station.name} + ' ' + ${station.location}"></option>
                                 </select>
                             </div>
                             <div class="col-md-4 mb-2">

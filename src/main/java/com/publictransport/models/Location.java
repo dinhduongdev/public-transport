@@ -25,4 +25,9 @@ public class Location {
     @Size(max = 100)
     @Column(length = 100)
     private String zone;
+
+    @Override
+    public String toString() {
+        return this.address + ", " + this.street + ", " + this.ward + " ," + this.zone;
+    }
 }
