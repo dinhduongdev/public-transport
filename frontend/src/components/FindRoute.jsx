@@ -171,14 +171,14 @@ export default function FindRoute() {
                     Cách {selectedRouteIndex + 1}
                   </span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-600">
+                <div className="gap-4 text-sm text-gray-600">
                   <p>
-                    <span className="font-medium">Bắt đầu:</span> (
-                    {routes[selectedRouteIndex].formattedStartAddress})
+                    <span className="font-medium">Bắt đầu: </span>
+                    {routes[selectedRouteIndex].formattedStartAddress}
                   </p>
                   <p>
-                    <span className="font-medium">Kết thúc:</span> (
-                    {routes[selectedRouteIndex].formattedEndAddress})
+                    <span className="font-medium">Kết thúc: </span>
+                    {routes[selectedRouteIndex].formattedEndAddress}
                   </p>
                   <p>
                     <span className="font-medium">Tổng khoảng cách:</span>{" "}
@@ -187,7 +187,14 @@ export default function FindRoute() {
                     ).toFixed(2)}{" "}
                     km
                   </p>
+                  <p>
+                    <span className="font-medium">Chuyến: </span>{" "}
+                    {[...new Set(routes[selectedRouteIndex].hops.map(hop => hop.route.code))].map((code, index, array) => (
+                      <span key={index}>{code} {index < array.length - 1 ? " > ":""} </span>
+                    ))}
+                  </p>
                 </div>
+
                 <h4 className="font-medium text-gray-700">Các Trạm:</h4>
                 <ul className="space-y-2 text-sm text-gray-600 max-h-60 overflow-y-auto">
                   {" "}

@@ -199,6 +199,7 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
                 Node currentNode = graph.addNode(stop);
                 if (previousNode != null) {
                     // Tạo edge từ previousNode đến currentNode
+                    // nẾU lÀ stop ĐẦu tiÊn thÌ khÔng cÓ cẠNH nÀO ĐẰng trƯỚc
                     graph.addEdge(previousNode, currentNode);
                 }
                 previousNode = currentNode;
