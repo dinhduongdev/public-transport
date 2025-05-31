@@ -15,12 +15,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
 @Service("userDetailsService")
@@ -143,14 +147,21 @@ public class UserServiceImpl implements UserService {
 
         System.out.println("Processing OAuth2 user: " + oidcUser.getEmail());
         Optional<User> userOpt = this.getUserByEmail(oidcUser.getEmail());
+        User user;
 
         if (userOpt.isEmpty()) {
             System.out.println("User not found, registering new Google user: " + oidcUser.getEmail());
-            registerFromGoogle(oidcUser);
+            user = registerFromGoogle(oidcUser);
         } else {
             System.out.println("User already exists: " + userOpt.get().getEmail());
+            user = userOpt.get();
         }
 
-        return oidcUser;
+        List<GrantedAuthority> authorities = new ArrayList<>(
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+        );
+        authorities.add(new SimpleGrantedAuthority(user.getRole()));
+
+        return new DefaultOidcUser(authorities, oidcUser.getIdToken(), oidcUser.getUserInfo());
     }
 }

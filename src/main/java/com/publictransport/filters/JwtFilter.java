@@ -29,8 +29,16 @@ public class JwtFilter implements Filter {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String requestURI = httpRequest.getRequestURI();
-        String authorizationHeader = httpRequest.getHeader("Authorization");
 
+//        // Skip filter for OAuth2 paths
+//        if (requestURI.startsWith("/oauth2/") ||
+//                requestURI.equals("/login") ||
+//                requestURI.contains("oauth2/authorization/")) {
+//            chain.doFilter(request, response);
+//            return;
+//        }
+
+        String authorizationHeader = httpRequest.getHeader("Authorization");
         // Các API yêu cầu chứng thực
         if (requestURI.startsWith(httpRequest.getContextPath() + "/api/secure/**") ||
                 requestURI.startsWith(httpRequest.getContextPath() + "/api/secure/profile") ||
