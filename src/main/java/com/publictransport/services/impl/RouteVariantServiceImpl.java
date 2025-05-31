@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class RouteVariantServiceImpl implements RouteVariantService {
@@ -70,5 +71,10 @@ public class RouteVariantServiceImpl implements RouteVariantService {
     @Override
     public Optional<Double> findMeanDistanceBetweenStops(Long routeVariantId) {
         return routeVariantRepository.findMeanDistanceBetweenStops(routeVariantId);
+    }
+
+    @Override
+    public List<RouteVariant> fetchRouteVariantsWithStops(Set<Long> routeVariantIds) {
+        return routeVariantRepository.fetchRouteVariantsWithStops(routeVariantIds);
     }
 }

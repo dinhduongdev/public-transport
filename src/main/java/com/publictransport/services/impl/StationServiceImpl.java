@@ -100,4 +100,15 @@ public class StationServiceImpl implements StationService {
     public long countStations(StationFilter filter) {
         return stationRepository.countStations(filter);
     }
+
+    @Override
+    public List<Long> getStationIds(StationFilter filter){
+        return stationRepository.getStationIds(filter);
+    }
+
+    @Override
+    public List<Station> getStationsByIds(List<Long> ids, boolean fetchStops){
+        return stationRepository.getStationsByIds(ids, fetchStops);
+    }
+
 }

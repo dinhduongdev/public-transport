@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 @Transactional
@@ -177,5 +174,18 @@ public class RouteVariantRepositoryImpl implements RouteVariantRepository {
             return Optional.empty();
         }
         return Optional.of(meanDistance);
+    }
+
+    @Override
+    public List<RouteVariant> fetchRouteVariantsWithStops(Set<Long> routeVariantIds) {
+        Session session = factory.getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<RouteVariant> cq = cb.createQuery(RouteVariant.class);
+        Root<RouteVariant> root = cq.from(RouteVariant.class);
+        root.fetch(RouteVariant_.stops, JoinType.LEFT).fetch(Stop_.station);
+        root.fetch(RouteVariant_.route, JoinType.LEFT);
+        cq.select(root).where(root.get(RouteVariant_.id).in(routeVariantIds));
+        Query<RouteVariant> query = session.createQuery(cq);
+        return query.getResultList();
     }
 }

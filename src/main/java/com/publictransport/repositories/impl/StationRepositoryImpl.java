@@ -161,6 +161,38 @@ public class StationRepositoryImpl implements StationRepository {
         Session session = getCurrentSession();
         return session.createQuery("FROM Station", Station.class).getResultList();
     }
+
+    public List<Long> getStationIds(StationFilter filter) {
+        Session session = getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<Station> root = cq.from(Station.class);
+        cq.select(root.get(Station_.id));
+
+        List<Predicate> predicates = filter.toPredicateList(cb, root);
+        if (!predicates.isEmpty()) {
+            cq.where(cb.and(predicates.toArray(new Predicate[0])));
+        }
+
+        Query<Long> query = session.createQuery(cq);
+        PaginationUtils.setQueryResultsRange(query, filter);
+        return query.getResultList();
+    }
+
+    public List<Station> getStationsByIds(List<Long> ids, boolean fetchStops) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        Session session = getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Station> cq = cb.createQuery(Station.class);
+        Root<Station> root = cq.from(Station.class);
+        cq.select(root).where(root.get(Station_.id).in(ids));
+        if (fetchStops) {
+            root.fetch(Station_.stops).fetch(Stop_.routeVariant).fetch(RouteVariant_.route);
+        }
+        return session.createQuery(cq).getResultList();
+    }
 }
 
 

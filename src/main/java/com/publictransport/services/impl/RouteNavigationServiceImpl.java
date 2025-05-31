@@ -93,6 +93,10 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
             // Không có route variant chung hoặc không có trạm dừng gần điểm đi/đến
             return List.of();
         }
+        List<RouteVariant> commonRouteVarsWithFetchedStops =
+                routeVariantService.fetchRouteVariantsWithStops(
+                        commonRouteVars.stream().map(RouteVariant::getId).collect(Collectors.toSet())
+                );
 
         // 3. Tìm trạm dừng của các routeVar chung
         List<RouteNavigation> navigations = new ArrayList<>();
@@ -100,7 +104,7 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
         Coordinates endCoords = MapUtils.convertToCoordinates(filter.getEndCoords()).orElseThrow();
         String formattedStartAddress = mapProxy.getAddress(startCoords).orElse("");
         String formattedEndAddress = mapProxy.getAddress(endCoords).orElse("");
-        for (RouteVariant routeVar : commonRouteVars) {
+        for (RouteVariant routeVar : commonRouteVarsWithFetchedStops) {
             RouteNavigation navigation = new RouteNavigation();
             navigation.setStartCoordinates(startCoords);
             navigation.setEndCoordinates(endCoords);
@@ -126,6 +130,7 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
             }
 
             // Tạo danh sách các hop từ trạm xuất phát đến trạm đích
+            System.out.println("Creating hops for route variant: " + routeVar.getId());
             int order = 1;
             for (int i = startIndex; i <= endIndex; i++) {
                 Stop currentStop = stops.get(i);
@@ -138,7 +143,7 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
                             nextStop.getStation().getCoordinates()
                     ) * 1000; // Chuyển đổi sang mét
                 }
-                navigation.addHop(new Hop(order++, currentStop, nextStopDistance, new RouteDTO(currentStop.getRouteVariant().getRoute())));
+                navigation.addHop(new Hop(order++, currentStop, nextStopDistance, new RouteDTO(routeVar.getRoute())));
             }
 
             // Tính toán khoảng cách và thời gian
@@ -182,10 +187,13 @@ public class RouteNavigationServiceImpl implements RouteNavigationService {
                 startStops.stream().map(Stop::getRouteVariant),
                 endStops.stream().map(Stop::getRouteVariant)
         ).collect(Collectors.toSet());
-        System.out.println("Candidate route variants: " + Arrays.toString(candidateRouteVars.toArray()));
+        List<RouteVariant> candidateRouteVarsWithFetchedStops =
+                routeVariantService.fetchRouteVariantsWithStops(
+                        candidateRouteVars.stream().map(RouteVariant::getId).collect(Collectors.toSet())
+                );
 
         Graph graph = new Graph();
-        for (RouteVariant routeVar : candidateRouteVars) {
+        for (RouteVariant routeVar : candidateRouteVarsWithFetchedStops) {
             Node previousNode = null;
             for (Stop stop : routeVar.getStops()) {
                 Node currentNode = graph.addNode(stop);

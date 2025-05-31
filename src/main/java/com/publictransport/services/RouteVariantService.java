@@ -5,6 +5,7 @@ import com.publictransport.models.RouteVariant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public interface RouteVariantService {
     List<RouteVariant> findAllRouteVariants(int page, int size);
@@ -28,4 +29,6 @@ public interface RouteVariantService {
     List<RouteVariant> findByStationId(Long stationId);
 
     Optional<Double> findMeanDistanceBetweenStops(Long routeVariantId);
+
+    List<RouteVariant> fetchRouteVariantsWithStops(Set<Long> routeVariantIds);
 }

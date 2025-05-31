@@ -10,7 +10,9 @@ public interface StationRepository {
     Optional<Station> findById(Long id);
 
     void save(Station station);
+
     Optional<Station> findDuplicate(Station station);
+
     void update(Station station);
 
     void delete(Long id);
@@ -22,5 +24,9 @@ public interface StationRepository {
     List<Station> getAllStations();
 
     long countStations(StationFilter filter);
+
+    List<Long> getStationIds(StationFilter filter);
+
+    List<Station> getStationsByIds(List<Long> ids, boolean fetchStops);
 
 }

@@ -1,7 +1,6 @@
 package com.publictransport.services;
 
 import com.publictransport.dto.params.StationFilter;
-import com.publictransport.models.Coordinates;
 import com.publictransport.models.Station;
 
 import java.util.List;
@@ -28,4 +27,9 @@ public interface StationService {
     Optional<StationFilter> buildNewFilterByKeyword(String keyword);
 
     long countStations(StationFilter filter);
+
+    List<Long> getStationIds(StationFilter filter);
+
+    List<Station> getStationsByIds(List<Long> ids, boolean fetchStops);
+
 }
