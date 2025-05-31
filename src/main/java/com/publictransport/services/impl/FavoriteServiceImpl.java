@@ -153,4 +153,11 @@ public class FavoriteServiceImpl implements FavoriteService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<Favorite> findAllFavoritesByTarget(Long targetId, String targetType) {
+        return favoriteRepository.findAllByTargetIdAndTargetType(targetId, targetType)
+                .stream()
+                .collect(Collectors.toList());
+    }
+
 }

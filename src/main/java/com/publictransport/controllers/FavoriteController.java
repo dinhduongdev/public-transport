@@ -39,7 +39,7 @@ public class FavoriteController {
         }
 
         try {
-            List<Favorite> favorites = favoriteService.findObservedFavoritesByTarget(targetId, targetType);
+            List<Favorite> favorites = favoriteService.findAllFavoritesByTarget(targetId, targetType);
             if (favorites.isEmpty()) {
                 redirectAttributes.addFlashAttribute("errorMsg", "Chưa có lượt yêu thích nào cho mục này.");
                 return "redirect:/manage-routes";

@@ -21,5 +21,6 @@ public interface FavoriteService {
 
 
     List<Favorite> findObservedFavoritesByTarget(Long targetId, String targetType);
+    List<Favorite> findAllFavoritesByTarget(Long targetId, String targetType);
 }
 

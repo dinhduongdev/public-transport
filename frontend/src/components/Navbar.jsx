@@ -62,16 +62,16 @@ const Navbar = () => {
     };
   }, []);
 
-  // Lấy thông báo khi user thay đổi
+  //Lấy thông báo khi user thay đổi
   useEffect(() => {
     if (user?.id) {
       requestNotificationPermission();
       dispatch(fetchNotifications(user.id));
       // Polling để kiểm tra thông báo mới (mỗi 30 giây)
-      const interval = setInterval(() => {
-        dispatch(fetchNotifications(user.id));
-      }, 30000);
-      return () => clearInterval(interval);
+      // const interval = setInterval(() => {
+      //   dispatch(fetchNotifications(user.id));
+      // }, 30000);
+      // return () => clearInterval(interval);
     }
   }, [user, dispatch]);
 

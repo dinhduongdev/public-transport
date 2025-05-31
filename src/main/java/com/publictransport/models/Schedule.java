@@ -38,8 +38,6 @@ public class Schedule {
 
     @Column(name = "priority")
     private Integer priority;
-
-
     @JsonIgnore
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ScheduleTrip> scheduleTrips;

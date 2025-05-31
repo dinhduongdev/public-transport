@@ -49,7 +49,7 @@ export default function MapView() {
       return [];
     }
   };
-
+  // [[lat, lng], [lat, lng], ...]
   // Cập nhật đường đi khi tuyến được chọn thay đổi
   useEffect(() => {
     const updatePath = async () => {

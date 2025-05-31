@@ -178,3 +178,15 @@ CREATE TABLE Rating
     CONSTRAINT fk_rating_route FOREIGN KEY (route_id) REFERENCES Route (id) ON DELETE CASCADE,
     CONSTRAINT uk_rating_user_route UNIQUE (user_id, route_id)
 );
+
+CREATE TABLE notification (
+      id BIGINT AUTO_INCREMENT PRIMARY KEY,
+      title VARCHAR(255),
+      message TEXT NOT NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      is_read BOOLEAN DEFAULT FALSE,
+      user_id BIGINT NOT NULL,
+      CONSTRAINT fk_notification_user FOREIGN KEY (user_id)
+          REFERENCES user(id) ON DELETE CASCADE
+);
+
