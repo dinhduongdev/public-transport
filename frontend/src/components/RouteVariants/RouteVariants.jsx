@@ -24,10 +24,10 @@ const RouteVariants = () => {
   }
 
   return (
-    <div className="p-4 h-screen flex flex-col">
+    <div className=" h-screen flex flex-col">
       <RouteHeader route={route} onBack={() => navigate('/')}   userId={user?.id}/>
-      <div className="flex flex-row flex-grow gap-4 overflow-hidden">
-        <div className="w-3/10 flex flex-col overflow-y-auto pr-2">
+      <div className="flex flex-row flex-grow gap-2 overflow-hidden">
+        <div className="w-3/10 flex flex-col overflow-y-auto pr-2 p-4">
           <RouteTabs routeVariants={route.routeVariants} activeTab={activeTab} setActiveTab={setActiveTab} />
           <RouteSubTabs activeSubTab={activeSubTab} setActiveSubTab={setActiveSubTab} />
           <RouteContent
@@ -40,7 +40,6 @@ const RouteVariants = () => {
           />
         </div>
         <div className="w-7/10 h-full">
-          <h3 className="text-lg font-semibold mb-2">Bản đồ tuyến đường</h3>
           {loading ? (
             <div className="text-center py-4">
               <div className="inline-block animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-teal-500"></div>

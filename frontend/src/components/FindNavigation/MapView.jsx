@@ -186,7 +186,7 @@ export default function MapView() {
       {routePath.length > 0 && (
         <Polyline
           positions={routePath}
-          color="#14B8A6"
+          color="#3388ff"
           weight={4}
           opacity={0.7}
         />

@@ -40,10 +40,10 @@ const RouteHeader = ({ route, onBack, userId }) => {
   };
 
   return (
-    <div className="flex items-center mb-4">
+    <div className="flex items-center pb-4 shadow-md">
       <button
         onClick={onBack}
-        className="mr-2 text-gray-600 hover:text-gray-800 text-2xl"
+        className="mr-2 text-gray-600 hover:text-gray-800 text-2xl cursor-pointer p-4"
         aria-label="Quay lại"
       >
         ←

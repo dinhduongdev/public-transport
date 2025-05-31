@@ -243,7 +243,7 @@ const RouteSearch = () => {
                 routes.map((route) => (
                   <li
                     key={route.id}
-                    className="p-4 border rounded-lg shadow hover:bg-gray-100 transition cursor-pointer"
+                    className="p-2 my-1 border rounded-lg shadow hover:bg-gray-100 transition cursor-pointer"
                     onClick={() => handleRouteClick(route)}
                   >
                     <div className="flex items-center gap-3">

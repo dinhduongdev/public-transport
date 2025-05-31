@@ -12,13 +12,12 @@ const RouteStops = ({ scheduleData }) => {
           key={stop.id}
           className="p-4 border rounded-lg shadow bg-gray-50"
         >
-          <p><strong>{stop.station.name}</strong></p>
+          <p><strong>{stop.stopOrder}. {stop.station.name}</strong></p>
           <p>
             {stop.station.location.address}, {stop.station.location.street},{' '}
             {stop.station.location.ward ? `${stop.station.location.ward}, ` : ''}
             {stop.station.location.zone}
           </p>
-          <p><strong>Thứ tự:</strong> {stop.stopOrder}</p>
         </div>
       ))}
     </div>

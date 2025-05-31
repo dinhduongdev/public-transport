@@ -122,7 +122,7 @@ const RouteSchedule = ({
           ? outboundVariant.endStop
           : returnVariant.endStop}
       </p>
-      <div className="mt-2 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
+      <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
         {tripTimes.map((time, index) => (
           <div
             key={index}
