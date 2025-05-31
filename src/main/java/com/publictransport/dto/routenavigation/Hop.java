@@ -8,7 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class Hop {
     private int order;
+    private RouteDTO route;
     private Stop stop;
     private double distanceToNextStop;
-    private RouteDTO route;
 }

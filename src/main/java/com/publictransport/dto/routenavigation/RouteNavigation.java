@@ -16,6 +16,7 @@ public class RouteNavigation {
     private String formattedEndAddress;
     private double totalDistanceInMeters;
     private Duration duration;
+    private int transitCount;
     private List<Hop> hops;
 
     public RouteNavigation() {
