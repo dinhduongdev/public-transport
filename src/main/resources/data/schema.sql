@@ -19,7 +19,8 @@ DROP TABLE IF EXISTS StatusReport;
 DROP TABLE IF EXISTS User;
 DROP TABLE IF EXISTS Role;
 DROP TABLE IF EXISTS Favorite;
-
+DROP TABLE IF EXISTS Rating;
+DROP TABLE IF EXISTS TrafficReport;
 -- Bật lại kiểm tra khóa ngoại
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -47,6 +48,21 @@ CREATE TABLE User
     CONSTRAINT uk_user_email UNIQUE (email),
     FOREIGN KEY (role) REFERENCES Role (name)
 );
+-- Report
+CREATE TABLE TrafficReport (
+       id BIGINT NOT NULL AUTO_INCREMENT,
+       user_id BIGINT,
+       location VARCHAR(255) NOT NULL,
+       latitude DOUBLE,
+       longitude DOUBLE,
+       description TEXT NOT NULL,
+       status ENUM('CLEAR', 'MODERATE', 'HEAVY', 'STUCK') NOT NULL,
+       approval_status ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
+       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+       image_url VARCHAR(500),
+       PRIMARY KEY (id),
+       FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE SET NULL
+);
 
 CREATE TABLE StatusReport
 (
@@ -71,15 +87,15 @@ CREATE TABLE Report
 );
 
 -- Notification
-CREATE TABLE Notification
-(
-    id      BIGINT PRIMARY KEY AUTO_INCREMENT,
-    time    DATETIME NOT NULL,
-    message TEXT     NOT NULL,
-    user_id BIGINT,
-    FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE
+CREATE TABLE Notification (
+      id BIGINT PRIMARY KEY AUTO_INCREMENT,
+      title VARCHAR(255),
+      message TEXT NOT NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      is_read BOOLEAN DEFAULT FALSE,
+      user_id BIGINT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE
 );
-
 -- Route
 CREATE TABLE Route
 (
@@ -169,4 +185,17 @@ CREATE TABLE Favorite
     target_type ENUM ('ROUTE', 'SCHEDULE'),
     is_observed BOOLEAN,
     FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE
-)
+);
+
+CREATE TABLE Rating (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    route_id BIGINT NOT NULL,
+    score INT NOT NULL CHECK (score >= 1 AND score <= 5),
+    comment TEXT,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_rating_user FOREIGN KEY (user_id) REFERENCES User(id),
+    CONSTRAINT fk_rating_route FOREIGN KEY (route_id) REFERENCES Route(id),
+    CONSTRAINT uk_rating_user_route UNIQUE (user_id, route_id)
+);
