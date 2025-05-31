@@ -69,39 +69,6 @@ CREATE TABLE TrafficReport (
        FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE SET NULL
 );
 
-CREATE TABLE StatusReport
-(
-    name VARCHAR(20) PRIMARY KEY
-);
-INSERT INTO StatusReport (name)
-VALUES ('PENDING'),
-       ('VERIFIED');
-
--- Report
-CREATE TABLE Report
-(
-    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
-    latitude    DOUBLE NOT NULL,
-    longitude   DOUBLE NOT NULL,
-    description TEXT,
-    image       VARCHAR(255),
-    status      VARCHAR(20),
-    user_id     BIGINT,
-    FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE,
-    FOREIGN KEY (status) REFERENCES StatusReport (name) ON DELETE CASCADE
-);
-
--- Notification
-CREATE TABLE Notification
-(
-    id         BIGINT PRIMARY KEY AUTO_INCREMENT,
-    title      VARCHAR(255),
-    message    TEXT     NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    is_read    BOOLEAN           DEFAULT FALSE,
-    user_id    BIGINT   NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE
-);
 
 
 -- Route
@@ -123,9 +90,8 @@ CREATE TABLE RouteVariant
     distance    FLOAT,
     start_stop  nvarchar(255),
     end_stop    nvarchar(255),
-    FOREIGN KEY (route_id) REFERENCES Route (id)
+    FOREIGN KEY (route_id) REFERENCES Route (id)  ON DELETE CASCADE
 );
-
 
 -- Schedule
 CREATE TABLE Schedule
@@ -135,7 +101,7 @@ CREATE TABLE Schedule
     start_date       DATETIME,
     end_date         DATETIME,
     priority         INT,
-    FOREIGN KEY (route_variant_id) REFERENCES RouteVariant (id)
+    FOREIGN KEY (route_variant_id) REFERENCES RouteVariant (id)  ON DELETE CASCADE
 );
 
 
@@ -145,7 +111,7 @@ CREATE TABLE ScheduleDay
     schedule_id BIGINT,
     day         ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'),
     PRIMARY KEY (schedule_id, day),
-    FOREIGN KEY (schedule_id) REFERENCES Schedule (id)
+    FOREIGN KEY (schedule_id) REFERENCES Schedule (id) ON DELETE CASCADE
 );
 
 
@@ -158,7 +124,7 @@ CREATE TABLE ScheduleTrip
     end_time      TIME,
     trip_order    INT,
     license_plate VARCHAR(20),
-    FOREIGN KEY (schedule_id) REFERENCES Schedule (id)
+    FOREIGN KEY (schedule_id) REFERENCES Schedule (id)  ON DELETE CASCADE
 );
 
 
@@ -184,7 +150,7 @@ CREATE TABLE Stop
     station_id       BIGINT,
     stop_order       INT,
     FOREIGN KEY (station_id) REFERENCES Station (id),
-    FOREIGN KEY (route_variant_id) REFERENCES RouteVariant (id)
+    FOREIGN KEY (route_variant_id) REFERENCES RouteVariant (id)  ON DELETE CASCADE
 );
 
 
@@ -209,6 +175,6 @@ CREATE TABLE Rating
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_rating_user FOREIGN KEY (user_id) REFERENCES User (id),
-    CONSTRAINT fk_rating_route FOREIGN KEY (route_id) REFERENCES Route (id),
+    CONSTRAINT fk_rating_route FOREIGN KEY (route_id) REFERENCES Route (id) ON DELETE CASCADE,
     CONSTRAINT uk_rating_user_route UNIQUE (user_id, route_id)
 );
