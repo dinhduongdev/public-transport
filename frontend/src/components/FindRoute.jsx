@@ -174,13 +174,11 @@ export default function FindRoute() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-600">
                   <p>
                     <span className="font-medium">Bắt đầu:</span> (
-                    {routes[selectedRouteIndex].startCoordinates.lat},{" "}
-                    {routes[selectedRouteIndex].startCoordinates.lng})
+                    {routes[selectedRouteIndex].formattedStartAddress})
                   </p>
                   <p>
                     <span className="font-medium">Kết thúc:</span> (
-                    {routes[selectedRouteIndex].endCoordinates.lat},{" "}
-                    {routes[selectedRouteIndex].endCoordinates.lng})
+                    {routes[selectedRouteIndex].formattedEndAddress})
                   </p>
                   <p>
                     <span className="font-medium">Tổng khoảng cách:</span>{" "}
