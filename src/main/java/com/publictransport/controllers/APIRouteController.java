@@ -211,7 +211,7 @@ public class APIRouteController {
 
         if (params.getPage() > totalPages) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("message", "Requested page exceeds total pages"));
+                    .body(Map.of("message", "Not found"));
         }
 
         List<Route> routes = routeService.findRoutes(params, true);

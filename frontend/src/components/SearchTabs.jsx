@@ -13,7 +13,7 @@ export default function SearchTabs() {
           aria-selected={activeTab === 'search'}
           aria-controls="search-panel"
           id="search-tab"
-          className={`flex-1 text-sm font-semibold p-3 border-b-2 ${
+          className={`flex-1 text-sm font-semibold p-3 border-b-2 cursor-pointer ${
             activeTab === 'search'
               ? 'border-teal-500 text-teal-600'
               : 'border-transparent text-gray-600'
@@ -27,7 +27,7 @@ export default function SearchTabs() {
           aria-selected={activeTab === 'find-route'}
           aria-controls="find-route-panel"
           id="find-route-tab"
-          className={`flex-1 text-sm font-semibold p-3 border-b-2 ${
+          className={`flex-1 text-sm font-semibold p-3 border-b-2 cursor-pointer ${
             activeTab === 'find-route'
               ? 'border-teal-500 text-teal-600'
               : 'border-transparent text-gray-600'
