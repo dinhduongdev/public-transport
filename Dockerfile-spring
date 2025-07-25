@@ -1,9 +1,0 @@
-FROM tomcat:jre21-temurin-jammy
-
-COPY target/PublicTransport-1.0-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
-
-# Expose the port Tomcat runs on
-EXPOSE 8080
-
-# Command to run Tomcat when the container starts
-CMD ["catalina.sh", "run"]
